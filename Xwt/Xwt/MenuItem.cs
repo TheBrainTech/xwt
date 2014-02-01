@@ -136,6 +136,11 @@ namespace Xwt
 			set { Backend.Visible = value; }
 		}
 		
+    public KeyAccelerator Accelerator {
+      get { return Backend.Accelerator; }
+      set { Backend.Accelerator = value; }
+    }
+
 		public Image Image {
 			get { return image; }
 			set {
@@ -209,5 +214,15 @@ namespace Xwt
 		CheckBox,
 		RadioButton
 	}
+
+  public class KeyAccelerator
+  {
+    public ConsoleKeyInfo KeyInfo;
+    public bool CommandOrWindowsKey;
+    public KeyAccelerator(ConsoleKeyInfo keyInfo, bool CommandOrWindowsKey) {
+      this.KeyInfo = keyInfo;
+      this.CommandOrWindowsKey = CommandOrWindowsKey;
+    }
+  }
 }
 

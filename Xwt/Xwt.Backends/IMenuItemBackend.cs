@@ -65,6 +65,11 @@ namespace Xwt.Backends
 		/// Gets or sets whether the menu item is visible.
 		/// </summary>
 		bool Visible { get; set; }
+
+    /// <summary>
+    /// Gets or sets the keyboard accelerator (menu shortcut) for the menu item.
+    /// </summary>
+    KeyAccelerator Accelerator { get; set; }
 	}
 	
 	public interface IMenuItemEventSink

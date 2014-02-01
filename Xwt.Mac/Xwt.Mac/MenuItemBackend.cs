@@ -41,6 +41,33 @@ namespace Xwt.Mac
 		string label;
 		bool useMnemonic;
 		
+    NSEventModifierMask GetModifierMask(KeyAccelerator accel)
+    {
+      NSEventModifierMask mask = default(NSEventModifierMask);
+      if (accel.CommandOrWindowsKey)
+        mask |= NSEventModifierMask.CommandKeyMask;
+      // HasFlags is not typesafe, so verbose code you see here
+      if ((accel.KeyInfo.Modifiers & ConsoleModifiers.Shift) != 0)
+        mask |= NSEventModifierMask.ShiftKeyMask;
+      if ((accel.KeyInfo.Modifiers & ConsoleModifiers.Alt) != 0)
+        mask |= NSEventModifierMask.AlternateKeyMask;
+      if ((accel.KeyInfo.Modifiers & ConsoleModifiers.Control) != 0)
+        mask |= NSEventModifierMask.ControlKeyMask;
+      return mask;
+    }
+
+    KeyAccelerator accelerator;
+    public KeyAccelerator Accelerator {
+      get {
+        return accelerator;
+      }
+      set {
+        accelerator = value;
+        item.KeyEquivalent = value.KeyInfo.KeyChar + ""; // TODO allow more interesting keys such as left arrow, home, end, etc.
+        item.KeyEquivalentModifierMask = GetModifierMask(value);
+      }
+    }
+
 		public MenuItemBackend (): this (new NSMenuItem ())
 		{
 		}
