@@ -41,6 +41,14 @@ namespace Xwt.GtkBackend
 		bool changingCheck;
 		ApplicationContext context;
 		
+    public KeyAccelerator Accelerator {
+      get {
+        return null;
+      }
+      set {
+      }
+    }
+    
 		public MenuItemBackend ()
 			: this (new Gtk.ImageMenuItem (""))
 		{
