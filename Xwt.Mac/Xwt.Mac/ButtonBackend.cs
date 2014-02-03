@@ -96,10 +96,18 @@ namespace Xwt.Mac
 				Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
 				Messaging.void_objc_msgSend_bool (Widget.Handle, selSetShowsBorderOnlyWhileMouseInside.Handle, true);
 				break;
+			case ButtonStyle.AlwaysBorderless:
+				Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
+				Messaging.void_objc_msgSend_bool (Widget.Handle, selSetBordered.Handle, false);
+				Messaging.void_objc_msgSend_int (Widget.Handle, selSetButtonType.Handle, 5);
+				break;
 			}
 		}
 		
 		static Selector selSetShowsBorderOnlyWhileMouseInside = new Selector ("setShowsBorderOnlyWhileMouseInside:");
+		static Selector selSetBordered = new Selector ("setBordered:");
+		static Selector selSetButtonType = new Selector ("setButtonType:");
+		
 		
 		public void SetButtonType (ButtonType type)
 		{

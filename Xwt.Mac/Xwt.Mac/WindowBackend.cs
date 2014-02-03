@@ -320,6 +320,18 @@ namespace Xwt.Mac
 				eventSink.OnBoundsChanged (((IWindowBackend)this).Bounds);
 			});
 		}
+		
+		public override void BecomeMainWindow ()
+		{
+      base.BecomeMainWindow ();
+			eventSink.OnBecomeMain ();
+		}
+		
+		public override void BecomeKeyWindow ()
+		{
+      base.BecomeKeyWindow ();
+			eventSink.OnBecomeKey ();
+		}
 
 		void IWindowBackend.SetChild (IWidgetBackend child)
 		{

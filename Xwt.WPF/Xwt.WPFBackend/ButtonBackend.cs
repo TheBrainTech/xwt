@@ -78,6 +78,11 @@ namespace Xwt.WPFBackend
 					Button.BorderThickness = new Thickness (0);
 					Button.BorderBrush = Brushes.Transparent;
 					break;
+				case ButtonStyle.AlwaysBorderless:
+					Button.ClearValue (SWC.Control.BackgroundProperty);
+					Button.BorderThickness = new Thickness (0);
+					Button.BorderBrush = Brushes.Transparent;
+					break;
 			}
 			Button.InvalidateMeasure ();
 		}

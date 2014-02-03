@@ -279,7 +279,20 @@ namespace Xwt.WPFBackend
 				Frontend.Content.Surface.Reallocate ();
 			return s;
 		}
+		
+		protected override void SomeMethod() {
+			// override something here that gets called when the window becomes the top level frame (it or one of its children is the top level focus)
+			// for example, if a dialog box of this window is clicked on, this should fire
+			EventSink.OnBecomeMain ();
+		}
 
+		protected override void SomeOtherMethod() {
+			/// override something here that gets called when the window becomes the top level frame (it is the top level focus)
+			// for example, if a dialog box of this window is clicked on, this should NOT fire
+			// but if this window's dialog box is closed, this should fire
+			EventSink.OnBecomeKey ();
+		}
+		
 		protected override void OnRenderSizeChanged (SizeChangedInfo sizeInfo)
 		{
 			// Once the physical size of the window has been set we can calculate

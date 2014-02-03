@@ -168,6 +168,7 @@ namespace Xwt.Mac
 		public void SetButtonStyle (ButtonStyle style)
 		{
 			switch (style) {
+			case ButtonStyle.AlwaysBorderless:
 			case ButtonStyle.Borderless:
 			case ButtonStyle.Flat:
 				input.Bordered = false;
