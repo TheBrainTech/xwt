@@ -79,9 +79,7 @@ namespace Xwt.WPFBackend
 					Button.BorderBrush = Brushes.Transparent;
 					break;
 				case ButtonStyle.AlwaysBorderless:
-					Button.ClearValue (SWC.Control.BackgroundProperty);
-					Button.BorderThickness = new Thickness (0);
-					Button.BorderBrush = Brushes.Transparent;
+					Button.Style = (Style)ButtonResources["NoChromeButton"];
 					break;
 			}
 			Button.InvalidateMeasure ();
