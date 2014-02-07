@@ -166,6 +166,18 @@ namespace Xwt.Mac
 			});
 		}
 		
+		public override void MouseEntered(NSEvent theEvent) {
+			context.InvokeUserCode (delegate {
+				eventSink.OnMouseEntered ();
+			});
+		}
+		
+		public override void MouseExited(NSEvent theEvent) {
+			context.InvokeUserCode (delegate {
+				eventSink.OnMouseExited ();
+			});
+		}
+		
 		public override void MouseDragged (NSEvent theEvent)
 		{
 			var p = ConvertPointFromView (theEvent.LocationInWindow, null);
