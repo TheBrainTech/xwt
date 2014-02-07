@@ -240,6 +240,10 @@ namespace Xwt
 			ValidateObject (image);
 			return backend.GetNativeImage (image);
 		}
+		
+		public object GetNativeWindow (Window window) {
+			return window.Backend;
+		}
 
 		public T CreateObject<T> () where T:new()
 		{

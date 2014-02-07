@@ -188,7 +188,7 @@ namespace Xwt.Mac
 		public override object GetNativeWidget (Widget w)
 		{
 			ViewBackend wb = (ViewBackend)Toolkit.GetBackend (w);
-			wb.SetAutosizeMode (true);
+//			wb.SetAutosizeMode(true);   // removed this because it causes items to disappear as soon as you try to get the native widget for them
 			return wb.Widget;
 		}
 
