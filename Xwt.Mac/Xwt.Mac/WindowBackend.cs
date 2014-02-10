@@ -138,6 +138,13 @@ namespace Xwt.Mac
 			set { }
 		}
 		
+		public override bool CanBecomeKeyWindow {
+			get {
+				// must be overriden or borderless windows will not be able to become key
+				return true;
+			}
+		}
+		
 		public virtual bool HasFocus {
 			get { return false; }
 		}

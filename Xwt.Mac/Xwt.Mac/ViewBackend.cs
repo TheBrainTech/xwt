@@ -63,6 +63,7 @@ namespace Xwt.Mac
 		bool sizeCalcPending = true;
 		bool sensitive = true;
 		bool canGetFocus = true;
+		bool mouseDownCanMoveWindow = false;
 		Xwt.Drawing.Color backgroundColor;
 
 		void IBackend.InitializeBackend (object frontend, ApplicationContext context)
@@ -167,6 +168,15 @@ namespace Xwt.Mac
 					((IViewObject)s).Backend.UpdateSensitiveStatus (s, parentIsSensitive);
 				else
 					UpdateSensitiveStatus (s, sensitive && parentIsSensitive);
+			}
+		}
+		
+		public bool MouseDownCanMoveWindow {
+			get {
+				return mouseDownCanMoveWindow;
+			}
+			set {
+				mouseDownCanMoveWindow = value;
 			}
 		}
 

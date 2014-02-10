@@ -94,6 +94,12 @@ namespace Xwt.Mac
 				return true;
 			}
 		}
+		
+		public override bool MouseDownCanMoveWindow {
+			get {
+				return Backend.MouseDownCanMoveWindow;
+			}
+		}
 
 		public override bool AcceptsFirstResponder ()
 		{
