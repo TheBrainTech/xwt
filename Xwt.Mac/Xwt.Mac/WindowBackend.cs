@@ -141,7 +141,7 @@ namespace Xwt.Mac
 		public override bool CanBecomeKeyWindow {
 			get {
 				// must be overriden or borderless windows will not be able to become key
-				return true;
+				return frontend.CanBecomeKey;
 			}
 		}
 		
