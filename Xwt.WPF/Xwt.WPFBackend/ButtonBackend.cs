@@ -34,6 +34,7 @@ using System.Windows.Media;
 using System.Text.RegularExpressions;
 using SWC = System.Windows.Controls;
 using Xwt.Backends;
+using System.Reflection;
 
 
 namespace Xwt.WPFBackend
@@ -165,7 +166,8 @@ namespace Xwt.WPFBackend
 			get
 			{
 				if (buttonsDictionary == null) {
-					Uri uri = new Uri ("pack://application:,,,/Xwt.WPF;component/XWT.WPFBackend/Buttons.xaml");
+					Assembly thisAssembly = Assembly.GetAssembly(typeof(Xwt.WPFBackend.ButtonBackend));
+					Uri uri = new Uri (String.Format("pack://application:,,,/{0};component/XWT.WPFBackend/Buttons.xaml", thisAssembly.GetName().Name));
 					buttonsDictionary = (ResourceDictionary)XamlReader.Load (System.Windows.Application.GetResourceStream (uri).Stream);
 				}
 
