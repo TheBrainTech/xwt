@@ -56,11 +56,6 @@ namespace Xwt
 			}
 		}
 		
-		static Button ()
-		{
-			MapEvent (ButtonEvent.Clicked, typeof(Button), "OnClicked");
-		}
-		
 		public Button ()
 		{
 		}
@@ -163,6 +158,7 @@ namespace Xwt
 			}
 		}
 		
+		[MappedEvent(ButtonEvent.Clicked)]
 		protected virtual void OnClicked (EventArgs e)
 		{
 			if (clicked != null)

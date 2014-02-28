@@ -51,11 +51,6 @@ namespace Xwt
 			get { return (ILabelBackend) BackendHost.Backend; }
 		}
 
-		static Label ()
-		{
-			MapEvent (LabelEvent.LinkClicked, typeof (Label), "OnLinkClicked");
-		}
-		
 		public Label ()
 		{
 		}
@@ -117,6 +112,7 @@ namespace Xwt
 			}
 		}
 		
+		[MappedEvent(LabelEvent.LinkClicked)]
 		protected virtual void OnLinkClicked (LinkEventArgs e)
 		{
 			if (linkClicked != null)

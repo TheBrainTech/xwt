@@ -62,12 +62,6 @@ namespace Xwt
 			}
 		}
 		
-		static ListView ()
-		{
-			MapEvent (TableViewEvent.SelectionChanged, typeof(ListView), "OnSelectionChanged");
-			MapEvent (ListViewEvent.RowActivated, typeof(ListView), "OnRowActivated");
-		}
-		
 		public ListView (IListDataSource source): this ()
 		{
 			VerifyConstructorCall (this);
@@ -183,6 +177,7 @@ namespace Xwt
 		{
 		}
 		
+		[MappedEvent(TableViewEvent.SelectionChanged)]
 		protected virtual void OnSelectionChanged (EventArgs a)
 		{
 			if (selectionChanged != null)
@@ -206,6 +201,7 @@ namespace Xwt
 		/// Raises the row activated event.
 		/// </summary>
 		/// <param name="a">The alpha component.</param>
+		[MappedEvent(ListViewEvent.RowActivated)]
 		protected virtual void OnRowActivated (ListViewRowEventArgs a)
 		{
 			if (rowActivated != null)

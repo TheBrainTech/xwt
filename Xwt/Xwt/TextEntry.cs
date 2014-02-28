@@ -34,12 +34,6 @@ namespace Xwt
 	{
 		EventHandler changed, activated;
 		
-		static TextEntry ()
-		{
-			MapEvent (TextEntryEvent.Changed, typeof(TextEntry), "OnChanged");
-			MapEvent (TextEntryEvent.Activated, typeof(TextEntry), "OnActivated");
-		}
-		
 		protected new class WidgetBackendHost: Widget.WidgetBackendHost, ITextEntryEventSink
 		{
 			public void OnChanged ()
@@ -106,6 +100,7 @@ namespace Xwt
 			set { Backend.MultiLine = value; }
 		}
 
+		[MappedEvent(TextEntryEvent.Changed)]
 		protected virtual void OnChanged (EventArgs e)
 		{
 			if (changed != null)
@@ -123,6 +118,7 @@ namespace Xwt
 			}
 		}
 
+		[MappedEvent(TextEntryEvent.Activated)]
 		protected virtual void OnActivated (EventArgs e)
 		{
 			if (activated != null)

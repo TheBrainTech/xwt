@@ -61,11 +61,6 @@ namespace Xwt
 			get { return backendHost.Backend; }
 		}
 
-		protected static void MapEvent (object eventId, Type type, string methodName)
-		{
-			EventUtil.MapEvent (eventId, type, methodName);
-		}
-		
 		internal void VerifyConstructorCall<T> (T t)
 		{
 			if (GetType () != typeof(T))
@@ -78,6 +73,37 @@ namespace Xwt
 		static Dictionary<Type, List<EventMap>> overridenEventMap = new Dictionary<Type, List<EventMap>> ();
 		static Dictionary<Type, HashSet<object>> overridenEvents = new Dictionary<Type, HashSet<object>> ();
 		
+		static EventUtil()
+		{
+			DiscoverMappedEvents();
+		}
+
+		private static void DiscoverMappedEvents() {
+			Type mappedEventAttributeType = typeof(MappedEventAttribute);
+			Type xwtComponentType = typeof(XwtComponent);
+
+			List<Type> targetTypes = new List<Type>();
+			Type[] allTypes = Assembly.GetAssembly(xwtComponentType).GetTypes();
+
+			foreach (Type type in allTypes) {
+				if (type.IsSubclassOf(xwtComponentType)) {
+					targetTypes.Add(type);
+				}
+			}
+
+			foreach (Type type in targetTypes) {
+				MethodInfo[] methodInfoCollection = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+				foreach (MethodInfo methodInfo in methodInfoCollection) {
+					MappedEventAttribute attribute = (MappedEventAttribute)Attribute.GetCustomAttribute(methodInfo, mappedEventAttributeType, true);
+
+					if (attribute != null) {
+						MapEvent(attribute.EventId, type, methodInfo.Name);
+					}
+				}
+			}
+		}
+
 		public static void MapEvent (object eventId, Type type, string methodName)
 		{
 			List<EventMap> events;
@@ -118,6 +144,16 @@ namespace Xwt
 		{
 			var method = thisType.GetMethod (emap.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			return method.DeclaringType != t;
+		}
+	}
+
+	public class MappedEventAttribute : Attribute
+	{
+		public object EventId { get; private set; }
+
+		public MappedEventAttribute(object eventId)
+		{
+			EventId = eventId;
 		}
 	}
 }

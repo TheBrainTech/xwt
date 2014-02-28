@@ -110,14 +110,6 @@ namespace Xwt
 			}
 		}
 
-		static WindowFrame ()
-		{
-			MapEvent (WindowFrameEvent.Shown, typeof(WindowFrame), "OnShown");
-			MapEvent (WindowFrameEvent.Hidden, typeof(WindowFrame), "OnHidden");
-			MapEvent (WindowFrameEvent.CloseRequested, typeof(WindowFrame), "OnCloseRequested");
-			MapEvent (WindowFrameEvent.Closed, typeof(WindowFrame), "OnClosed");
-		}
-
 		public WindowFrame ()
 		{
 			if (!(base.BackendHost is WindowBackendHost))
@@ -306,6 +298,7 @@ namespace Xwt
 			Backend.Present ();
 		}
 
+		[MappedEvent(WindowFrameEvent.Shown)]
 		protected virtual void OnShown ()
 		{
 			if(shown != null)
@@ -317,6 +310,7 @@ namespace Xwt
 			Visible = false;
 		}
 
+		[MappedEvent(WindowFrameEvent.Hidden)]
 		protected virtual void OnHidden ()
 		{
 			if (hidden != null)
@@ -341,6 +335,7 @@ namespace Xwt
 		/// Called to check if the window can be closed
 		/// </summary>
 		/// <returns><c>true<c> if the window can be closed, <c>false</c> otherwise</returns>
+		[MappedEvent(WindowFrameEvent.CloseRequested)]
 		protected virtual bool OnCloseRequested ()
 		{
 			if (closeRequested == null)
@@ -356,6 +351,7 @@ namespace Xwt
 		/// <remarks>
 		/// This method is not called when the window is disposed, only when explicitly closed (either by code or by the user)
 		/// </remarks>
+		[MappedEvent(WindowFrameEvent.Closed)]
 		protected virtual void OnClosed ()
 		{
 			if (closed != null)

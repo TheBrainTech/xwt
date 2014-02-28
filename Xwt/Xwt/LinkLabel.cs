@@ -90,11 +90,6 @@ namespace Xwt
 			}
 		}
 
-		static LinkLabel ()
-		{
-			MapEvent (LinkLabelEvent.NavigateToUrl, typeof (LinkLabel), "OnNavigateToUrl");
-		}
-
 		public LinkLabel ()
 		{
 		}
@@ -110,6 +105,7 @@ namespace Xwt
 			return new WidgetBackendHost ();
 		}
 
+		[MappedEvent(LinkLabelEvent.NavigateToUrl)]
 		protected virtual void OnNavigateToUrl (NavigateToUrlEventArgs e)
 		{
 			if (navigateToUrl != null)
