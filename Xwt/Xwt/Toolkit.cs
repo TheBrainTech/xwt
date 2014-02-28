@@ -176,7 +176,13 @@ namespace Xwt
 			string assembly = type.Substring (i+1).Trim ();
 			type = type.Substring (0, i).Trim ();
 			try {
-				Assembly asm = Assembly.Load (assembly);
+				Assembly asm = null;
+				try {
+					asm = Assembly.Load (assembly);
+				} catch (System.IO.FileNotFoundException) {
+					// This will happen when assemblies are merged for deployment
+					asm = Assembly.GetExecutingAssembly();
+				}
 				if (asm != null) {
 					Type t = asm.GetType (type);
 					if (t != null) {
