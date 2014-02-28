@@ -59,11 +59,6 @@ namespace Xwt
 			return new MenuItemBackendHost ();
 		}
 		
-		static MenuItem ()
-		{
-			MapEvent (MenuItemEvent.Clicked, typeof(MenuItem), "OnClicked");
-		}
-		
 		public MenuItem ()
 		{
 			if (!IsSeparator)
@@ -190,6 +185,7 @@ namespace Xwt
 			OnClicked (EventArgs.Empty);
 		}
 		
+		[MappedEvent(MenuItemEvent.Clicked)]
 		protected virtual void OnClicked (EventArgs e)
 		{
 			if (clicked != null)
