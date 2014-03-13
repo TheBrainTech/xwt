@@ -491,6 +491,10 @@ namespace Xwt.Mac
 				WidgetEvent ev = (WidgetEvent) eventId;
 				currentEvents |= ev;
 				switch (ev) {
+				case WidgetEvent.KeyPressed:
+				case WidgetEvent.KeyReleased:
+					SetupKeyEvents (Widget.GetType ());
+					break;
 				case WidgetEvent.GotFocus:
 				case WidgetEvent.LostFocus:
 					SetupFocusEvents (Widget.GetType ());
@@ -498,7 +502,7 @@ namespace Xwt.Mac
 				}
 			}
 		}
-		
+
 		public virtual void DisableEvent (object eventId)
 		{
 			if (eventId is WidgetEvent) {
@@ -506,7 +510,7 @@ namespace Xwt.Mac
 				currentEvents &= ~ev;
 			}
 		}
-		
+
 		static Selector draggingEnteredSel = new Selector ("draggingEntered:");
 		static Selector draggingUpdatedSel = new Selector ("draggingUpdated:");
 		static Selector draggingExitedSel = new Selector ("draggingExited:");
@@ -515,9 +519,12 @@ namespace Xwt.Mac
 		static Selector concludeDragOperationSel = new Selector ("concludeDragOperation:");
 		static Selector becomeFirstResponderSel = new Selector ("becomeFirstResponder");
 		static Selector resignFirstResponderSel = new Selector ("resignFirstResponder");
+		static Selector keyDownSel = new Selector ("keyDown:");
+		static Selector keyUpSel = new Selector ("keyUp:");
 
 		static HashSet<Type> typesConfiguredForDragDrop = new HashSet<Type> ();
 		static HashSet<Type> typesConfiguredForFocusEvents = new HashSet<Type> ();
+		static HashSet<Type> typesConfiguredForKeyEvents = new HashSet<Type> ();
 
 		static void SetupForDragDrop (Type type)
 		{
@@ -544,7 +551,42 @@ namespace Xwt.Mac
 				}
 			}
 		}
-		
+
+		static void SetupKeyEvents (Type type)
+		{
+			lock (typesConfiguredForKeyEvents) {
+				if (typesConfiguredForKeyEvents.Add (type)) {
+					Class c = new Class (type);
+					c.AddMethod (keyDownSel.Handle, new Action<IntPtr,IntPtr,IntPtr> (OnKeyDown), "v@:@");
+					c.AddMethod (keyUpSel.Handle, new Action<IntPtr,IntPtr,IntPtr> (OnKeyUp), "v@:@");
+				}
+			}
+		}
+
+		static void OnKeyDown (IntPtr sender, IntPtr sel, IntPtr evt)
+		{
+			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
+			if (ob == null)
+				return;
+			NSEvent evnt = new NSEvent(evt);
+			// TODO this is bogus
+			KeyEventArgs kea = new KeyEventArgs(Key.Return, ModifierKeys.None, false, 0);
+			// TODO translate evnt to the thing
+			ob.Backend.EventSink.OnKeyPressed(kea);
+		}
+
+		static void OnKeyUp (IntPtr sender, IntPtr sel, IntPtr evt)
+		{
+			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
+			if (ob == null)
+				return;
+			NSEvent evnt = new NSEvent(evt);
+			// TODO this is bogus
+			KeyEventArgs kea = new KeyEventArgs(Key.Return, ModifierKeys.None, false, 0);
+			// TODO translate evnt to the thing
+			ob.Backend.EventSink.OnKeyReleased(kea);
+		}
+
 		public void DragStart (DragStartData sdata)
 		{
 			var lo = Widget.ConvertPointToBase (new PointF (Widget.Bounds.X, Widget.Bounds.Y));
