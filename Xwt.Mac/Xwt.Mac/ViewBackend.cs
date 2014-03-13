@@ -526,6 +526,11 @@ namespace Xwt.Mac
 		static HashSet<Type> typesConfiguredForFocusEvents = new HashSet<Type> ();
 		static HashSet<Type> typesConfiguredForKeyEvents = new HashSet<Type> ();
 
+		// class_addmethod docs:
+		// and secret string syntax
+		// https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html
+		// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100
+
 		static void SetupForDragDrop (Type type)
 		{
 			lock (typesConfiguredForDragDrop) {
