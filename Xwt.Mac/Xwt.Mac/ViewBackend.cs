@@ -573,10 +573,9 @@ namespace Xwt.Mac
 			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
 			if (ob == null)
 				return;
-			NSEvent evnt = new NSEvent(evt);
-			// TODO this is bogus
-			KeyEventArgs kea = new KeyEventArgs(Key.Return, ModifierKeys.None, false, 0);
-			// TODO translate evnt to the thing
+			NSEvent theEvent = new NSEvent(evt);
+			Key key = Util.TranslateToXwtKey(theEvent.Characters, theEvent.ModifierFlags);
+			KeyEventArgs kea = new KeyEventArgs(key, theEvent.ModifierFlags.ToXwtValue(), theEvent.IsARepeat, (long) TimeSpan.FromSeconds (theEvent.Timestamp).TotalMilliseconds);
 			ob.Backend.EventSink.OnKeyPressed(kea);
 		}
 
@@ -585,10 +584,9 @@ namespace Xwt.Mac
 			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
 			if (ob == null)
 				return;
-			NSEvent evnt = new NSEvent(evt);
-			// TODO this is bogus
-			KeyEventArgs kea = new KeyEventArgs(Key.Return, ModifierKeys.None, false, 0);
-			// TODO translate evnt to the thing
+			NSEvent theEvent = new NSEvent(evt);
+			Key key = Util.TranslateToXwtKey(theEvent.Characters, theEvent.ModifierFlags);
+			KeyEventArgs kea = new KeyEventArgs(key, theEvent.ModifierFlags.ToXwtValue(), theEvent.IsARepeat, (long) TimeSpan.FromSeconds (theEvent.Timestamp).TotalMilliseconds);
 			ob.Backend.EventSink.OnKeyReleased(kea);
 		}
 

@@ -407,6 +407,119 @@ namespace Xwt.Mac
 				m |= ModifierKeys.Shift;
 			return m;
 		}
+		
+		// Some key translations are missing
+		// This is a basic port of the code from WPFBackend.KeyboardUtil
+		public static Key TranslateToXwtKey(string characters, NSEventModifierMask modifierMask) {
+			if(characters == null || characters.Length == 0) {
+				return (Key)0;
+			}
+			
+			char key = characters[0];
+			
+			// Letter keys
+			if(key >= 'A' && key <= 'Z') {
+				return (Key)(key - 'A' + Key.A);
+			}
+			if(key >= 'a' && key <= 'z') {
+				return (Key)(key - 'a' + Key.a);
+			}
+
+			// numbers
+			if(key >= '0' && key <= '9') {
+				if((modifierMask & NSEventModifierMask.NumericPadKeyMask) != 0) {
+					return (Key)(key - '0' + Key.NumPad0);
+				}
+				return (Key)(key - '0' + Key.K0);
+			}
+			
+			// numpad other keys
+			if((modifierMask & NSEventModifierMask.NumericPadKeyMask) != 0) {
+				switch(key) {
+					case '=': return Key.Equal;
+					case '/': return Key.NumPadDivide;
+					case '*': return Key.NumPadMultiply;
+					case '-': return Key.NumPadSubtract;
+					case '+': return Key.NumPadAdd;
+					case '.': return Key.NumPadDecimal;
+				}
+			}
+
+			// punctuation
+			switch(key) {
+				case '*': return Key.Asterisk;
+				case '+': return Key.Plus;
+				case ',': return Key.Comma;
+				case '-': return Key.Minus;
+				case '.': return Key.Period;
+				case '/': return Key.Slash;
+				case ':': return Key.Colon;
+				case ';': return Key.Semicolon;
+				case '<': return Key.Less;
+				case '>': return Key.Greater;
+				case '?': return Key.Question;
+				// Don't know why, but key does not have values for !@#$%^&*()-=_+[]\{}|'"`~
+				// These keys will thus result in a value of 0
+			}
+
+			// F- keys
+			if((modifierMask & NSEventModifierMask.FunctionKeyMask) != 0) {
+				if((NSKey)key >= NSKey.F1 && (NSKey)key <= NSKey.F10) {
+					return (Key)((NSKey)key - NSKey.F1 + Key.F1);
+				}
+			}
+			
+			// special keys that are not mapped properly in NSKey?!
+			switch((int)key) {
+				case 127: return Key.BackSpace;
+				case 13: return Key.Return;
+				case 32: return Key.Space;
+				case 27: return Key.Escape;
+				case 63272: return Key.Delete;
+				case 3: return Key.NumPadEnter;
+				// The following items do not exist on the mac or do not trigger events
+				// case NSKey.Cancel: return Key.Cancel;
+				// case NSKey.Tab: return Key.Tab;
+				// case NSKey.LineFeed: return Key.LineFeed;
+				// case NSKey.Clear: return Key.Clear;
+				// case NSKey.Pause: return Key.Pause;
+				// case NSKey.CapsLock: return Key.CapsLock;
+				// case NSKey.Select: return Key.Select;
+				// case NSKey.Print: return Key.Print;
+				// case NSKey.Execute: return Key.Execute;
+				// case NSKey.Help: return Key.Help;
+				// case NSKey.Insert: return Key.Insert;
+				// case NSKey.ScrollLock: return Key.ScrollLock;
+				// case NSKey.NumLock: return Key.NumLock;
+				// case NSKey.Shift: return Key.ShiftLeft;
+				// case NSKey.RightShift: return Key.ShiftRight;
+				// case NSKey.Control: return Key.ControlLeft;
+				// case NSKey.RightControl: return Key.ControlRight;
+				// case NSKey.Option: return Key.AltLeft;
+				// case NSKey.RightOption: return Key.AltRight;
+				// case NSKey.KeypadMultiply: return Key.Asterisk;
+				// case NSKey.KeypadPlus: return Key.Plus;
+				// case NSKey.OemComma: return isShiftToggled ? Key.Semicolon : Key.Comma;
+				// case NSKey.KeypadMinus: return Key.Minus;
+				// case NSKey.KeypadDivide: return Key.Slash;
+				// case NSKey.OemPeriod: return isShiftToggled ? Key.Colon : Key.Period;			
+			}
+			
+			// other special keys
+ 			// this does not work for the values that are covered above - NSKey constants are not right?!
+			switch ((NSKey)key) {
+				case NSKey.PageDown: return Key.PageDown;
+				case NSKey.PageUp: return Key.PageUp;
+				case NSKey.End: return Key.End;
+				case NSKey.Home: return Key.Home;
+				case NSKey.LeftArrow: return Key.Left;
+				case NSKey.UpArrow: return Key.Up;
+				case NSKey.RightArrow: return Key.Right;
+				case NSKey.DownArrow: return Key.Down;
+			}
+
+			return (Key)0;
+		}		
 	}
 
 	public interface ICopiableObject
