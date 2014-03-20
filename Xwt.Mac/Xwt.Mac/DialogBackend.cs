@@ -142,6 +142,7 @@ namespace Xwt.Mac
 		{
 			modalSessionRunning = false;
 			NSApplication.SharedApplication.StopModal ();
+			this.Close();
 		}
 
 		#endregion
