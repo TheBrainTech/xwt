@@ -56,6 +56,11 @@ namespace Xwt.Mac
 		public int[] SelectedRows {
 			get {
 				int[] sel = new int [Table.SelectedRowCount];
+
+				if(Table.SelectedRowCount == 0) {
+					return sel;
+				}
+
 				int i = 0;
 				foreach (int r in Table.SelectedRows)
 					sel [i++] = r;
