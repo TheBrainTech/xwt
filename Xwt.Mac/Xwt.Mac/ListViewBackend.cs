@@ -122,7 +122,7 @@ namespace Xwt.Mac
 
 		public override int GetRowCount (NSTableView tableView)
 		{
-			return source.RowCount;
+			return source != null ? source.RowCount : 0;
 		}
 
 		public override void SetObjectValue (NSTableView tableView, MonoMac.Foundation.NSObject theObject, NSTableColumn tableColumn, int row)
