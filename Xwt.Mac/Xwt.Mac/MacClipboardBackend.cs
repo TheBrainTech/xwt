@@ -57,8 +57,41 @@ namespace Xwt.Mac
 		}
 
 		public override bool IsTypeAvailable (TransferDataType type)
-		{
-			return NSPasteboard.GeneralPasteboard.CanReadItemWithDataConformingToTypes (new[] { type.ToUTI () });
+		{ 
+			NSPasteboard pb = NSPasteboard.GeneralPasteboard;
+			NSObject[] classes;
+			NSDictionary options;
+			bool isType;
+
+			if (type == TransferDataType.Image) {
+				NSObject urlClassObj = NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl)));
+				NSObject imageClassObj = NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSImage)));
+
+				classes = new NSObject[]{ urlClassObj };
+
+				NSObject a = new NSString(type.ToUTI());
+
+				options = NSDictionary.FromObjectAndKey(imageClassObj, a);
+
+				isType = pb.CanReadObjectForClasses(classes, options);
+				return isType;
+			} else if (type == TransferDataType.Text) {
+				classes = new NSObject[] {
+					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSAttributedString))),
+					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSString)))
+				};
+				options = new NSDictionary();
+				isType = pb.CanReadObjectForClasses(classes, options);
+				return isType;
+			} else if (type == TransferDataType.Uri) {
+				//files
+				classes = new NSObject[]{ NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl))) };
+				options = NSDictionary.FromObjectAndKey(NSObject.FromObject(NSNumber.FromBoolean(true)), new NSString(type.ToUTI()));
+				isType = pb.CanReadObjectForClasses(classes, options);
+				return isType;
+			}
+
+			return NSPasteboard.GeneralPasteboard.CanReadItemWithDataConformingToTypes (new string[] {type.ToUTI ()});
 		}
 
 		public override object GetData (TransferDataType type)
