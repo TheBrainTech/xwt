@@ -63,8 +63,14 @@ namespace Xwt.Mac
 
 		public override object GetData (TransferDataType type)
 		{
-			if (type == TransferDataType.Uri)
-				return (Uri)NSUrl.FromPasteboard (NSPasteboard.GeneralPasteboard);
+			if (type == TransferDataType.Uri) {
+				NSUrl url = NSUrl.FromPasteboard(NSPasteboard.GeneralPasteboard);
+				if(url.IsFileUrl) {
+					return new Uri(url.Path);
+				} else {
+					return (Uri)url;
+				}
+			}
 
 			var data = NSPasteboard.GeneralPasteboard.GetDataForType (type.ToUTI ());
 			if (data == null)
