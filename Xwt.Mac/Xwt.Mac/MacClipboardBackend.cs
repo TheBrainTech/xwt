@@ -64,17 +64,23 @@ namespace Xwt.Mac
 			bool isType;
 
 			if (type == TransferDataType.Image) {
-				NSObject urlClassObj = NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl)));
-				NSObject imageClassObj = NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSImage)));
+				//The below only works for images copied from web browsers, doesn't work for raw images.
 
-				classes = new NSObject[]{ urlClassObj };
+//				NSObject urlClassObj = NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl)));
+//				NSObject imageClassObj = NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSImage)));
+//				classes = new NSObject[]{ urlClassObj };
+//				NSObject a = new NSString(type.ToUTI());
+//				options = NSDictionary.FromObjectAndKey(imageClassObj, a);
+//				isType = pb.CanReadObjectForClasses(classes, options);
+//				return isType;
 
-				NSObject a = new NSString(type.ToUTI());
-
-				options = NSDictionary.FromObjectAndKey(imageClassObj, a);
-
-				isType = pb.CanReadObjectForClasses(classes, options);
-				return isType;
+				var item = pb.PasteboardItems[0];
+				for (int i= 0; i< item.Types.Length; i++) {
+					if (item.Types[i].Equals("public.tiff")) {
+						return true;
+					}
+				}
+				return false;
 			} else if (type == TransferDataType.Text) {
 				classes = new NSObject[] {
 					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSAttributedString))),
@@ -90,9 +96,9 @@ namespace Xwt.Mac
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;
 			}
-
 			return NSPasteboard.GeneralPasteboard.CanReadItemWithDataConformingToTypes (new string[] {type.ToUTI ()});
 		}
+
 
 		public override object GetData (TransferDataType type)
 		{
@@ -105,14 +111,24 @@ namespace Xwt.Mac
 				}
 			}
 
+			if(type == TransferDataType.Image) {
+				NSPasteboard pasteBoard = NSPasteboard.GeneralPasteboard;
+				string[] imageTypes = NSImage.ImageUnfilteredPasteboardTypes();
+				for (int i = 0; i< imageTypes.Length; i++) {
+					NSData imgData = pasteBoard.GetDataForType(imageTypes[i]);
+					if(imgData != null) {
+						NSImage nsImg = new NSImage(imgData);
+						return ApplicationContext.Toolkit.WrapImage (nsImg);
+					}
+				}
+			}
+
 			var data = NSPasteboard.GeneralPasteboard.GetDataForType (type.ToUTI ());
 			if (data == null)
 				return null;
 
 			if (type == TransferDataType.Text)
 				return data.ToString ();
-			if (type == TransferDataType.Image)
-				return new NSImage (data);
 
 			unsafe {
 				var bytes = new byte [data.Length];
