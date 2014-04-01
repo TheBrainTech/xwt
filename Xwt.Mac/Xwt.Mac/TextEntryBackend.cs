@@ -26,6 +26,7 @@
 using System;
 using Xwt.Backends;
 using MonoMac.AppKit;
+using MonoMac.ObjCRuntime;
 
 
 namespace Xwt.Mac
@@ -161,6 +162,28 @@ namespace Xwt.Mac
 			get {
 				return this;
 			}
+		}
+
+		public override bool PerformKeyEquivalent(NSEvent theEvent) {
+			if (theEvent.Type == NSEventType.KeyDown) {
+				NSApplication app = NSApplication.SharedApplication;
+				if ((theEvent.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.CommandKeyMask) {
+					string ch = theEvent.CharactersIgnoringModifiers;
+					if (ch == "x") {
+						return app.SendAction(new Selector("cut:"), this.Window.FirstResponder, this);
+					}
+					if (ch == "c") {
+						return app.SendAction(new Selector("copy:"), this.Window.FirstResponder, this);
+					}
+					if (ch == "v") {
+						return app.SendAction(new Selector("paste:"), this.Window.FirstResponder, this);
+					}
+					if (ch == "a") {
+						return app.SendAction(new Selector("selectAll:"), this.Window.FirstResponder, this);
+					}
+				}
+			}
+			return base.PerformKeyEquivalent(theEvent);
 		}
 
 		public ViewBackend Backend { get; set; }
