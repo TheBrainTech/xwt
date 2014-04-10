@@ -96,6 +96,10 @@ namespace Xwt.WPFBackend
 			if (!IsTypeAvailable (type))
 				return null;
 
+			if(type == TransferDataType.Image) {
+				return ApplicationContext.Toolkit.WrapImage(WindowsClipboard.GetImage());
+			}
+
 			return WindowsClipboard.GetData (type.ToWpfDataFormat ());
 		}
 
