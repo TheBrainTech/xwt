@@ -76,7 +76,7 @@ namespace Xwt.Mac
 
 				var item = pb.PasteboardItems[0];
 				for (int i= 0; i< item.Types.Length; i++) {
-					if (item.Types[i].Equals("public.tiff")) {
+					if (item.Types[i].Equals("public.tiff") || item.Types[i].Equals("public.png")) {
 						return true;
 					}
 				}
