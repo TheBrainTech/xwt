@@ -852,6 +852,11 @@ namespace Xwt.WPFBackend
 
 			e.Handled = true; // Prevent default handlers from being used.
 
+			if (e.Data.GetDataPresent(DataFormats.Text)) {
+				e.Effects = DragDropEffects.Link;
+				return;
+			}
+
 			if ((enabledEvents & WidgetEvent.DragOverCheck) > 0) {
 				var checkArgs = new DragOverCheckEventArgs (pos, types, proposedAction);
 				Context.InvokeUserCode (delegate {
