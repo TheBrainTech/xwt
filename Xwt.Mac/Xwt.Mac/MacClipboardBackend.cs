@@ -73,7 +73,9 @@ namespace Xwt.Mac
 //				options = NSDictionary.FromObjectAndKey(imageClassObj, a);
 //				isType = pb.CanReadObjectForClasses(classes, options);
 //				return isType;
-
+				if (pb.PasteboardItems.Length == 0) {
+					return false;
+				}
 				var item = pb.PasteboardItems[0];
 				for (int i= 0; i< item.Types.Length; i++) {
 					if (item.Types[i].Equals("public.tiff") || item.Types[i].Equals("public.png")) {
