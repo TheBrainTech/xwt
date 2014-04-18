@@ -51,8 +51,14 @@ namespace Xwt.Mac
 			this.source = source;
 			tsource = new ListSource (source);
 			Table.DataSource = tsource;
+			Table.DoubleClick += ListView_RowActivated;
 		}
-		
+
+		void ListView_RowActivated (object sender, EventArgs e)
+		{
+			this.EventSink.OnRowActivated (Table.SelectedRow);
+		}
+
 		public int[] SelectedRows {
 			get {
 				int[] sel = new int [Table.SelectedRowCount];
