@@ -128,14 +128,7 @@ namespace Xwt.WPFBackend
 				case ListViewEvent.RowActivated:
 					ListBox.MouseDoubleClick += OnMouseDoubleClick;
 					break;
-						
 				}
-			}
-		}
-
-		private void OnMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			if(this.SelectedRows.Count() == 1) {
-				ListBoxEventSink.OnRowActivated(this.SelectedRows[0]);
 			}
 		}
 
@@ -148,6 +141,19 @@ namespace Xwt.WPFBackend
 					ListBox.SelectionChanged -= OnSelectionChanged;
 					break;
 				}
+			}
+			else if(eventId is ListViewEvent) {
+				switch((ListViewEvent)eventId) {
+				case ListViewEvent.RowActivated:
+					ListBox.MouseDoubleClick -= OnMouseDoubleClick;
+					break;
+				}
+			}
+		}
+
+		private void OnMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+			if(this.SelectedRows.Count() == 1) {
+				ListBoxEventSink.OnRowActivated(this.SelectedRows[0]);
 			}
 		}
 
