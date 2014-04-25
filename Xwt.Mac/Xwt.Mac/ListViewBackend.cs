@@ -39,7 +39,7 @@ namespace Xwt.Mac
 
 		protected override NSTableView CreateView ()
 		{
-			return new NSTableView ();
+			return new TableView ();
 		}
 
 		protected override string SelectionChangeEventName {
@@ -52,6 +52,13 @@ namespace Xwt.Mac
 			tsource = new ListSource (source);
 			Table.DataSource = tsource;
 			Table.DoubleClick += ListView_RowActivated;
+
+			((TableView)Table).ViewMouseClicked += () => {
+				ButtonEventArgs be = new ButtonEventArgs();
+				be.Button = PointerButton.Left;
+
+				this.EventSink.OnButtonPressed(be);
+			};
 		}
 
 		void ListView_RowActivated (object sender, EventArgs e)
@@ -152,6 +159,27 @@ namespace Xwt.Mac
 		public override bool WriteRows (NSTableView tableView, MonoMac.Foundation.NSIndexSet rowIndexes, NSPasteboard pboard)
 		{
 			return false;
+		}
+	}
+
+	class TableView: NSTableView
+	{
+		public delegate void MousedClicked();
+		public MousedClicked ViewMouseClicked;
+
+		public override void MouseDown(NSEvent theEvent) {
+			base.MouseDown(theEvent);
+			if (ViewMouseClicked != null) {
+				ViewMouseClicked();
+			}
+		}
+
+		public override bool AcceptsFirstMouse(NSEvent theEvent) {
+			return true;
+		}
+
+		public override bool AcceptsFirstResponder() {
+			return true;
 		}
 	}
 }
