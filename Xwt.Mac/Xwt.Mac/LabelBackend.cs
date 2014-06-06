@@ -217,6 +217,14 @@ namespace Xwt.Mac
 	
 	class TextFieldView: NSTextField, IViewObject
 	{
+		public override System.Drawing.RectangleF Frame { 
+			get { return base.Frame; }
+			set {
+				base.Frame = value;
+				this.StringValue = this.StringValue;
+			}
+		}
+
 		CustomTextFieldCell cell;
 
 		public ViewBackend Backend { get; set; }
