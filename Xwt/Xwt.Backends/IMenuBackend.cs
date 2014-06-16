@@ -30,10 +30,21 @@ namespace Xwt.Backends
 {
 	public interface IMenuBackend: IBackend
 	{
+		void Initialize (IMenuEventSink eventSink);
 		void InsertItem (int index, IMenuItemBackend menuItem);
 		void RemoveItem (IMenuItemBackend menuItem);
 		void Popup ();
 		void Popup (IWidgetBackend widget, double x, double y);
+	}
+
+	public interface IMenuEventSink
+	{
+		void OnOpening ();
+	}
+
+	public enum MenuEvent
+	{
+		Opening = 1
 	}
 }
 

@@ -34,7 +34,27 @@ namespace Xwt
 	public class Menu: XwtComponent
 	{
 		MenuItemCollection items;
-		
+		EventHandler opening;
+
+		protected class MenuBackendHost: BackendHost<Menu,IMenuBackend>, IMenuEventSink
+		{
+			protected override void OnBackendCreated ()
+			{
+				base.OnBackendCreated ();
+				Backend.Initialize (this);
+			}
+
+			public void OnOpening ()
+			{
+				Parent.DoOpen ();
+			}
+		}
+
+		protected override Xwt.Backends.BackendHost CreateBackendHost ()
+		{
+			return new MenuBackendHost ();
+		}
+
 		public Menu ()
 		{
 			items = new MenuItemCollection (this);
@@ -94,6 +114,30 @@ namespace Xwt
 			}
 			if (Items.Count > 0 && Items[Items.Count - 1] is SeparatorMenuItem)
 				Items.RemoveAt (Items.Count - 1);
+		}
+
+		internal virtual void DoOpen ()
+		{
+			OnOpening (EventArgs.Empty);
+		}
+
+		[MappedEvent(MenuEvent.Opening)]
+		protected virtual void OnOpening (EventArgs e)
+		{
+			if(opening != null) {
+				opening(this, e);
+			}
+		}
+
+		public event EventHandler Opening {
+			add {
+				base.BackendHost.OnBeforeEventAdd (MenuEvent.Opening, opening);
+				opening += value;
+			}
+			remove {
+				opening -= value;
+				base.BackendHost.OnAfterEventRemove (MenuEvent.Opening, opening);
+			}
 		}
 	}
 }

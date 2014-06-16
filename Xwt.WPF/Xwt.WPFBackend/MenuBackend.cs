@@ -40,6 +40,11 @@ namespace Xwt.WPFBackend
 	public class MenuBackend : Backend, IMenuBackend
 	{
 		List<MenuItemBackend> items;
+		IMenuEventSink eventSink;
+
+		public void Initialize(IMenuEventSink eventSink) {
+			this.eventSink = eventSink;
+		}
 
 		public override void InitializeBackend (object frontend, ApplicationContext context)
 		{
@@ -133,6 +138,34 @@ namespace Xwt.WPFBackend
 			}
 
 			return menu;
+		}
+
+		public override void EnableEvent(object eventId) {
+			if(eventId is MenuEvent) {
+				switch((MenuEvent)eventId) {
+				case MenuEvent.Opening:
+					this.ParentItem.MenuItem.SubmenuOpened += SubmenuOpenedHandler;
+					break;
+				}
+			}
+		}
+
+		public override void DisableEvent(object eventId) {
+			if(eventId is MenuEvent) {
+				switch((MenuEvent)eventId) {
+				case MenuEvent.Opening:
+					this.ParentItem.MenuItem.SubmenuOpened -= SubmenuOpenedHandler;
+					break;
+				}
+			}
+		}
+
+		private void SubmenuOpenedHandler(object sender, RoutedEventArgs e)
+		{
+			if((e.Source as System.Windows.Controls.MenuItem) == this.ParentItem.MenuItem)
+			{
+				Context.InvokeUserCode(eventSink.OnOpening);    
+			}
 		}
 	}
 }
