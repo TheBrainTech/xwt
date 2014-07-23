@@ -136,6 +136,17 @@ namespace Xwt
       set { Backend.Accelerator = value; }
     }
 
+		[DefaultValue("")]
+		public string ToolTip {
+			get { return Backend.ToolTip; }
+			set {
+				if(IsSeparator) {
+					throw new NotSupportedException();
+				}
+				Backend.ToolTip = value;
+			}
+		}
+
 		public Image Image {
 			get { return image; }
 			set {

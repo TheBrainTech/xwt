@@ -70,6 +70,11 @@ namespace Xwt.Backends
     /// Gets or sets the keyboard accelerator (menu shortcut) for the menu item.
     /// </summary>
     KeyAccelerator Accelerator { get; set; }
+
+		/// <summary>
+		/// Gets or sets the tool tip for the menu item.
+		/// </summary>
+		string ToolTip { get; set; }
 	}
 	
 	public interface IMenuItemEventSink

@@ -116,6 +116,11 @@ namespace Xwt.WPFBackend
 			set { this.menuItem.IsEnabled = value; }
 		}
 
+		public string ToolTip {
+			get { return (string)this.menuItem.ToolTip; }
+			set { this.menuItem.ToolTip = value; }
+		}
+
 		public bool Visible {
 			get { return this.menuItem.IsVisible; }
 			set { this.menuItem.Visibility = (value) ? Visibility.Visible : Visibility.Collapsed; }

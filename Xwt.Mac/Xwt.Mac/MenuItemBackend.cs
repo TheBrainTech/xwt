@@ -148,7 +148,16 @@ namespace Xwt.Mac
 					item.State = NSCellStateValue.Off;
 			}
 		}
-		
+
+		public string ToolTip {
+			get {
+				return item.ToolTip;
+			}
+			set {
+				item.ToolTip = value;
+			}
+		}
+
 		#region IBackend implementation
 		public void InitializeBackend (object frontend, ApplicationContext context)
 		{
