@@ -130,11 +130,11 @@ namespace Xwt
 			get { return Backend.Visible; }
 			set { Backend.Visible = value; }
 		}
-		
-    public KeyAccelerator Accelerator {
-      get { return Backend.Accelerator; }
-      set { Backend.Accelerator = value; }
-    }
+
+		public KeyAccelerator Accelerator {
+			get { return Backend.Accelerator; }
+			set { Backend.Accelerator = value; }
+		}
 
 		[DefaultValue("")]
 		public string ToolTip {
