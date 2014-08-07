@@ -315,6 +315,8 @@
     <Compile Include="Xwt.Drawing\NinePatchImage.cs" />
     <Compile Include="Xwt\WebView.cs" />
     <Compile Include="Xwt.Backends\IWebViewBackend.cs" />
+    <Compile Include="Xwt\KeyboardKey.cs" />
+    <Compile Include="Xwt\KeyboardKeyModifiers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

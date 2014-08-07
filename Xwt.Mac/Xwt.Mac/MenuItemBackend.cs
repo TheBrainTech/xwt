@@ -40,33 +40,40 @@ namespace Xwt.Mac
 		ApplicationContext context;
 		string label;
 		bool useMnemonic;
-		
-    NSEventModifierMask GetModifierMask(KeyAccelerator accel)
-    {
-      NSEventModifierMask mask = default(NSEventModifierMask);
-      if (accel.CommandOrWindowsKey)
-        mask |= NSEventModifierMask.CommandKeyMask;
-      // HasFlags is not typesafe, so verbose code you see here
-      if ((accel.KeyInfo.Modifiers & ConsoleModifiers.Shift) != 0)
-        mask |= NSEventModifierMask.ShiftKeyMask;
-      if ((accel.KeyInfo.Modifiers & ConsoleModifiers.Alt) != 0)
-        mask |= NSEventModifierMask.AlternateKeyMask;
-      if ((accel.KeyInfo.Modifiers & ConsoleModifiers.Control) != 0)
-        mask |= NSEventModifierMask.ControlKeyMask;
-      return mask;
-    }
 
-    KeyAccelerator accelerator;
-    public KeyAccelerator Accelerator {
-      get {
-        return accelerator;
-      }
-      set {
-        accelerator = value;
-        item.KeyEquivalent = value.KeyInfo.KeyChar + ""; // TODO allow more interesting keys such as left arrow, home, end, etc.
-        item.KeyEquivalentModifierMask = GetModifierMask(value);
-      }
-    }
+		private NSEventModifierMask GetModifierMask(KeyAccelerator accel) {
+			NSEventModifierMask mask = default(NSEventModifierMask);
+
+			if(accel.Modifiers.HasFlag(KeyboardKeyModifiers.Command)) {
+				mask |= NSEventModifierMask.CommandKeyMask;
+			}
+
+			if(accel.Modifiers.HasFlag(KeyboardKeyModifiers.Shift)) {
+				mask |= NSEventModifierMask.ShiftKeyMask;
+			}
+
+			if(accel.Modifiers.HasFlag(KeyboardKeyModifiers.Alt)) {
+				mask |= NSEventModifierMask.AlternateKeyMask;
+			}
+
+			if(accel.Modifiers.HasFlag(KeyboardKeyModifiers.Control)) {
+				mask |= NSEventModifierMask.ControlKeyMask;
+			}
+
+			return mask;
+		}
+
+		private KeyAccelerator accelerator;
+		public KeyAccelerator Accelerator {
+			get {
+				return accelerator;
+			}
+			set {
+				accelerator = value;
+				item.KeyEquivalent = value.Key.MacMenuCharacter.ToString();
+				item.KeyEquivalentModifierMask = GetModifierMask(value);
+			}
+		}
 
 		public MenuItemBackend (): this (new NSMenuItem ())
 		{

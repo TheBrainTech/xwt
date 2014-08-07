@@ -222,14 +222,14 @@ namespace Xwt
 		RadioButton
 	}
 
-  public class KeyAccelerator
-  {
-    public ConsoleKeyInfo KeyInfo;
-    public bool CommandOrWindowsKey;
-    public KeyAccelerator(ConsoleKeyInfo keyInfo, bool CommandOrWindowsKey) {
-      this.KeyInfo = keyInfo;
-      this.CommandOrWindowsKey = CommandOrWindowsKey;
-    }
-  }
+	public class KeyAccelerator {
+		public KeyboardKey Key { get; set; }
+		public KeyboardKeyModifiers Modifiers { get; set; }
+
+		public KeyAccelerator(KeyboardKey key, KeyboardKeyModifiers modifiers) {
+			this.Key = key;
+			this.Modifiers = modifiers;
+		}
+	}
 }
 
