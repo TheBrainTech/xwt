@@ -70,7 +70,11 @@ namespace Xwt.Mac
 			}
 			set {
 				accelerator = value;
-				item.KeyEquivalent = value.Key.MacMenuCharacter.ToString();
+				if(value.Modifiers.HasFlag(KeyboardKeyModifiers.Shift)) {
+					item.KeyEquivalent = value.Key.MacMenuCharacter.ToString();
+				} else {
+					item.KeyEquivalent = value.Key.MacMenuCharacter.ToString().ToLower();
+				}
 				item.KeyEquivalentModifierMask = GetModifierMask(value);
 			}
 		}
