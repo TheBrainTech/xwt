@@ -15,20 +15,6 @@ namespace Xwt.Mac {
 			this.Prompt = "Save";
 		}
 
-		public bool CanCreateFolders {
-			get { return CanCreateDirectories; }
-			set { CanCreateDirectories = value; }
-		}
-
-		public string Folder {
-			get {
-				return this.Url.Path;
-			}
-			set {
-				Folder = value;
-			}
-		}
-
 		public bool Run (IWindowFrameBackend parent)
 		{
 			var returnValue = this.RunModal ();
