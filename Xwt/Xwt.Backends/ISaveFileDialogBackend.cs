@@ -37,17 +37,6 @@ namespace Xwt.Backends
 		/// </summary>
 		string Title { get; set; }
 
-		/// <summary>
-		/// Gets the path of the folder that the user has selected in the dialog
-		/// </summary>
-		/// <value>
-		/// The name of the folder, or null if no selection was made
-		/// </value>
-		/// <remarks>
-		/// This property can be invoked at any time after a call to Initialize, and before the call to Close.
-		/// </remarks>
-		string Folder { get; set;}
-
 		string FileName { get; set;}
 
 		/// <summary>
@@ -62,12 +51,6 @@ namespace Xwt.Backends
 		string CurrentFolder { get; set; }
 
 		FileDialogFilter ActiveFilter { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance can create folders.
-		/// </summary>
-		/// <value><c>true</c> if this instance can create folders; otherwise, <c>false</c>.</value>
-		bool CanCreateFolders { get; set; }
 
 		/// <summary>
 		/// Runs the dialog, allowing the user to select a folder
