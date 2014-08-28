@@ -111,6 +111,7 @@ namespace Xwt.Mac
 			RegisterBackend <Xwt.Backends.IPopoverBackend, PopoverBackend> ();
 			RegisterBackend <Xwt.Backends.ISelectFolderDialogBackend, SelectFolderDialogBackend> ();
 			RegisterBackend <Xwt.Backends.IOpenFileDialogBackend, OpenFileDialogBackend> ();
+			RegisterBackend <Xwt.Backends.ISaveFileDialogBackend, SaveFileDialogBackend> ();
 			RegisterBackend <Xwt.Backends.ClipboardBackend, MacClipboardBackend> ();
 			RegisterBackend <Xwt.Backends.DesktopBackend, MacDesktopBackend> ();
 			RegisterBackend <Xwt.Backends.IMenuButtonBackend, MenuButtonBackend> ();
