@@ -94,11 +94,11 @@ namespace Xwt.WPFBackend
 		{
 			get
 			{
-				return Widget.Foreground.ToXwtColor ();
+				return Widget.Hyperlink.Foreground.ToXwtColor();
 			}
 			set
 			{
-				Widget.Foreground = ResPool.GetSolidBrush (value);
+				Widget.Hyperlink.Foreground = ResPool.GetSolidBrush(value);
 			}
 		}
 
