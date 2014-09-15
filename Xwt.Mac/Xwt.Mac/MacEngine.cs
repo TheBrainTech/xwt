@@ -56,11 +56,14 @@ namespace Xwt.Mac
 			appDelegate = new AppDelegate (IsGuest);
 			NSApplication.SharedApplication.Delegate = appDelegate;
 
+			// TODO: This is a workaround for builds that include the Mono runtime.
+			// NSObject.ValueForKey throws an exception
+
 			// If NSPrincipalClass is not set, set it now. This allows running
 			// the application without a bundle
-			var info = NSBundle.MainBundle.InfoDictionary;
-			if (info.ValueForKey ((NSString)"NSPrincipalClass") == null)
-				info.SetValueForKey ((NSString)"NSApplication", (NSString)"NSPrincipalClass");
+			//var info = NSBundle.MainBundle.InfoDictionary;
+			//if (info.ValueForKey ((NSString)"NSPrincipalClass") == null)
+			//	info.SetValueForKey ((NSString)"NSApplication", (NSString)"NSPrincipalClass");
 		}
 
 		public override void InitializeBackends ()
