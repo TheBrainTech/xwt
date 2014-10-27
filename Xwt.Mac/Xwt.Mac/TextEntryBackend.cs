@@ -144,6 +144,22 @@ namespace Xwt.Mac
 		{
 			Widget.BecomeFirstResponder ();
 		}
+
+		public override bool HasFocus {
+			get {
+				if(NSApplication.SharedApplication.KeyWindow.FirstResponder == Widget) {
+					return true;
+				}
+
+				NSTextView textView = NSApplication.SharedApplication.KeyWindow.FirstResponder as NSTextView;
+
+				if(textView != null && textView.WeakDelegate == Widget) {
+					return true;
+				}
+
+				return false;
+			}
+		}
 		#endregion
 	}
 	
