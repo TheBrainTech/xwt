@@ -8,6 +8,12 @@ namespace Xwt {
 	public class KeyboardKey {
 		private static List<KeyboardKey> allKeys = new List<KeyboardKey>();
 
+		public static ReadOnlyCollection<KeyboardKey> AllKeys {
+			get {
+				return allKeys.AsReadOnly();
+			}
+		}
+
 		public string ConfigurationString { get; set; }
 		public int MacInputKeyCode { get; set; }
 		public char MacMenuCharacter { get; set; }
@@ -122,10 +128,6 @@ namespace Xwt {
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Num -", MacInputKeyCode = -1,  MacInputCharacter = '\0',      MacMenuCharacter = (char)0,     ConsoleKey = ConsoleKey.Subtract });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Num +", MacInputKeyCode = -1,  MacInputCharacter = '\0',      MacMenuCharacter = (char)0,     ConsoleKey = ConsoleKey.Add });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Num .", MacInputKeyCode = -1,  MacInputCharacter = '\0',      MacMenuCharacter = (char)0,     ConsoleKey = ConsoleKey.Decimal });
-		}
-
-		public static KeyboardKey GetKeyFromConfigurationString(string configurationString) {
-			return allKeys.Single(k => k.ConfigurationString == configurationString);
 		}
 	}
 }
