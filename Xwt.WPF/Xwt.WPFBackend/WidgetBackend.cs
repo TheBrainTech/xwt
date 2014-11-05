@@ -211,7 +211,7 @@ namespace Xwt.WPFBackend
 		}
 
 		public bool HasFocus {
-			get { return Widget.IsFocused; }
+			get { return Widget.IsKeyboardFocused; }
 		}
 
 		public void SetFocus ()
