@@ -989,6 +989,8 @@ namespace Xwt.WPFBackend
 			if (Widget.IsVisible)
 				Context.InvokeUserCode (this.eventSink.OnBoundsChanged);
 		}
+
+		public virtual Color TextColor { get; set; }
 	}
 
 	public interface IWpfWidgetBackend

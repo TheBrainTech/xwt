@@ -90,6 +90,24 @@ namespace Xwt.WPFBackend
 			set { TextBox.ShowFrame = value; }
 		}
 
+		public override Drawing.Color TextColor {
+			get {
+				return this.TextBox.Foreground.ToXwtColor();
+			}
+			set {
+				this.TextBox.Foreground = new SolidColorBrush(value.ToWpfColor());
+			}
+		}
+
+		public override Drawing.Color BackgroundColor {
+			get {
+				return this.TextBox.Background.ToXwtColor();
+			}
+			set {
+				this.TextBox.Background = new SolidColorBrush(value.ToWpfColor());
+			}
+		}
+
 		// TODO
 		public bool MultiLine {
 			get { return multiline; }
