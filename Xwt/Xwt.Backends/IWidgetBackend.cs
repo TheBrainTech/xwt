@@ -108,6 +108,7 @@ namespace Xwt.Backends
 		
 		object Font { get; set; }
 		Color BackgroundColor { get; set; }
+		Color TextColor { get; set; }
 		string TooltipText { get; set; }
 		
 		/// <summary>
@@ -141,7 +142,7 @@ namespace Xwt.Backends
 		void OnButtonReleased (ButtonEventArgs args);
 		void OnMouseMoved (MouseMovedEventArgs args);
 		void OnBoundsChanged ();
-        void OnMouseScrolled(MouseScrolledEventArgs args);
+		void OnMouseScrolled(MouseScrolledEventArgs args);
 
 		// Events
 		Size GetPreferredSize (SizeConstraint widthConstraint = default(SizeConstraint), SizeConstraint heightConstraint = default(SizeConstraint));
@@ -198,7 +199,7 @@ namespace Xwt.Backends
 		MouseMoved = 1 << 14,
 		DragStarted = 1 << 15,
 		BoundsChanged = 1 << 16,
-        MouseScrolled = 1 << 17
+		MouseScrolled = 1 << 17
 	}
 	
 	public class DragStartData

@@ -65,6 +65,7 @@ namespace Xwt.Mac
 		bool canGetFocus = true;
 		bool mouseDownCanMoveWindow = false;
 		Xwt.Drawing.Color backgroundColor;
+		Xwt.Drawing.Color textColor;
 
 		void IBackend.InitializeBackend (object frontend, ApplicationContext context)
 		{
@@ -400,6 +401,15 @@ namespace Xwt.Mac
 				if (Widget.Layer == null)
 					Widget.WantsLayer = true;
 				Widget.Layer.BackgroundColor = value.ToCGColor ();
+			}
+		}
+		
+		public virtual Xwt.Drawing.Color TextColor {
+			get {
+				return this.textColor;
+			}
+			set {
+				this.textColor = value;
 			}
 		}
 		

@@ -132,7 +132,8 @@ namespace Xwt.Mac
 					Widget.Cell.Scrollable = false;
 					Widget.Cell.Wraps = true;
 				} else {
-					Widget.Cell.UsesSingleLineMode = true;
+					// Widget.Cell.UsesSingleLineMode = true causes the vertical alignment of large fonts to be wrong - the top of text gets cut off
+//					Widget.Cell.UsesSingleLineMode = true; 
 					Widget.Cell.Scrollable = true;
 					Widget.Cell.Wraps = false;
 				}
@@ -161,6 +162,23 @@ namespace Xwt.Mac
 			}
 		}
 		#endregion
+
+		public override Xwt.Drawing.Color BackgroundColor {
+			get { return Widget.BackgroundColor.ToXwtColor(); }
+			set {
+				((NSTextFieldCell) Widget.Cell).BackgroundColor = value.ToNSColor();
+				Widget.BackgroundColor = value.ToNSColor();
+			}
+		}
+
+		public override Xwt.Drawing.Color TextColor {
+			get { return Widget.TextColor.ToXwtColor(); }
+			set {
+				((NSTextFieldCell) Widget.Cell).TextColor = value.ToNSColor();
+				Widget.TextColor = value.ToNSColor();
+			}
+		}
+
 	}
 	
 	class CustomTextField: NSTextField, IViewObject

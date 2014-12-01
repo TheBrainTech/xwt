@@ -585,6 +585,11 @@ namespace Xwt
 			set { Backend.BackgroundColor = value; }
 		}
 
+		public Color TextColor {
+			get { return Backend.TextColor; }
+			set { Backend.TextColor = value; }
+		}
+
 		[DefaultValue ("")]
 		public string TooltipText {
 			get { return Backend.TooltipText ?? ""; }
