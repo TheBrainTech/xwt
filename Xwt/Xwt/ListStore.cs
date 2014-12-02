@@ -318,6 +318,10 @@ namespace Xwt
 		
 		public object GetValue (int row, int column)
 		{
+			if(list.Count < row + 1) {
+				return null;
+			}
+
 			return list [row][column];
 		}
 
