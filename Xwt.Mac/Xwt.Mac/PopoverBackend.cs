@@ -37,6 +37,18 @@ namespace Xwt.Mac
 {
 	public class PopoverBackend : IPopoverBackend
 	{
+		private class PopoverDelegate : NSPopoverDelegate {
+			private IPopoverEventSink eventSink;
+
+			public PopoverDelegate(IPopoverEventSink sink) {
+				this.eventSink = sink;
+			}
+
+			public override void DidClose(NSNotification notification) {
+				eventSink.OnClosed();
+			}
+		}
+
 		NSPopover popover;
 		public event EventHandler Closed;
 
@@ -114,6 +126,7 @@ namespace Xwt.Mac
 			popover = new NSPopover ();
 			popover.Behavior = NSPopoverBehavior.Transient;
 			popover.ContentViewController = controller;
+			popover.Delegate = new PopoverDelegate(sink);
 			ViewBackend backend = (ViewBackend)Toolkit.GetBackend (referenceWidget);
 			var reference = backend.Widget;
 			popover.Show (positionRect.ToRectangleF (),
