@@ -71,6 +71,12 @@ namespace Xwt.WPFBackend
 					return i != this;
 				});
 			base.OnCollapsed(e);
+
+			var node = (TreeStoreNode)DataContext;
+
+			view.Backend.Context.InvokeUserCode(delegate {
+				((ITreeViewEventSink)view.Backend.EventSink).OnRowCollapsed(node);
+			});
 		}
 
 		public int Level {

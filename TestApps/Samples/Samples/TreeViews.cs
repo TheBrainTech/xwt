@@ -121,6 +121,8 @@ namespace Samples
 			PackStart (label);
 
 			view.RowExpanded += (sender, e) => label.Text = "Row expanded: " + store.GetNavigatorAt (e.Position).GetValue (text);
+
+			view.RowCollapsed += (sender, e) => label.Text = "Row collapsed: " + store.GetNavigatorAt (e.Position).GetValue (text);
 		}
 
 		void HandleDragOver (object sender, DragOverEventArgs e)

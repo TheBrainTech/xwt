@@ -51,6 +51,11 @@ namespace Xwt.Mac
 			{
 				Backend.EventSink.OnRowExpanding (((TreeItem)notification.UserInfo["NSObject"]).Position);
 			}
+
+			public override void ItemDidCollapse (NSNotification notification)
+			{
+				Backend.EventSink.OnRowCollapsed (((TreeItem)notification.UserInfo["NSObject"]).Position);
+			}
 		}
 		
 		NSOutlineView Tree {

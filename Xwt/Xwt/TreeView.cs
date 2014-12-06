@@ -60,6 +60,11 @@ namespace Xwt
 				((TreeView)Parent).OnRowActivated (new TreeViewRowEventArgs (position));
 			}
 
+			public void OnRowCollapsed (TreePosition position)
+			{
+				((TreeView)Parent).OnRowCollapsed(new TreeViewRowEventArgs(position));
+			}
+
 			public void OnRowExpanded (TreePosition position)
 			{
 				((TreeView)Parent).OnRowExpanded (new TreeViewRowEventArgs (position));
@@ -491,6 +496,32 @@ namespace Xwt
 			remove {
 				rowExpanded -= value;
 				BackendHost.OnAfterEventRemove (TreeViewEvent.RowExpanded, rowExpanded);
+			}
+		}
+
+		/// <summary>
+		/// Raises the row collapsed event.
+		/// </summary>
+		/// <param name="a">The alpha component.</param>
+		[MappedEvent(TreeViewEvent.RowCollapsed)]
+		protected virtual void OnRowCollapsed(TreeViewRowEventArgs a) {
+			if(rowCollapsed != null)
+				rowCollapsed(this, a);
+		}
+
+		EventHandler<TreeViewRowEventArgs> rowCollapsed;
+
+		/// <summary>
+		/// Occurs just before a row is collapsed
+		/// </summary>
+		public event EventHandler<TreeViewRowEventArgs> RowCollapsed {
+			add {
+				BackendHost.OnBeforeEventAdd(TreeViewEvent.RowCollapsed, rowCollapsed);
+				rowCollapsed += value;
+			}
+			remove {
+				rowCollapsed -= value;
+				BackendHost.OnAfterEventRemove(TreeViewEvent.RowCollapsed, rowCollapsed);
 			}
 		}
 	}
