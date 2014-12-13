@@ -38,6 +38,8 @@ namespace Xwt.WPFBackend
 	public class TextEntryBackend
 		: WidgetBackend, ITextEntryBackend
 	{
+		public static bool SUPPRESS_NATIVE_UNDO_COMMAND = false;
+
 		bool multiline;
 
 		PlaceholderTextAdorner Adorner {
@@ -53,6 +55,15 @@ namespace Xwt.WPFBackend
 					layer.Add (Adorner);
 			};
 			TextBox.VerticalContentAlignment = VerticalAlignment.Center;
+
+			CommandManager.AddPreviewCanExecuteHandler(this.Widget as TextBox, new CanExecuteRoutedEventHandler(OnPreviewCanExecuteHandler));
+		}
+
+		private void OnPreviewCanExecuteHandler(object sender, CanExecuteRoutedEventArgs e) {
+			if(SUPPRESS_NATIVE_UNDO_COMMAND && (e.Command == ApplicationCommands.Undo || e.Command == ApplicationCommands.Redo)) {
+				e.CanExecute = false;
+				e.Handled = true;
+			}
 		}
 
 		protected override double DefaultNaturalWidth
