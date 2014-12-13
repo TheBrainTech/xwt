@@ -40,6 +40,9 @@ namespace Xwt.Mac
 		{
 			base.Initialize ();
 			ViewObject = new MacDatePicker ();
+			NSDatePicker datePicker = (NSDatePicker)ViewObject;
+			datePicker.DatePickerStyle = NSDatePickerStyle.ClockAndCalendar;
+			datePicker.DatePickerElements = NSDatePickerElementFlags.YearMonthDate;
 		}
 
 		public override void EnableEvent (object eventId)
