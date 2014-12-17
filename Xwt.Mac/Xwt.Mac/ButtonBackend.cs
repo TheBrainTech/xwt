@@ -89,25 +89,20 @@ namespace Xwt.Mac
 			case ButtonStyle.Normal:
 				Widget.BezelStyle = NSBezelStyle.Rounded;
 				Widget.SetButtonType (NSButtonType.MomentaryPushIn);
-				Messaging.void_objc_msgSend_bool (Widget.Handle, selSetShowsBorderOnlyWhileMouseInside.Handle, false);
+				Widget.SetShowsBorderOnlyWhileMouseInside(false);
 				break;
 			case ButtonStyle.Borderless:
 			case ButtonStyle.Flat:
 				Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
-				Messaging.void_objc_msgSend_bool (Widget.Handle, selSetShowsBorderOnlyWhileMouseInside.Handle, true);
+				Widget.SetShowsBorderOnlyWhileMouseInside(true);
 				break;
 			case ButtonStyle.AlwaysBorderless:
 				Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
-				Messaging.void_objc_msgSend_bool (Widget.Handle, selSetBordered.Handle, false);
-				Messaging.void_objc_msgSend_int (Widget.Handle, selSetButtonType.Handle, 5);
+				Widget.Bordered = false;
+				Widget.SetButtonType(NSButtonType.MomentaryChange);
 				break;
 			}
 		}
-		
-		static Selector selSetShowsBorderOnlyWhileMouseInside = new Selector ("setShowsBorderOnlyWhileMouseInside:");
-		static Selector selSetBordered = new Selector ("setBordered:");
-		static Selector selSetButtonType = new Selector ("setButtonType:");
-		
 		
 		public void SetButtonType (ButtonType type)
 		{
