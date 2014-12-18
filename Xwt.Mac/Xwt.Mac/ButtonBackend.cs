@@ -36,6 +36,9 @@ namespace Xwt.Mac
 {
 	public class ButtonBackend: ViewBackend<NSButton,IButtonEventSink>, IButtonBackend
 	{
+
+		private ButtonStyle buttonStyle = ButtonStyle.Normal;
+
 		public ButtonBackend ()
 		{
 		}
@@ -85,6 +88,7 @@ namespace Xwt.Mac
 		
 		public void SetButtonStyle (ButtonStyle style)
 		{
+			buttonStyle = style;
 			switch (style) {
 			case ButtonStyle.Normal:
 				Widget.BezelStyle = NSBezelStyle.Rounded;
@@ -100,6 +104,14 @@ namespace Xwt.Mac
 				Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
 				Widget.Bordered = false;
 				Widget.SetButtonType(NSButtonType.MomentaryChange);
+				break;
+			case ButtonStyle.CompactFlatMomentary:
+				Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
+				Widget.SetShowsBorderOnlyWhileMouseInside(true);
+				break;
+			case ButtonStyle.CompactFlatToggle:
+				Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
+				Widget.SetButtonType(NSButtonType.OnOff);
 				break;
 			}
 		}
@@ -118,6 +130,18 @@ namespace Xwt.Mac
 			default:
 				Widget.BezelStyle = NSBezelStyle.Rounded;
 				break;
+			}
+		}
+
+		public bool IsToggled {
+			get {
+				return Widget.State == NSCellStateValue.On;
+			}
+			set {
+				Widget.State = value ? NSCellStateValue.On : NSCellStateValue.Off;
+				if(buttonStyle == ButtonStyle.CompactFlatToggle) {
+					Widget.SetShowsBorderOnlyWhileMouseInside(!value);
+				}
 			}
 		}
 		

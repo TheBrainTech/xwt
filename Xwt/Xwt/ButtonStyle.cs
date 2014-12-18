@@ -33,6 +33,8 @@ namespace Xwt
 		Flat,
 		Borderless,
 		AlwaysBorderless, // don't show a border even on mouseover
+		CompactFlatMomentary,
+		CompactFlatToggle
 	}
 	
 	public enum ButtonType
