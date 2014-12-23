@@ -174,6 +174,15 @@ namespace Xwt.WPFBackend
 				return buttonsDictionary;
 			}
 		}
+
+		public bool IsToggled {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
 	}
 
 	class WpfButton : SWC.Button, IWpfWidget
