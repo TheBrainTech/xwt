@@ -45,6 +45,10 @@ namespace Xwt
 		Widget content;
 		bool shown;
 
+		public bool IsVisible {
+			get { return this.Backend.IsVisible; }
+		}
+
 		EventHandler closedEvent;
 
 		protected class PopoverBackendHost: BackendHost<Popover,IPopoverBackend>, IPopoverEventSink

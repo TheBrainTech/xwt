@@ -32,6 +32,10 @@ namespace Xwt.WPFBackend
 {
 	public class PopoverBackend : Backend, IPopoverBackend
 	{
+		public bool IsVisible {
+			get { return this.NativeWidget.Child.IsVisible; }
+		}
+
 		public Xwt.Popover.Position ActualPosition {
 			get; set;
 		}

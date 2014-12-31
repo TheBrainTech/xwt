@@ -49,6 +49,10 @@ namespace Xwt.Mac
 			}
 		}
 
+		public bool IsVisible { 
+			get { return popover.Shown; }
+		}
+
 		NSPopover popover;
 		public event EventHandler Closed;
 

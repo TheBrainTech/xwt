@@ -35,6 +35,7 @@ namespace Xwt.Backends
 		void Initialize (IPopoverEventSink sink);
 		void Show (Popover.Position arrowPosition, Widget referenceWidget, Xwt.Rectangle positionRect, Xwt.Widget child);
 		void Hide ();
+		bool IsVisible { get; }
 	}
 
 	public interface IPopoverEventSink
