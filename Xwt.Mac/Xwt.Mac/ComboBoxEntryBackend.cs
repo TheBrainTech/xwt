@@ -46,6 +46,14 @@ namespace Xwt.Mac
 		{
 			base.Initialize ();
 			ViewObject = new MacComboBox (EventSink, ApplicationContext);
+
+			this.Widget.WillPopUp += (object sender, EventArgs e) => {
+				this.IsDropDownOpen = true;
+			};
+
+			this.Widget.WillDismiss += (object sender, EventArgs e) => {
+				this.IsDropDownOpen = false;
+			};
 		}
 		
 		protected override Size GetNaturalSize ()
@@ -65,6 +73,8 @@ namespace Xwt.Mac
 		#endregion
 
 		#region IComboBoxBackend implementation
+		public bool IsDropDownOpen { get; private set; }
+
 		public void SetViews (CellViewCollection views)
 		{
 		}

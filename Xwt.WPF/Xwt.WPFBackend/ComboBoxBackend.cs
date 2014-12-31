@@ -90,6 +90,10 @@ namespace Xwt.WPFBackend
 			set { ComboBox.SelectedIndex = value; }
 		}
 
+		public bool IsDropDownOpen {
+			get { return this.ComboBox.IsDropDownOpen; }
+		}
+
 		public override void EnableEvent (object eventId)
 		{
 			base.EnableEvent (eventId);

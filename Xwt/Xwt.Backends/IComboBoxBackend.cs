@@ -32,6 +32,7 @@ namespace Xwt.Backends
 		void SetViews (CellViewCollection views);
 		void SetSource (IListDataSource source, IBackend sourceBackend);
 		int SelectedRow { get; set; }
+		bool IsDropDownOpen { get; }
 	}
 	
 	public interface IComboBoxEventSink: IWidgetEventSink

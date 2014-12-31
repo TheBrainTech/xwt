@@ -122,6 +122,10 @@ namespace Xwt
 			OnPreferredSizeChanged ();
 		}
 
+		public bool IsDropDownOpen {
+			get { return this.Backend.IsDropDownOpen; }
+		}
+
 		[DefaultValue (-1)]
 		public int SelectedIndex {
 			get { return Backend.SelectedRow; }

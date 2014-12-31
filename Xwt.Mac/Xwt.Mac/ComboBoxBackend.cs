@@ -58,6 +58,7 @@ namespace Xwt.Mac
 {
 	public class ComboBoxBackend: ViewBackend<NSPopUpButton,IComboBoxEventSink>, IComboBoxBackend
 	{
+		private MenuDelegate menuDelegate;
 		IListDataSource source;
 		
 		public ComboBoxBackend ()
@@ -76,9 +77,16 @@ namespace Xwt.Mac
 				Widget.SynchronizeTitleAndSelectedItem ();
 				ResetFittingSize ();
 			};
+
+			menuDelegate = new MenuDelegate();
+			this.Widget.Menu.Delegate = menuDelegate;
 		}
 
 		#region IComboBoxBackend implementation
+		public bool IsDropDownOpen {
+			get { return menuDelegate.IsMenuOpen; }
+		}
+
 		public void SetViews (CellViewCollection views)
 		{
 		}
@@ -94,6 +102,7 @@ namespace Xwt.Mac
 			
 			source = s;
 			Widget.Menu = new NSMenu ();
+			this.Widget.Menu.Delegate = menuDelegate;
 			
 			if (source != null) {
 				source.RowInserted += HandleSourceRowInserted;
@@ -186,6 +195,21 @@ namespace Xwt.Mac
 			}
 		}
 		#endregion
+
+		private class MenuDelegate : NSMenuDelegate {
+			public bool IsMenuOpen { get; private set; }
+
+			public override void MenuDidClose(NSMenu menu) {
+				this.IsMenuOpen = false;
+			}
+
+			public override void MenuWillOpen(NSMenu menu) {
+				this.IsMenuOpen = true;
+			}
+
+			public override void MenuWillHighlightItem(NSMenu menu, NSMenuItem item) {
+			}
+		}
 	}
 	
 	class PopUpButton: NSPopUpButton, IViewObject
