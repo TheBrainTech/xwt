@@ -35,6 +35,7 @@ using System.Windows.Controls;
 using SW = System.Windows;
 
 using Xwt.Backends;
+using System.ComponentModel;
 
 namespace Xwt.WPFBackend
 {
@@ -57,6 +58,12 @@ namespace Xwt.WPFBackend
 			Grid.SetColumn (contentBox, 0);
 			Grid.SetRow (contentBox, 1);
 			rootPanel.Children.Add (contentBox);
+
+			this.Window.Closing += (object sender, CancelEventArgs e) => {
+				if(e.Cancel == false && this.Window.Owner != null) {
+					this.Window.Owner.Focus();
+				}
+			};
 		}
 
 		new WpfWindow Window
