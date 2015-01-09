@@ -41,6 +41,8 @@ namespace Xwt.WPFBackend
 {
 	public class ButtonBackend : WidgetBackend, IButtonBackend
 	{
+		public ButtonStyle buttonStyle;
+
 		public ButtonBackend ()
 			: this (new WpfButton ())
 		{
@@ -63,6 +65,8 @@ namespace Xwt.WPFBackend
 		}
 
 		public void SetButtonStyle (ButtonStyle style) {
+			buttonStyle = style;
+
 			switch (style)
 			{
 				case ButtonStyle.Normal:
@@ -82,8 +86,28 @@ namespace Xwt.WPFBackend
 				case ButtonStyle.AlwaysBorderless:
 					Button.Style = (Style)ButtonResources["NoChromeButton"];
 					break;
+				case ButtonStyle.CompactFlatMomentary:
+				case ButtonStyle.CompactFlatToggle:
+					Button.Focusable = false;
+					Button.Style = (Style)ButtonResources["CompactFlat"];
+					break;
 			}
 			Button.InvalidateMeasure ();
+		}
+
+		private bool isToggled = false;
+		public bool IsToggled {
+			get { return isToggled; }
+			set {
+				isToggled = value;
+				if (buttonStyle == ButtonStyle.CompactFlatToggle) {
+					if (isToggled) {
+						Button.Style = (Style)ButtonResources["CompactFlatToggled"];
+					} else {
+						Button.Style = (Style)ButtonResources["CompactFlat"];
+					}
+				}
+			}
 		}
 
 		public virtual void SetButtonType (ButtonType type) {
@@ -172,15 +196,6 @@ namespace Xwt.WPFBackend
 				}
 
 				return buttonsDictionary;
-			}
-		}
-
-		public bool IsToggled {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
 			}
 		}
 	}
