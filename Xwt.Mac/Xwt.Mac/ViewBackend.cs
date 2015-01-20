@@ -418,6 +418,10 @@ namespace Xwt.Mac
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
 		{
 			var lo = Widget.ConvertPointToBase (new PointF ((float)widgetCoordinates.X, (float)widgetCoordinates.Y));
+			if (Widget.Window == null)
+			{
+				return new Point (0, 0);
+			}
 			lo = Widget.Window.ConvertBaseToScreen (lo);
 			return MacDesktopBackend.ToDesktopRect (new RectangleF (lo.X, lo.Y, 0, Widget.IsFlipped ? 0 : Widget.Frame.Height)).Location;
 		}
