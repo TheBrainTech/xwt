@@ -35,6 +35,15 @@ namespace Xwt.Mac
 		ScrollPolicy verticalScrollPolicy;
 		ScrollPolicy horizontalScrollPolicy;
 
+		public override Xwt.Drawing.Color BackgroundColor {
+			get {
+				return Widget.BackgroundColor.ToXwtColor();
+			}
+			set {
+				Widget.BackgroundColor = value.ToNSColor();
+			}
+		}
+
 		public override void Initialize ()
 		{
 			ViewObject = new CustomScrollView ();
