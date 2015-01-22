@@ -428,6 +428,7 @@ namespace Xwt.WPFBackend
 				var ev = (WidgetEvent)eventId;
 				switch (ev) {
 					case WidgetEvent.KeyPressed:
+						Widget.PreviewKeyDown += WidgetPreviewKeyDownHandler;
 						Widget.KeyDown += WidgetKeyDownHandler;
 						break;
 					case WidgetEvent.KeyReleased:
@@ -480,6 +481,7 @@ namespace Xwt.WPFBackend
 				switch (ev) {
 					case WidgetEvent.KeyPressed:
 						Widget.KeyDown -= WidgetKeyDownHandler;
+						Widget.PreviewKeyDown -= WidgetPreviewKeyDownHandler;
 						break;
 					case WidgetEvent.KeyReleased:
 						Widget.KeyUp -= WidgetKeyUpHandler;
@@ -541,6 +543,14 @@ namespace Xwt.WPFBackend
 
 				Matrix m = source.CompositionTarget.TransformToDevice;
 				return m.M22;
+			}
+		}
+
+		void WidgetPreviewKeyDownHandler (object sender, System.Windows.Input.KeyEventArgs e)
+		{
+			// Forward events to KeyDownHandler for special keys that are normally handled before they get to KeyDownHandler
+			if(e.Key == SW.Input.Key.Up || e.Key == SW.Input.Key.Down || e.Key == SW.Input.Key.PageUp || e.Key == SW.Input.Key.PageDown) {
+				WidgetKeyDownHandler(sender, e);
 			}
 		}
 

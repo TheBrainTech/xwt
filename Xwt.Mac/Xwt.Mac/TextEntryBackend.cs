@@ -190,6 +190,45 @@ namespace Xwt.Mac
 		{
 			this.context = context;
 			this.eventSink = eventSink;
+			this.Delegate = new CustomTextFieldDelegate(eventSink);
+		}
+
+		private class CustomTextFieldDelegate : NSTextFieldDelegate {
+			private ITextEntryEventSink eventSink;
+
+			private static readonly Selector moveUpSelector = new Selector("moveUp:");
+			private static readonly Selector moveDownSelector = new Selector("moveDown:");
+			private static readonly Selector scrollPageUpSelector = new Selector("scrollPageUp:");
+			private static readonly Selector scrollPageDownSelector = new Selector("scrollPageDown:");
+			private static readonly Selector insertNewlineSelector = new Selector("insertNewline:");
+			private static readonly Selector cancelOperationSelector = new Selector("cancelOperation:");
+
+			public CustomTextFieldDelegate(ITextEntryEventSink eventSink) {
+				this.eventSink = eventSink;
+			}
+
+			public override bool DoCommandBySelector(NSControl control, NSTextView textView, Selector commandSelector) {
+				if(commandSelector == moveUpSelector) {
+					eventSink.OnKeyPressed(new KeyEventArgs(Key.Up, default(ModifierKeys), false, 0));
+				}
+				else if(commandSelector == moveDownSelector) {
+					eventSink.OnKeyPressed(new KeyEventArgs(Key.Down, default(ModifierKeys), false, 0));
+				}
+				else if(commandSelector == scrollPageUpSelector) {
+					eventSink.OnKeyPressed(new KeyEventArgs(Key.PageUp, default(ModifierKeys), false, 0));
+				}
+				else if(commandSelector == scrollPageDownSelector) {
+					eventSink.OnKeyPressed(new KeyEventArgs(Key.PageDown, default(ModifierKeys), false, 0));
+				}
+				else if(commandSelector == insertNewlineSelector) {
+					eventSink.OnKeyPressed(new KeyEventArgs(Key.Return, default(ModifierKeys), false, 0));
+				}
+				else if(commandSelector == cancelOperationSelector) {
+					eventSink.OnKeyPressed(new KeyEventArgs(Key.Escape, default(ModifierKeys), false, 0));
+				}
+
+				return false;
+			}
 		}
 		
 		public NSView View {
