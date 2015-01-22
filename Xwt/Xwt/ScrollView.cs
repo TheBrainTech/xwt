@@ -40,11 +40,6 @@ namespace Xwt
 			{
 				((ScrollView)Parent).OnVisibleRectChanged (EventArgs.Empty);
 			}
-			
-			public override Size GetDefaultNaturalSize ()
-			{
-				return Xwt.Backends.DefaultNaturalSizes.ScrollView;
-			}
 		}
 		
 		protected override BackendHost CreateBackendHost ()
