@@ -306,11 +306,24 @@ namespace Xwt.WPFBackend
 			if (borderCalculated)
 				return;
 
+			double left = 0;
+			double top = 0;
+			double right = 0;
+			double bottom = 0;
+
 			var c = (FrameworkElement)Content;
-			var p = c.PointToScreen (new SW.Point (0, 0));
-			var left = p.X - Left;
-			var top = p.Y - Top;
-			frameBorder = new WidgetSpacing (left, top, windowWidth - c.ActualWidth - left, windowHeight - c.ActualHeight - top);
+
+			if(this.WindowStyle != SW.WindowStyle.None) {
+				var p = c.PointToScreen(new SW.Point(0, 0));
+
+				left = p.X - Left;
+				top = p.Y - Top;
+				right = windowWidth - c.ActualWidth - left;
+				bottom = windowHeight - c.ActualHeight - top;
+			}
+
+			frameBorder = new WidgetSpacing(left, top, right, bottom);
+
 			borderCalculated = true;
 			Left = initialX - left;
 			Top = initialY - top;
