@@ -401,6 +401,7 @@ namespace Xwt.Mac
 				if (Widget.Layer == null)
 					Widget.WantsLayer = true;
 				Widget.Layer.BackgroundColor = value.ToCGColor ();
+				Widget.NeedsDisplay = true;
 			}
 		}
 		
@@ -417,13 +418,15 @@ namespace Xwt.Mac
 		
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
 		{
-			var lo = Widget.ConvertPointToBase (new PointF ((float)widgetCoordinates.X, (float)widgetCoordinates.Y));
 			if (Widget.Window == null)
 			{
 				return new Point (0, 0);
 			}
-			lo = Widget.Window.ConvertBaseToScreen (lo);
-			return MacDesktopBackend.ToDesktopRect (new RectangleF (lo.X, lo.Y, 0, Widget.IsFlipped ? 0 : Widget.Frame.Height)).Location;
+
+			RectangleF frameRelativeToWindow = this.Widget.ConvertRectToView(this.Widget.Bounds, null);
+			RectangleF frameRelativeToScreen = this.Widget.Window.ConvertRectToScreen(frameRelativeToWindow);
+
+			return MacDesktopBackend.ToDesktopRect (new RectangleF (frameRelativeToScreen.X, frameRelativeToScreen.Y, 0, this.Widget.IsFlipped ? this.Widget.Frame.Height : 0)).Location;
 		}
 		
 		protected virtual Size GetNaturalSize ()
