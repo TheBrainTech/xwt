@@ -51,7 +51,11 @@ namespace Xwt.Mac
 			Widget.HasVerticalScroller = true;
 			Widget.AutoresizesSubviews = true;
 		}
-		
+
+		public void ScrollToPoint(Point point) {
+			(Widget.DocumentView as NSView).ScrollPoint(new System.Drawing.PointF((float)point.X, (float)point.Y));
+		}
+
 		protected override Size GetNaturalSize ()
 		{
 			return EventSink.GetDefaultNaturalSize ();

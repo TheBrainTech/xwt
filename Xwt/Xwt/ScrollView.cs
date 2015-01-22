@@ -123,6 +123,10 @@ namespace Xwt
 			if (visibleRectChanged != null)
 				visibleRectChanged (this, e);
 		}
+
+		public void ScrollToPoint(Point point) {
+			Backend.ScrollToPoint(point);
+		}
 	}
 	
 	public enum ScrollPolicy

@@ -39,6 +39,11 @@ namespace Xwt.WPFBackend
 			ScrollViewer = new ExScrollViewer();
 		}
 
+		public void ScrollToPoint(Point point) {
+			this.ScrollViewer.ScrollToVerticalOffset(point.Y);
+			this.ScrollViewer.ScrollToHorizontalOffset(point.X);
+		}
+
 		public ScrollPolicy VerticalScrollPolicy
 		{
 			get { return GetScrollPolicy (ScrollViewer.VerticalScrollBarVisibility); }
