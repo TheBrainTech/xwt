@@ -51,7 +51,7 @@ namespace Xwt.WPFBackend
 		public ScrollPolicy HorizontalScrollPolicy
 		{
 			get { return ScrollViewer.GetHorizontalScrollBarVisibility (ListBox).ToXwtScrollPolicy (); }
-			set { ScrollViewer.SetVerticalScrollBarVisibility (ListBox, value.ToWpfScrollBarVisibility ()); }
+			set { ScrollViewer.SetHorizontalScrollBarVisibility (ListBox, value.ToWpfScrollBarVisibility ()); }
 		}
 
 		public void SetViews (CellViewCollection views)
