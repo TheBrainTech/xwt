@@ -18,6 +18,7 @@ namespace Xwt.WPFBackend
 		public CanvasBackend ()
 		{
 			Canvas = new CustomPanel ();
+			Canvas.ClipToBounds = true;
 			Canvas.RenderAction = Render;
 		}
 
