@@ -74,6 +74,18 @@ namespace Xwt.Mac
 		{
 		}
 
+		public override void ScrollWheel(NSEvent theEvent) {
+			base.ScrollWheel(theEvent);
+			value += theEvent.ScrollingDeltaY;
+			if(value < lowerValue)
+				value = lowerValue;
+			if(value > upperValue - pageSize)
+				value = upperValue - pageSize;
+			UpdateValue();
+			eventSink.OnValueChanged ();
+		
+		}
+
 		public void Initialize (IScrollAdjustmentEventSink eventSink)
 		{
 			this.eventSink = eventSink;

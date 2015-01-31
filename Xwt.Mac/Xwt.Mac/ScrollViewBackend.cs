@@ -47,6 +47,7 @@ namespace Xwt.Mac
 		public override void Initialize ()
 		{
 			ViewObject = new CustomScrollView ();
+			((CustomScrollView)ViewObject).EventSink = EventSink;
 			Widget.HasHorizontalScroller = true;
 			Widget.HasVerticalScroller = true;
 			Widget.AutoresizesSubviews = true;
@@ -104,7 +105,8 @@ namespace Xwt.Mac
 		
 		public Rectangle VisibleRect {
 			get {
-				return Rectangle.Zero;
+				System.Drawing.RectangleF rectF = Widget.ContentView.VisibleRect();
+				return new Rectangle(rectF.X, rectF.Y, rectF.Width, rectF.Height);
 			}
 		}
 		
@@ -161,6 +163,18 @@ namespace Xwt.Mac
 			get {
 				return true;
 			}
+		}
+
+		public IScrollViewEventSink EventSink { get; set;}
+
+//		public override void ScrollWheel(NSEvent theEvent) {
+//			base.ScrollWheel(theEvent);
+//			EventSink.OnMouseScrolled(new MouseScrolledEventArgs((long)theEvent.Timestamp, (double)theEvent.ScrollingDeltaX, (double)theEvent.ScrollingDeltaY, ScrollDirection.Down));
+//		}
+
+		public override void ReflectScrolledClipView(NSClipView cView) {
+			base.ReflectScrolledClipView(cView);
+			EventSink.OnVisibleRectChanged();
 		}
 	}
 
