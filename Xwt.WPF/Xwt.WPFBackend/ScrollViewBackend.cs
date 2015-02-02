@@ -37,6 +37,11 @@ namespace Xwt.WPFBackend
 		public ScrollViewBackend()
 		{
 			ScrollViewer = new ExScrollViewer();
+			ScrollViewer.PreviewMouseWheel += ScrollViewer_PreviewMouseWheel;
+		}
+
+		void ScrollViewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e) {
+			((IScrollViewEventSink)EventSink).OnVisibleRectChanged();
 		}
 
 		public void ScrollToPoint(Point point) {
