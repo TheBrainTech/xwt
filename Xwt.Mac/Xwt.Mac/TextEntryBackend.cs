@@ -148,6 +148,9 @@ namespace Xwt.Mac
 
 		public override bool HasFocus {
 			get {
+				if (NSApplication.SharedApplication.KeyWindow == null) {
+					return false;
+				}
 				if(NSApplication.SharedApplication.KeyWindow.FirstResponder == Widget) {
 					return true;
 				}
