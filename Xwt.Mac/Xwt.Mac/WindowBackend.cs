@@ -419,7 +419,7 @@ namespace Xwt.Mac
 				width = cr.Width;
 			if (height == -1)
 				height = cr.Height;
-			var r = FrameRectFor (new System.Drawing.RectangleF ((float)cr.X, (float)cr.Y, (float)width, (float)height));
+			var r = FrameRectFor (new System.Drawing.RectangleF ((float)cr.X, (float)(cr.Y - height + cr.Height), (float)width, (float)height));
 			SetFrame (r, true);
 			LayoutWindow ();
 		}
