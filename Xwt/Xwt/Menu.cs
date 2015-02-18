@@ -35,6 +35,7 @@ namespace Xwt
 	{
 		MenuItemCollection items;
 		EventHandler opening;
+		EventHandler closed;
 
 		protected class MenuBackendHost: BackendHost<Menu,IMenuBackend>, IMenuEventSink
 		{
@@ -47,6 +48,11 @@ namespace Xwt
 			public void OnOpening ()
 			{
 				Parent.DoOpen ();
+			}
+
+			public void OnClosed()
+			{
+				Parent.DoClose();
 			}
 		}
 
@@ -137,6 +143,28 @@ namespace Xwt
 			remove {
 				opening -= value;
 				base.BackendHost.OnAfterEventRemove (MenuEvent.Opening, opening);
+			}
+		}
+
+		internal virtual void DoClose() {
+			OnClosed(EventArgs.Empty);
+		}
+
+		[MappedEvent(MenuEvent.Closed)]
+		protected virtual void OnClosed(EventArgs e) {
+			if(closed != null) {
+				closed(this, e);
+			}
+		}
+
+		public event EventHandler Closed {
+			add {
+				base.BackendHost.OnBeforeEventAdd(MenuEvent.Closed, closed);
+				closed += value;
+			}
+			remove {
+				closed -= value;
+				base.BackendHost.OnAfterEventRemove(MenuEvent.Closed, closed);
 			}
 		}
 	}

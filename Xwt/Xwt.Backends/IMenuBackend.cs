@@ -40,11 +40,13 @@ namespace Xwt.Backends
 	public interface IMenuEventSink
 	{
 		void OnOpening ();
+		void OnClosed();
 	}
 
 	public enum MenuEvent
 	{
-		Opening = 1
+		Opening = 1,
+		Closed = 2,
 	}
 }
 

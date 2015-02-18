@@ -139,6 +139,10 @@ namespace Xwt.WPFBackend
 				menu.Opened += (object sender, RoutedEventArgs e) => {
 					this.Context.InvokeUserCode(eventSink.OnOpening);
 				};
+
+				menu.Closed += (object sender, RoutedEventArgs e) => {
+					this.Context.InvokeUserCode(eventSink.OnClosed);
+				};
 			}
 
 			return menu;
@@ -150,6 +154,12 @@ namespace Xwt.WPFBackend
 				case MenuEvent.Opening:
 					if(this.ParentItem != null) {
 						this.ParentItem.MenuItem.SubmenuOpened += SubmenuOpenedHandler;
+					}
+					break;
+
+				case MenuEvent.Closed:
+					if(this.ParentItem != null) {
+						this.ParentItem.MenuItem.SubmenuClosed += SubmenuClosedHandler;
 					}
 					break;
 				}
@@ -164,6 +174,12 @@ namespace Xwt.WPFBackend
 						this.ParentItem.MenuItem.SubmenuOpened -= SubmenuOpenedHandler;
 					}
 					break;
+
+				case MenuEvent.Closed:
+					if(this.ParentItem != null) {
+						this.ParentItem.MenuItem.SubmenuClosed -= SubmenuClosedHandler;
+					}
+					break;
 				}
 			}
 		}
@@ -173,6 +189,12 @@ namespace Xwt.WPFBackend
 			if((e.Source as System.Windows.Controls.MenuItem) == this.ParentItem.MenuItem)
 			{
 				Context.InvokeUserCode(eventSink.OnOpening);    
+			}
+		}
+
+		private void SubmenuClosedHandler(object sender, RoutedEventArgs e) {
+			if((e.Source as System.Windows.Controls.MenuItem) == this.ParentItem.MenuItem) {
+				Context.InvokeUserCode(eventSink.OnClosed);
 			}
 		}
 	}

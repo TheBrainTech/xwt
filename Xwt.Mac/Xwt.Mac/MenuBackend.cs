@@ -53,6 +53,13 @@ namespace Xwt.Mac
 				});
 			}
 
+			public override void MenuDidClose(NSMenu menu)
+			{
+				context.InvokeUserCode (delegate {
+					eventSink.OnClosed ();
+				});
+			}
+
 			#region implemented abstract members of NSMenuDelegate
 
 			public override void MenuWillHighlightItem(NSMenu menu, NSMenuItem item)
