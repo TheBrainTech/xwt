@@ -135,6 +135,10 @@ namespace Xwt.WPFBackend
 				this.menu = new ContextMenu ();
 				foreach (var item in Items)
 					this.menu.Items.Add (item.Item);
+
+				menu.Opened += (object sender, RoutedEventArgs e) => {
+					this.Context.InvokeUserCode(eventSink.OnOpening);
+				};
 			}
 
 			return menu;
@@ -144,7 +148,9 @@ namespace Xwt.WPFBackend
 			if(eventId is MenuEvent) {
 				switch((MenuEvent)eventId) {
 				case MenuEvent.Opening:
-					this.ParentItem.MenuItem.SubmenuOpened += SubmenuOpenedHandler;
+					if(this.ParentItem != null) {
+						this.ParentItem.MenuItem.SubmenuOpened += SubmenuOpenedHandler;
+					}
 					break;
 				}
 			}
@@ -154,7 +160,9 @@ namespace Xwt.WPFBackend
 			if(eventId is MenuEvent) {
 				switch((MenuEvent)eventId) {
 				case MenuEvent.Opening:
-					this.ParentItem.MenuItem.SubmenuOpened -= SubmenuOpenedHandler;
+					if(this.ParentItem != null) {
+						this.ParentItem.MenuItem.SubmenuOpened -= SubmenuOpenedHandler;
+					}
 					break;
 				}
 			}
