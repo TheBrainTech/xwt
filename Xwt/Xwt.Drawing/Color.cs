@@ -100,6 +100,12 @@ namespace Xwt.Drawing
 			}
 		}
 		
+		public bool IsNearWhite {
+			get {
+				return Red + Green + Blue > 2.9;
+			}
+		}
+
 		HslColor Hsl {
 			get {
 				if (hsl == null)
