@@ -28,6 +28,7 @@ using System;
 using System.Windows;
 using SWC = System.Windows.Controls;
 using Xwt.Backends;
+using mshtml;
 
 namespace Xwt.WPFBackend
 {
@@ -38,6 +39,20 @@ namespace Xwt.WPFBackend
 		public WebViewBackend ()
 		{
 			Widget = new SWC.WebBrowser ();
+			((SWC.WebBrowser)Widget).LoadCompleted += WebViewBackend_LoadCompleted;
+		}
+
+		void WebViewBackend_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e) {
+			string DisableScriptError = "window.onerror = function() {return true;} ";
+			HTMLDocument doc2 = (HTMLDocument)((SWC.WebBrowser)Widget).Document;
+			IHTMLScriptElement scriptErrorSuppressed = (IHTMLScriptElement)doc2.createElement("SCRIPT");
+			scriptErrorSuppressed.type = "text/javascript";
+			scriptErrorSuppressed.text = DisableScriptError;
+			IHTMLElementCollection nodes = doc2.getElementsByTagName("head");
+			foreach (IHTMLElement elem in nodes) {
+				HTMLHeadElement head = (HTMLHeadElement)elem;
+				head.appendChild((IHTMLDOMNode)scriptErrorSuppressed);
+			}
 		}
 
 		internal WebViewBackend (SWC.WebBrowser browser)
@@ -53,5 +68,6 @@ namespace Xwt.WPFBackend
 			}
 		}
 	}
+
 }
 
