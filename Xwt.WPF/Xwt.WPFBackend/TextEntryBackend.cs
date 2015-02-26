@@ -188,5 +188,13 @@ namespace Xwt.WPFBackend
 		{
 			Context.InvokeUserCode (EventSink.OnChanged);
 		}
+
+		public new void SetFocus() {
+			base.SetFocus();
+			if (!string.IsNullOrEmpty(TextBox.Text)) {
+				TextBox.SelectionStart = TextBox.Text.Length;
+				TextBox.SelectionLength = 0;
+			}
+		}
 	}
 }
