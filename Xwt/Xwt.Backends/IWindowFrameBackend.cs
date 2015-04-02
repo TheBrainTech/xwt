@@ -87,6 +87,8 @@ namespace Xwt.Backends
 		/// <value><c>true</c> if the window is in full screen mode; otherwise, <c>false</c>.</value>
 		bool FullScreen { get; set; }
 
+		WindowState WindowState { get; set; }
+
 		/// <summary>
 		/// Gets the screen on which most of the area of this window is placed
 		/// </summary>

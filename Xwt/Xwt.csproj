@@ -49,6 +49,7 @@
     <Compile Include="Xwt.Backends\IWindowBackend.cs" />
     <Compile Include="Xwt\Application.cs" />
     <Compile Include="Xwt.Backends\IBackend.cs" />
+    <Compile Include="Xwt\WindowState.cs" />
     <Compile Include="Xwt\XwtComponent.cs" />
     <Compile Include="Xwt\Box.cs" />
     <Compile Include="Xwt\WidgetCollection.cs" />

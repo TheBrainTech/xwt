@@ -250,6 +250,11 @@ namespace Xwt
 			set { Backend.FullScreen = value; }
 		}
 
+		public WindowState WindowState {
+			get { return Backend.WindowState; }
+			set { Backend.WindowState = value; }
+		}
+
 		/// <summary>
 		/// Gets the screen on which most of the area of this window is placed
 		/// </summary>

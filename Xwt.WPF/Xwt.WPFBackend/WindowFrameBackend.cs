@@ -180,12 +180,42 @@ namespace Xwt.WPFBackend
 			window.Activate ();
 		}
 
-		
+
 		bool IWindowFrameBackend.FullScreen {
 			get {
 				return false;
 			}
 			set {
+			}
+		}
+
+		WindowState IWindowFrameBackend.WindowState {
+			get {
+				switch (window.WindowState) {
+					case System.Windows.WindowState.Maximized:
+						return Xwt.WindowState.Maximized;
+					case System.Windows.WindowState.Minimized:
+						return Xwt.WindowState.Minimized;
+					case System.Windows.WindowState.Normal:
+						return Xwt.WindowState.Normal;
+					default:
+						throw new Exception("Unexpected window state: " + window.WindowState);
+				}
+			}
+			set {
+				switch (value) {
+					case Xwt.WindowState.Maximized:
+						window.WindowState = System.Windows.WindowState.Maximized;
+						break;
+					case Xwt.WindowState.Minimized:
+						window.WindowState = System.Windows.WindowState.Minimized;
+						break;
+					case Xwt.WindowState.Normal:
+						window.WindowState = System.Windows.WindowState.Normal;
+						break;
+					default:
+						throw new InvalidOperationException("Invalid window state: " + value);
+				}
 			}
 		}
 
