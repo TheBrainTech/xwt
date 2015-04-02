@@ -175,6 +175,65 @@ namespace Xwt.Mac
 			}
 		}
 
+		public WindowState WindowState {
+			get {
+				if(this.IsMiniaturized) {
+					return WindowState.Minimized;
+				} else if(this.ContentView.IsInFullscreenMode) {
+					return WindowState.FullScreen;
+				} else if(this.IsZoomed) {
+					return WindowState.Maximized;
+				} else {
+					return WindowState.Normal;
+				}
+			}
+
+			set {
+
+				if(value == WindowState) { return; }
+
+				switch(value) {
+				case WindowState.Minimized:
+					if(this.ContentView.IsInFullscreenMode) {
+						this.ToggleFullScreen(this);
+					}
+					this.Miniaturize(this);
+					break;
+				case WindowState.FullScreen:
+					if(this.IsMiniaturized) {
+						this.Deminiaturize(this);
+					}
+					this.ToggleFullScreen(this);
+					break;
+				case WindowState.Maximized:
+					if(this.ContentView.IsInFullscreenMode) {
+						this.ToggleFullScreen(this);
+					}
+					if(this.IsMiniaturized) {
+						this.Deminiaturize(this);
+					}
+					if(!this.IsZoomed) {
+						this.Zoom(this);
+					}
+					break;
+				case WindowState.Normal:
+					if(this.ContentView.IsInFullscreenMode) {
+						this.ToggleFullScreen(this);
+					}
+					if(IsZoomed) {
+						this.Zoom(this);
+					}
+					if(this.IsMiniaturized) {
+						this.Deminiaturize(this);
+					}
+					break;
+				default:
+					throw new InvalidOperationException("Invalid window state: " + value);
+				}
+			}
+		}
+
+
 		object IWindowFrameBackend.Screen {
 			get {
 				return Screen;
