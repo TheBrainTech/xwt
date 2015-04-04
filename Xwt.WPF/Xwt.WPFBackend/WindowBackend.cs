@@ -50,6 +50,10 @@ namespace Xwt.WPFBackend
 		public WindowBackend ()
 		{
 			base.Window = new WpfWindow ();
+
+			base.Window.StateChanged += (object sender, EventArgs e) => {
+				cachedRestoreBounds = new Rectangle(Window.RestoreBounds.X, Window.RestoreBounds.Y, Window.RestoreBounds.Width, Window.RestoreBounds.Height);
+			};
 			Window.UseLayoutRounding = true;
 			rootPanel = CreateMainGrid ();
 			contentBox = new DockPanel ();

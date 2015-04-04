@@ -240,19 +240,14 @@ namespace Xwt
 			get { return Backend.Opacity; }
 			set { Backend.Opacity = value; }
 		}
-		
-		/// <summary>
-		/// Gets or sets a value indicating whether this window is in full screen mode
-		/// </summary>
-		/// <value><c>true</c> if the window is in full screen mode; otherwise, <c>false</c>.</value>
-		public bool FullScreen {
-			get { return Backend.FullScreen; }
-			set { Backend.FullScreen = value; }
-		}
 
 		public WindowState WindowState {
 			get { return Backend.WindowState; }
 			set { Backend.WindowState = value; }
+		}
+
+		public Rectangle RestoreBounds {
+			get { return Backend.RestoreBounds; }
 		}
 
 		/// <summary>

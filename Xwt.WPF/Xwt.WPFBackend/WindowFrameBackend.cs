@@ -180,15 +180,6 @@ namespace Xwt.WPFBackend
 			window.Activate ();
 		}
 
-
-		bool IWindowFrameBackend.FullScreen {
-			get {
-				return false;
-			}
-			set {
-			}
-		}
-
 		WindowState IWindowFrameBackend.WindowState {
 			get {
 				switch (window.WindowState) {
@@ -216,6 +207,14 @@ namespace Xwt.WPFBackend
 					default:
 						throw new InvalidOperationException("Invalid window state: " + value);
 				}
+			}
+		}
+
+		protected Rectangle cachedRestoreBounds;
+
+		Rectangle IWindowFrameBackend.RestoreBounds {
+			get {
+				return window.RestoreBounds.IsEmpty ? cachedRestoreBounds : new Rectangle(window.RestoreBounds.X, window.RestoreBounds.Y, window.RestoreBounds.Width, window.RestoreBounds.Height);
 			}
 		}
 
