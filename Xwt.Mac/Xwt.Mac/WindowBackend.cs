@@ -48,10 +48,22 @@ namespace Xwt.Mac
 		
 		public WindowBackend (IntPtr ptr): base (ptr)
 		{
+			this.WillEnterFullScreen += HandleWindowStateChanging;
+			this.WillMiniaturize += HandleWindowStateChanging;
+			this.WillStartLiveResize += HandleWindowStateChanging;
+		}
+
+		private void HandleWindowStateChanging(object sender, EventArgs e) {
+			Rectangle restoreBounds = new Rectangle(this.Frame.X, this.Frame.Y, this.Frame.Width, this.Frame.Height);
+			restoreBounds.Y = this.frontend.Screen.Bounds.Height - (restoreBounds.Y + restoreBounds.Height); //Invert Y
+			cachedRestoreBounds = restoreBounds;
 		}
 		
 		public WindowBackend ()
 		{
+			this.WillEnterFullScreen += HandleWindowStateChanging;
+			this.WillMiniaturize += HandleWindowStateChanging;
+			this.WillStartLiveResize += HandleWindowStateChanging;
 			this.controller = new WindowBackendController ();
 			controller.Window = this;
 			StyleMask |= NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable;
@@ -153,27 +165,7 @@ namespace Xwt.Mac
 		{
 		}
 
-		public bool FullScreen {
-			get {
-				if (MacSystemInformation.OsVersion < MacSystemInformation.Lion)
-					return false;
-
-				return (StyleMask & NSWindowStyle.FullScreenWindow) != 0;
-
-			}
-			set {
-				if (MacSystemInformation.OsVersion < MacSystemInformation.Lion)
-					return;
-
-				if (value != ((StyleMask & NSWindowStyle.FullScreenWindow) != 0)) {
-					//HACK: workaround for MonoMac not allowing null as argument
-					MonoMac.ObjCRuntime.Messaging.void_objc_msgSend_IntPtr (
-						Handle,
-						MonoMac.ObjCRuntime.Selector.GetHandle ("toggleFullScreen:"),
-						IntPtr.Zero);
-				}			
-			}
-		}
+		private Rectangle cachedRestoreBounds;
 
 		public WindowState WindowState {
 			get {
@@ -203,7 +195,9 @@ namespace Xwt.Mac
 					if(this.IsMiniaturized) {
 						this.Deminiaturize(this);
 					}
-					this.ToggleFullScreen(this);
+					if(!this.ContentView.IsInFullscreenMode) {
+						this.ToggleFullScreen(this);
+					}
 					break;
 				case WindowState.Maximized:
 					if(this.ContentView.IsInFullscreenMode) {
@@ -230,6 +224,12 @@ namespace Xwt.Mac
 				default:
 					throw new InvalidOperationException("Invalid window state: " + value);
 				}
+			}
+		}
+			
+		public Rectangle RestoreBounds {
+			get {
+				return cachedRestoreBounds;
 			}
 		}
 
