@@ -26,36 +26,46 @@
 
 using System;
 using System.Windows;
-using SWC = System.Windows.Controls;
 using Xwt.Backends;
-using mshtml;
+using System.Windows.Navigation;
+using System.Windows.Controls;
+using System.Reflection;
 
 namespace Xwt.WPFBackend
 {
 	public class WebViewBackend : WidgetBackend, IWebViewBackend
 	{
-		string url;
+		private WebBrowser webBrowser;
+		private string url;
+		private bool scriptErrorsSuppressed = false;
 
 		public WebViewBackend ()
 		{
-			Widget = new SWC.WebBrowser ();
-			((SWC.WebBrowser)Widget).LoadCompleted += WebViewBackend_LoadCompleted;
+			webBrowser = new WebBrowser ();
+			Widget = webBrowser;
+
+			webBrowser.LoadCompleted += WebBrowser_LoadCompleted;
 		}
 
-		void WebViewBackend_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e) {
-			string DisableScriptError = "window.onerror = function() {return true;} ";
-			HTMLDocument doc2 = (HTMLDocument)((SWC.WebBrowser)Widget).Document;
-			IHTMLScriptElement scriptErrorSuppressed = (IHTMLScriptElement)doc2.createElement("SCRIPT");
-			scriptErrorSuppressed.type = "text/javascript";
-			scriptErrorSuppressed.text = DisableScriptError;
-			IHTMLElementCollection nodes = doc2.getElementsByTagName("head");
-			foreach (IHTMLElement elem in nodes) {
-				HTMLHeadElement head = (HTMLHeadElement)elem;
-				head.appendChild((IHTMLDOMNode)scriptErrorSuppressed);
+		private void WebBrowser_LoadCompleted(object sender, NavigationEventArgs e) {
+			if(!scriptErrorsSuppressed) {
+				SupressScriptErrors();
+				scriptErrorsSuppressed = true;
 			}
 		}
 
-		internal WebViewBackend (SWC.WebBrowser browser)
+		private void SupressScriptErrors() {
+			FieldInfo field = typeof(WebBrowser).GetField("_axIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
+			if(field != null) {
+				object axIWebBrowser2 = field.GetValue(webBrowser);
+				if(axIWebBrowser2 != null) {
+					// The property IWebBrowser2:Silent specifies whether the browser control shows script errors in dialogs or not. Set it to true.
+					axIWebBrowser2.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, axIWebBrowser2, new object[] { true });
+				}
+			}
+		}
+
+		internal WebViewBackend (WebBrowser browser)
 		{
 			Widget = browser;
 		}
@@ -64,10 +74,9 @@ namespace Xwt.WPFBackend
 			get { return url; }
 			set {
 				url = value;
-				((SWC.WebBrowser)Widget).Navigate (url);
+				webBrowser.Navigate (url);
 			}
 		}
 	}
-
 }
 
