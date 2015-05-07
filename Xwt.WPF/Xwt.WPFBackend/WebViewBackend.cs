@@ -39,10 +39,10 @@ namespace Xwt.WPFBackend
 		private WebBrowser webBrowser;
 		private string url;
 		private bool scriptErrorsSuppressed = false;
-		SWC.WebBrowser view;
+		WebBrowser view;
 		bool enableNavigatingEvent, enableLoadingEvent, enableLoadedEvent, enableTitleChangedEvent;
 
-		public WebViewBackend () : this (new SWC.WebBrowser ())
+		public WebViewBackend () : this (new WebBrowser ())
 		{
 			webBrowser = new WebBrowser ();
 			Widget = webBrowser;

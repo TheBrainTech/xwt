@@ -53,14 +53,15 @@ namespace Xwt.WPFBackend
 			get; set;
 		}
 
+		Border border;
 		Grid grid;
 
 		public Xwt.Drawing.Color BackgroundColor {
 			get {
-				return Border.Background.ToXwtColor ();
+				return border.Background.ToXwtColor ();
 			}
 			set {
-				Border.Background = new SolidColorBrush (value.ToWpfColor ());
+				border.Background = new SolidColorBrush (value.ToWpfColor ());
 			}
 		}
 
@@ -146,7 +147,7 @@ namespace Xwt.WPFBackend
 		public void Show (Xwt.Popover.Position orientation, Xwt.Widget reference, Xwt.Rectangle positionRect, Widget child)
 		{
 			ActualPosition = orientation;
-			Border.Child = (System.Windows.FrameworkElement)Context.Toolkit.GetNativeWidget (child);
+			border.Child = (System.Windows.FrameworkElement)Context.Toolkit.GetNativeWidget (child);
 			NativeWidget.CustomPopupPlacementCallback = (popupSize, targetSize, offset) => {
 				System.Windows.Point location;
 				if (ActualPosition == Popover.Position.Top)
@@ -164,14 +165,14 @@ namespace Xwt.WPFBackend
 
 		void NativeWidget_Closed (object sender, EventArgs e)
 		{
-			Border.Child = null;
+			border.Child = null;
 			EventSink.OnClosed ();
 		}
 
 		public void Hide ()
 		{
 			NativeWidget.IsOpen = false;
-			Border.Child = null;
+			border.Child = null;
 		}
 
 		public void Dispose ()
