@@ -133,6 +133,11 @@ namespace Xwt
 			}
 		}
 
+		public Color BackgroundColor {
+			get { return Backend.BackgroundColor; }
+			set { Backend.BackgroundColor = value; }
+		}
+
 		void UpdatePadding ()
 		{
 		}

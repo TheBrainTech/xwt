@@ -45,7 +45,7 @@ namespace Xwt
 		Point location;
 		Size size;
 		bool pendingReallocation;
-        Image icon;
+		Image icon;
 		WindowFrame transientFor;
 		
 		protected class WindowBackendHost: BackendHost<WindowFrame,IWindowFrameBackend>, IWindowFrameEventSink
@@ -203,10 +203,10 @@ namespace Xwt
 			set { Backend.Title = value; }
 		}
 
-        public Image Icon {
-            get { return icon; }
-			set { icon = value; Backend.SetIcon (icon != null ? icon.ImageDescription : ImageDescription.Null); }
-        }
+		public Image Icon {
+			get { return icon; }
+			set { icon = value; Backend.SetIcon (icon != null ? icon.GetImageDescription (BackendHost.ToolkitEngine) : ImageDescription.Null); }
+		}
 		
 		public bool Decorated {
 			get { return Backend.Decorated; }
@@ -234,6 +234,12 @@ namespace Xwt
 		public bool Visible {
 			get { return Backend.Visible; }
 			set { Backend.Visible = value; }
+		}
+
+		[DefaultValue (true)]
+		public bool Sensitive {
+			get { return Backend.Sensitive; }
+			set { Backend.Sensitive = value; }
 		}
 
 		public double Opacity {

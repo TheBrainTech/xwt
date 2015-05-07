@@ -72,7 +72,7 @@ namespace Xwt.WPFBackend
 			byte[] pixelData = new byte[stride * height];
 			bitmapImage.CopyPixels (pixelData, stride, 0);
 
-			return BitmapSource.Create (width, height, dpi, dpi, bitmapImage.Format, null, pixelData, stride);
+			return BitmapSource.Create (width, height, dpi, dpi, bitmapImage.Format, bitmapImage.Palette, pixelData, stride);
 		}
 
 		public override object CreateCustomDrawn (ImageDrawCallback drawCallback)
@@ -458,6 +458,9 @@ namespace Xwt.WPFBackend
 					dc.PushOpacity (idesc.Alpha);
 
 				var f = GetBestFrame (actx, scaleFactor, idesc.Size.Width, idesc.Size.Height, false);
+				var bmpImage = f as BitmapSource;
+				if (bmpImage != null && (bmpImage.PixelHeight != idesc.Size.Height || bmpImage.PixelWidth != idesc.Size.Width))
+					f = new TransformedBitmap (bmpImage, new ScaleTransform (idesc.Size.Width / bmpImage.PixelWidth, idesc.Size.Height / bmpImage.PixelHeight));
 				dc.DrawImage (f, new Rect (x, y, idesc.Size.Width, idesc.Size.Height));
 
 				if (idesc.Alpha < 1)

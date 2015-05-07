@@ -30,25 +30,37 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Reflection;
 using Xwt.Backends;
+using System.Threading;
 
 namespace Xwt
 {
+	/// <summary>
+	/// The base class for all Xwt components.
+	/// </summary>
 	[System.ComponentModel.DesignerCategory ("Code")]
-	public abstract class XwtComponent : Component, IFrontend
+	public abstract class XwtComponent : Component, IFrontend, ISynchronizeInvoke
 	{
 		BackendHost backendHost;
 		
 		public XwtComponent ()
 		{
 			backendHost = CreateBackendHost ();
-			backendHost.Parent = this;
+			backendHost.Parent = this; 
 		}
 		
+		/// <summary>
+		/// Creates the backend host.
+		/// </summary>
+		/// <returns>The backend host.</returns>
 		protected virtual BackendHost CreateBackendHost ()
 		{
 			return new BackendHost ();
 		}
 
+		/// <summary>
+		/// Gets the backend host.
+		/// </summary>
+		/// <value>The backend host.</value>
 		protected BackendHost BackendHost {
 			get { return backendHost; }
 		}
@@ -61,90 +73,123 @@ namespace Xwt
 			get { return backendHost.Backend; }
 		}
 
+		/// <summary>
+		/// A value, that can be used to identify this component
+		/// </summary>
+		public object Tag { get; set; }
+		
+		/// <summary>
+		/// Verifies that the constructor is not called from a sublass.
+		/// </summary>
+		/// <param name="t">This constructed base instance.</param>
+		/// <typeparam name="T">The base type to verify the constructor for.</typeparam>
 		internal void VerifyConstructorCall<T> (T t)
 		{
 			if (GetType () != typeof(T))
 				throw new InvalidConstructorInvocation (typeof(T));
 		}
+
+		#region ISynchronizeInvoke implementation
+
+		IAsyncResult ISynchronizeInvoke.BeginInvoke (Delegate method, object[] args)
+		{
+			var asyncResult = new AsyncInvokeResult ();
+			asyncResult.Invoke (method, args);
+			return asyncResult;
+		}
+
+		object ISynchronizeInvoke.EndInvoke (IAsyncResult result)
+		{
+			var xwtResult = result as AsyncInvokeResult;
+			if (xwtResult != null) {
+				xwtResult.AsyncResetEvent.Wait ();
+				if (xwtResult.Exception != null)
+					throw xwtResult.Exception;
+			} else {
+				result.AsyncWaitHandle.WaitOne ();
+			}
+
+			return result.AsyncState;
+		}
+
+		object ISynchronizeInvoke.Invoke (Delegate method, object[] args)
+		{
+			return ((ISynchronizeInvoke)this).EndInvoke (((ISynchronizeInvoke)this).BeginInvoke (method, args));
+		}
+
+		bool ISynchronizeInvoke.InvokeRequired {
+			get {
+				return Application.UIThread != Thread.CurrentThread;
+			}
+		}
+
+		#endregion
 	}
-	
-	class EventUtil
+
+	class AsyncInvokeResult : IAsyncResult
 	{
-		static Dictionary<Type, List<EventMap>> overridenEventMap = new Dictionary<Type, List<EventMap>> ();
-		static Dictionary<Type, HashSet<object>> overridenEvents = new Dictionary<Type, HashSet<object>> ();
-		
-		static EventUtil()
+		ManualResetEventSlim asyncResetEvent = new ManualResetEventSlim (false);
+
+		public AsyncInvokeResult ()
 		{
-			DiscoverMappedEvents();
+			this.asyncResetEvent = new ManualResetEventSlim ();
 		}
 
-		private static void DiscoverMappedEvents() {
-			Type mappedEventAttributeType = typeof(MappedEventAttribute);
-			Type xwtComponentType = typeof(XwtComponent);
-
-			List<Type> targetTypes = new List<Type>();
-			Type[] allTypes = Assembly.GetAssembly(xwtComponentType).GetTypes();
-
-			foreach (Type type in allTypes) {
-				if (type.IsSubclassOf(xwtComponentType)) {
-					targetTypes.Add(type);
+		internal void Invoke (Delegate method, object[] args)
+		{
+			Application.Invoke (delegate {
+				try {
+					AsyncState = method.DynamicInvoke(args);
+				} catch (Exception ex){
+					Exception = ex;
+				} finally {
+					IsCompleted = true;
+					asyncResetEvent.Set ();
 				}
+			});
+		}
+
+		#region IAsyncResult implementation
+
+		public object AsyncState {
+			get;
+			private set;
+		}
+
+		public Exception Exception {
+			get;
+			private set;
+		}
+
+		internal ManualResetEventSlim AsyncResetEvent {
+			get {
+				return asyncResetEvent;
 			}
+		}
 
-			foreach (Type type in targetTypes) {
-				MethodInfo[] methodInfoCollection = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+		public WaitHandle AsyncWaitHandle {
+			get {
+				if (asyncResetEvent == null) {
+					asyncResetEvent = new ManualResetEventSlim(false);
 
-				foreach (MethodInfo methodInfo in methodInfoCollection) {
-					MappedEventAttribute attribute = (MappedEventAttribute)Attribute.GetCustomAttribute(methodInfo, mappedEventAttributeType, true);
-
-					if (attribute != null) {
-						MapEvent(attribute.EventId, type, methodInfo.Name);
-					}
+					if (IsCompleted)
+						asyncResetEvent.Set();
 				}
+				return asyncResetEvent.WaitHandle;
 			}
 		}
 
-		public static void MapEvent (object eventId, Type type, string methodName)
-		{
-			List<EventMap> events;
-			if (!overridenEventMap.TryGetValue (type, out events)) {
-				events = new List<EventMap> ();
-				overridenEventMap [type] = events;
-			}
-			EventMap emap = new EventMap () {
-				MethodName = methodName,
-				EventId = eventId
-			};
-			events.Add (emap);
+		public bool CompletedSynchronously { get { return false; } }
+
+
+		public bool IsCompleted {
+			get;
+			private set;
 		}
-		
-		public static HashSet<object> GetDefaultEnabledEvents (Type type, Func<IEnumerable<object>> customEnabledEvents)
-		{
-			HashSet<object> defaultEnabledEvents;
-			if (!overridenEvents.TryGetValue (type, out defaultEnabledEvents)) {
-				defaultEnabledEvents = new HashSet<object> ();
-				Type t = type;
-				while (t != typeof(Component)) {
-					List<EventMap> emaps;
-					if (overridenEventMap.TryGetValue (t, out emaps)) {
-						foreach (var emap in emaps) {
-							if (IsOverriden (emap, type, t))
-								defaultEnabledEvents.Add (emap.EventId);
-						}
-					}
-					t = t.BaseType;
-				}
-				defaultEnabledEvents.UnionWith (customEnabledEvents ());
-				overridenEvents [type] = defaultEnabledEvents;
-			}
-			return defaultEnabledEvents;
-		}
-		
-		static bool IsOverriden (EventMap emap, Type thisType, Type t)
-		{
-			var method = thisType.GetMethod (emap.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-			return method.DeclaringType != t;
-		}
+
+		#endregion
+
+
 	}
 
 	public class MappedEventAttribute : Attribute

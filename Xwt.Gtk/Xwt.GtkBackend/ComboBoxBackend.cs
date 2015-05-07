@@ -25,6 +25,10 @@
 // THE SOFTWARE.
 using System;
 using Xwt.Backends;
+using Gtk;
+#if XWT_GTK3
+using TreeModel = Gtk.ITreeModel;
+#endif
 
 
 namespace Xwt.GtkBackend
@@ -37,6 +41,7 @@ namespace Xwt.GtkBackend
 
 		public override void Initialize ()
 		{
+			//NeedsEventBox = false;  // TODO: needs fix: no events with or without event box
 			Widget = (Gtk.ComboBox) CreateWidget ();
 			if (Widget.Cells.Length == 0) {
 				var cr = new Gtk.CellRendererText ();
@@ -60,8 +65,8 @@ namespace Xwt.GtkBackend
 		protected new IComboBoxEventSink EventSink {
 			get { return (IComboBoxEventSink)base.EventSink; }
 		}
-		
-		bool IsRowSeparator (Gtk.TreeModel model, Gtk.TreeIter iter)
+
+		bool IsRowSeparator (TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.TreePath path = model.GetPath (iter);
 			bool res = false;
@@ -101,7 +106,7 @@ namespace Xwt.GtkBackend
 		{
 			Widget.Clear ();
 			foreach (var v in views)
-				CellUtil.CreateCellRenderer (ApplicationContext, this, null, v, Widget.Model);
+				CellUtil.CreateCellRenderer (ApplicationContext, Frontend, this, null, v);
 		}
 
 		public void SetSource (IListDataSource source, IBackend sourceBackend)
@@ -144,6 +149,43 @@ namespace Xwt.GtkBackend
 		{
 			Widget.SetCellDataFunc (cr, dataFunc);
 		}
+
+		Rectangle ICellRendererTarget.GetCellBounds (object target, Gtk.CellRenderer cr, Gtk.TreeIter iter)
+		{
+			return new Rectangle ();
+		}
+
+		Rectangle ICellRendererTarget.GetCellBackgroundBounds (object target, Gtk.CellRenderer cr, Gtk.TreeIter iter)
+		{
+			return new Rectangle ();
+		}
+
+		public virtual void SetCurrentEventRow (string path)
+		{
+		}
+
+		Gtk.Widget ICellRendererTarget.EventRootWidget {
+			get { return Widget; }
+		}
+		TreeModel ICellRendererTarget.Model {
+			get { return Widget.Model; }
+		}
+
+		Gtk.TreeIter ICellRendererTarget.PressedIter { get; set; }
+
+		CellViewBackend ICellRendererTarget.PressedCell { get; set; }
+
+		public bool GetCellPosition (Gtk.CellRenderer r, int ex, int ey, out int cx, out int cy, out Gtk.TreeIter it)
+		{
+			cx = cy = 0;
+			it = Gtk.TreeIter.Zero;
+			return false;
+		}
+
+		public void QueueDraw (object target, Gtk.TreeIter iter)
+		{
+		}
+
 		#endregion
 	}
 }

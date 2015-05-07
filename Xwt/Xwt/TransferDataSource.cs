@@ -51,7 +51,7 @@ namespace Xwt
 		/// <remarks>
 		/// This callback can be used in combination with the AddType method to
 		/// generate the data on demand. In some scenarios, the drop/paste
-		/// side of a drag&drop or clipboard operation can decide if a drop/paste
+		/// side of a drag&amp;drop or clipboard operation can decide if a drop/paste
 		/// is allowed or not by checking the available data type in this
 		/// data source. Once the operation is accepted, the DataRequestCallback
 		/// callback will be invoked to get the data for the type.
@@ -80,7 +80,7 @@ namespace Xwt
 		/// <remarks>
 		/// This method can be used in combination with DataRequestCallback to
 		/// generate the data on demand. In some scenarios, the drop/paste
-		/// side of a drag&drop or clipboard operation can decide if a drop/paste
+		/// side of a drag&amp;drop or clipboard operation can decide if a drop/paste
 		/// is allowed or not by checking the available data type in this
 		/// data source. Once the operation is accepted, the DataRequestCallback
 		/// callback will be invoked to get the data for the type.
@@ -99,7 +99,7 @@ namespace Xwt
 		/// <remarks>
 		/// This method can be used in combination with DataRequestCallback to
 		/// generate the data on demand. In some scenarios, the drop/paste
-		/// side of a drag&drop or clipboard operation can decide if a drop/paste
+		/// side of a drag&amp;drop or clipboard operation can decide if a drop/paste
 		/// is allowed or not by checking the available data type in this
 		/// data source. Once the operation is accepted, the DataRequestCallback
 		/// callback will be invoked to get the data for the type.
@@ -139,6 +139,11 @@ namespace Xwt
 			return null;
 		}
 		
+		/// <summary>
+		/// Serializes a value to a byte array using <see cref="System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/> .
+		/// </summary>
+		/// <returns>The serialized value.</returns>
+		/// <param name="val">The value to serialize.</param>
 		public static byte[] SerializeValue (object val)
 		{
 			using (MemoryStream ms = new MemoryStream ()) {
@@ -148,6 +153,11 @@ namespace Xwt
 			}
 		}
 		
+		/// <summary>
+		/// Deserializes a value from a byte array.
+		/// </summary>
+		/// <returns>The deserialized value.</returns>
+		/// <param name="data">The byte array containing the serialized value.</param>
 		public static object DeserializeValue (byte[] data)
 		{
 			using (MemoryStream ms = new MemoryStream (data)) {
@@ -157,5 +167,8 @@ namespace Xwt
 		}
 	}
 	
+	/// <summary>
+	/// Data request delegate, returns the data for a specific transfer data type request.
+	/// </summary>
 	public delegate object DataRequestDelegate (TransferDataType type);
 }

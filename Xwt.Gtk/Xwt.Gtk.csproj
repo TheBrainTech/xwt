@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Xwt.GtkBackend</RootNamespace>
@@ -24,7 +22,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -125,10 +123,33 @@
     <Compile Include="Xwt.GtkBackend.CellViews\CustomCellRendererText.cs" />
     <Compile Include="Xwt.GtkBackend.CellViews\CustomCellRendererToggle.cs" />
     <Compile Include="Xwt.GtkBackend.CellViews\CustomCellRendererImage.cs" />
+    <Compile Include="Xwt.GtkBackend.CellViews\Gtk2CellRendererCustom.cs" />
     <Compile Include="Xwt.GtkBackend\ScrollbarBackend.cs" />
     <Compile Include="Xwt.GtkBackend\GtkKeyboardHandler.cs" />
     <Compile Include="Xwt.GtkBackend\Conversion.cs" />
     <Compile Include="Xwt.GtkBackend\GtkPlatformBackend.cs" />
+    <Compile Include="Xwt.GtkBackend\ScrollControlBackend.cs">
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
+    </Compile>
+    <Compile Include="Xwt.GtkBackend.CellViews\CellViewBackend.cs" />
+    <Compile Include="Xwt.GtkBackend\SearchTextEntryBackend.cs" />
+    <Compile Include="Xwt.GtkBackend\Gtk2Extensions.cs" />
+    <Compile Include="Xwt.GtkBackend\Gtk2ViewPort.cs" />
+    <Compile Include="Xwt.GtkBackend\Gtk2DrawingArea.cs" />
+    <Compile Include="Xwt.GtkBackend\WidgetBackendGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\TextEntryBackendGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\PasswordEntryBackendGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\LabelBackendGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\ButtonBackendGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\SpinButtonBackendGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\BoxBackendGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\CanvasBackendGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\HeaderBoxGtk2.cs" />
+    <Compile Include="Xwt.GtkBackend\WebViewBackend.cs" />
+    <Compile Include="Xwt.GtkBackend\GtkWebKitMini.cs" />
+    <Compile Include="Xwt.GtkBackend\Gtk2PopoverWindow.cs" />
+    <Compile Include="Xwt.GtkBackend\ColorSelectorBackend.cs" />
+    <Compile Include="Xwt.GtkBackend\ColorPickerBackend.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -142,5 +163,22 @@
     <None Include="Xwt.Gtk.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="icons\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="icons\light\searchbox-clear-16.png">
+      <LogicalName>searchbox-clear-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\searchbox-clear-16%402x.png">
+      <LogicalName>searchbox-clear-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\searchbox-search-16%402x.png">
+      <LogicalName>searchbox-search-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\searchbox-search-16.png">
+      <LogicalName>searchbox-search-light-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

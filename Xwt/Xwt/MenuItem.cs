@@ -154,7 +154,7 @@ namespace Xwt
 					throw new NotSupportedException ();
 				image = value; 
 				if (!IsSeparator)
-					Backend.SetImage (image != null ? image.ImageDescription : ImageDescription.Null);
+					Backend.SetImage (image != null ? image.GetImageDescription (BackendHost.ToolkitEngine) : ImageDescription.Null);
 			}
 		}
 		

@@ -78,25 +78,58 @@ namespace Samples
 				                          c3.SelectedText);
 			};
 			PackStart (box);
-			
-			box = new HBox ();
+
 			var c4 = new ComboBoxEntry ();
-			var la4 = new Label ();
-			box.PackStart (c4);
-			box.PackStart (la4);
+			var la4 = new Label ("Selected text: ");
+			PackStart (c4);
+			PackStart (la4);
 			
 			c4.Items.Add (1, "One");
 			c4.Items.Add (2, "Two");
 			c4.Items.Add (3, "Three");
 			c4.TextEntry.PlaceholderText = "This is an entry";
-			c4.TextEntry.Changed += delegate {
-				la4.Text = "Selected text: " + c4.TextEntry.Text;
+			c4.TextEntry.SelectionChanged += delegate {
+				la4.Text = "Selected text: " + c4.TextEntry.SelectedText;
 			};
-			PackStart (box);
+
+			HBox selBox = new HBox ();
+			Label las = new Label ("Selection:");
+			selBox.PackStart (las);
+			Button selReplace = new Button ("Replace");
+			selReplace.Clicked += delegate {
+				c4.TextEntry.SelectedText = "[TEST]";
+			};
+			selBox.PackEnd (selReplace);
+			Button selAll = new Button ("Select all");
+			selAll.Clicked += delegate {
+				c4.TextEntry.SelectionStart = 0;
+				c4.TextEntry.SelectionLength = c4.TextEntry.Text.Length;
+			};
+			selBox.PackEnd (selAll);
+			Button selPlus = new Button ("+");
+			selPlus.Clicked += delegate {
+				c4.TextEntry.SelectionLength++;
+			};
+			selBox.PackEnd (selPlus);
+			Button selRight = new Button (">");
+			selRight.Clicked += delegate {
+				c4.TextEntry.SelectionStart++;
+			};
+			selBox.PackEnd (selRight);
+			PackStart (selBox);
+
+			c4.TextEntry.SelectionChanged += delegate {
+				las.Text = "Selection: " + c4.TextEntry.CursorPosition + " - " + c4.TextEntry.SelectionStart + " Length: " + c4.TextEntry.SelectionLength;
+			};
+
 
 			var c5 = new ComboBoxEntry ();
 			c5.TextEntry.TextAlignment = Alignment.Center;
-			c5.TextEntry.Text = "centered text";
+			c5.TextEntry.Text = "centered text with red background";
+			c5.BackgroundColor = Colors.Red;
+			c5.Items.Add (1, "One");
+			c5.Items.Add (2, "Two");
+			c5.Items.Add (3, "Three");
 			PackStart (c5);
 
 			// A complex combobox

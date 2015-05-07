@@ -34,17 +34,54 @@ namespace Samples
 		{
 			TextEntry te1 = new TextEntry ();
 			PackStart (te1);
+			te1.BackgroundColor = Xwt.Drawing.Colors.Red;
 			
 			Label la = new Label ();
 			PackStart (la);
 			te1.Changed += delegate {
 				la.Text = "Text: " + te1.Text;
 			};
+
+			HBox selBox = new HBox ();
+
+			Label las = new Label ("Selection:");
+			selBox.PackStart (las);
+			Button selReplace = new Button ("Replace");
+			selReplace.Clicked += delegate {
+				te1.SelectedText = "[TEST]";
+			};
+			selBox.PackEnd (selReplace);
+			Button selAll = new Button ("Select all");
+			selAll.Clicked += delegate {
+				te1.SelectionStart = 0;
+				te1.SelectionLength = te1.Text.Length;
+			};
+			selBox.PackEnd (selAll);
+			Button selPlus = new Button ("+");
+			selPlus.Clicked += delegate {
+				te1.SelectionLength++;
+			};
+			selBox.PackEnd (selPlus);
+			Button selRight = new Button (">");
+			selRight.Clicked += delegate {
+				te1.SelectionStart++;
+			};
+			selBox.PackEnd (selRight);
+			PackStart (selBox);
+
+			te1.SelectionChanged += delegate {
+				las.Text = "Selection: (" + te1.CursorPosition + " <-> " + te1.SelectionStart + " + " + te1.SelectionLength + ") " + te1.SelectedText;
+			};
 			
 			PackStart (new Label ("Entry with small font"));
 			TextEntry te2 = new TextEntry ();
 			te2.Font = te2.Font.WithScaledSize (0.5);
+			te2.PlaceholderText = "Placeholder text";
 			PackStart (te2);
+
+			PackStart (new TextEntry { Text = "Entry with custom height", MinHeight = 50 });
+
+			PackStart (new TextEntry { Text = "Readonly text", ReadOnly = true });
 			
 			PackStart (new Label ("Entry with placeholder text"));
 			TextEntry te3 = new TextEntry ();
@@ -56,10 +93,38 @@ namespace Samples
 			te4.ShowFrame = false;
 			PackStart (te4);
 
+			PackStart (new Label ("Entry with custom frame"));
+			FrameBox teFrame = new FrameBox ();
+			teFrame.BorderColor = Xwt.Drawing.Colors.Red;
+			teFrame.BorderWidth = 1;
+			teFrame.Content = new TextEntry () { ShowFrame = false };
+			PackStart (teFrame);
+
 			TextEntry te5 = new TextEntry ();
 			te5.Text = "I should be centered!";
 			te5.TextAlignment = Alignment.Center;
+			te5.PlaceholderText = "Placeholder text";
 			PackStart (te5);
+
+			TextEntry te6 = new TextEntry ();
+			te6.Text = "I should have" + Environment.NewLine + "multiple lines!";
+			te6.PlaceholderText = "Placeholder text";
+			te6.MultiLine = true;
+			te6.MinHeight = 40;
+			PackStart (te6);
+
+			try {
+				SearchTextEntry te7 = new SearchTextEntry ();
+				te7.PlaceholderText = "Type to search ...";
+				PackStart (te7);
+
+				SearchTextEntry te8 = new SearchTextEntry ();
+				te8.PlaceholderText = "I should have no frame";
+				te8.ShowFrame = false;
+				PackStart (te8);
+			} catch (InvalidOperationException ex) {
+				Console.WriteLine (ex);
+			}
 		}
 	}
 }

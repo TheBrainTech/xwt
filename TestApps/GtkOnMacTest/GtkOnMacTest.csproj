@@ -7,8 +7,6 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>GtkOnMacTest</RootNamespace>
     <AssemblyName>GtkOnMacTest</AssemblyName>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,8 +28,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral">
-      <Private>True</Private>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\i386\full\Xamarin.Mac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -42,14 +40,6 @@
     <ProjectReference Include="..\Samples\Samples.csproj">
       <Project>{88C04B85-B69B-47B4-AB9F-64F6DD4E0897}</Project>
       <Name>Samples</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xwt.Gtk\Xwt.Gtk.csproj">
-      <Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
-      <Name>Xwt.Gtk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xwt.Gtk.Mac\Xwt.Gtk.Mac.csproj">
-      <Project>{E95833C9-90AA-4366-9262-0A1BED148249}</Project>
-      <Name>Xwt.Gtk.Mac</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>

@@ -28,6 +28,7 @@ using System;
 using Xwt.Backends;
 
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Xwt
 {
@@ -37,10 +38,21 @@ namespace Xwt
 		static ToolkitEngineBackend engine;
 		static UILoop mainLoop;
 
+		/// <summary>
+		/// Gets the task scheduler of the current engine.
+		/// </summary>
+		/// <value>The toolkit specific task scheduler.</value>
+		/// <remarks>
+		/// The Xwt task scheduler marshals every Task to the Xwt GUI thread without concurrency.
+		/// </remarks>
 		public static TaskScheduler UITaskScheduler {
 			get { return Toolkit.CurrentEngine.Scheduler; }
 		}
 
+		/// <summary>
+		/// The main GUI loop.
+		/// </summary>
+		/// <value>The main loop.</value>
 		public static UILoop MainLoop {
 			get { return mainLoop; }
 		}
@@ -50,22 +62,35 @@ namespace Xwt
 			private set;
 		}
 
+		/// <summary>
+		/// Initialize Xwt with the best matching toolkit for the current platform.
+		/// </summary>
 		public static void Initialize ()
 		{
 			if (engine != null)
 				return;
 			Initialize (null);
 		}
-		
+
+		/// <summary>
+		/// Initialize Xwt with the specified type.
+		/// </summary>
+		/// <param name="type">The toolkit type.</param>
 		public static void Initialize (ToolkitType type, bool isGuest = false)
 		{
 			Initialize (Toolkit.GetBackendType (type), isGuest);
+			toolkit.Type = type;
 		}
 
+		/// <summary>
+		/// Initialize Xwt with the specified backend type.
+		/// </summary>
+		/// <param name="backendType">The <see cref="Type.FullName"/> of the backend type.</param>
 		public static void Initialize (string backendType, bool isGuest = false)
 		{
 			if (backendType == null)
 				throw new ArgumentNullException ("backendType");
+			
 			if (engine != null)
 				return;
 
@@ -79,12 +104,20 @@ namespace Xwt
 			toolkit.EnterUserCode ();
 		}
 		
+		/// <summary>
+		/// Initializes Xwt as guest, embedded into an other existing toolkit.
+		/// </summary>
+		/// <param name="type">The toolkit type.</param>
 		public static void InitializeAsGuest (ToolkitType type)
 		{
 			Initialize (type, true);
 			toolkit.ExitUserCode (null);
 		}
 		
+		/// <summary>
+		/// Initializes Xwt as guest, embedded into an other existing toolkit.
+		/// </summary>
+		/// <param name="backendType">The <see cref="Type.FullName"/> of the backend type.</param>
 		public static void InitializeAsGuest (string backendType)
 		{
 			if (backendType == null)
@@ -93,22 +126,40 @@ namespace Xwt
 			toolkit.ExitUserCode (null);
 		}
 
+		/// <summary>
+		/// Runs the main Xwt GUI thread.
+		/// </summary>
+		/// <remarks>
+		/// Blocks until the main GUI loop exits. Use <see cref="Application.Exit"/>
+		/// to stop the Xwt application.
+		/// </remarks>
 		public static void Run ()
 		{
+			if (XwtSynchronizationContext.AutoInstall)
+			if (SynchronizationContext.Current == null || 
+			    (!((engine.IsGuest) || (SynchronizationContext.Current is XwtSynchronizationContext))))
+				SynchronizationContext.SetSynchronizationContext (new XwtSynchronizationContext ());
+
 			toolkit.InvokePlatformCode (delegate {
 				engine.RunApplication ();
 			});
 		}
 		
+		/// <summary>
+		/// Exits the Xwt application.
+		/// </summary>
 		public static void Exit ()
 		{
 			toolkit.InvokePlatformCode (delegate {
 				engine.ExitApplication ();
 			});
+
+			if (SynchronizationContext.Current is XwtSynchronizationContext)
+				XwtSynchronizationContext.Uninstall ();
 		}
 
 		/// <summary>
-		/// Releases all resource used by the application
+		/// Releases all resources used by the application
 		/// </summary>
 		/// <remarks>This method must be called before the application process ends</remarks>
 		public static void Dispose ()
@@ -202,11 +253,20 @@ namespace Xwt
 			return t;
 		}
 
+		/// <summary>
+		/// Create a toolkit specific status icon.
+		/// </summary>
+		/// <returns>The status icon.</returns>
 		public static StatusIcon CreateStatusIcon ()
 		{
 			return new StatusIcon ();
 		}
 
+		/// <summary>
+		/// Occurs when an exception is not caught.
+		/// </summary>
+		/// <remarks>Subscribe to handle uncaught exceptions, which could
+		/// otherwise block or stop the application.</remarks>
 		public static event EventHandler<ExceptionEventArgs> UnhandledException;
 		
 		class Timer: IDisposable
@@ -218,6 +278,10 @@ namespace Xwt
 			}
 		}
 
+		/// <summary>
+		/// Notifies about unhandled exceptions using the UnhandledException event.
+		/// </summary>
+		/// <param name="ex">The unhandled Exception.</param>
 		internal static void NotifyException (Exception ex)
 		{
 			var unhandledException = UnhandledException;
@@ -232,6 +296,9 @@ namespace Xwt
 		}
 	}
 
+	/// <summary>
+	/// The UILoop class provides access to the main GUI loop.
+	/// </summary>
 	public class UILoop
 	{
 		Toolkit toolkit;
@@ -241,6 +308,9 @@ namespace Xwt
 			this.toolkit = toolkit;
 		}
 
+		/// <summary>
+		/// Dispatches pending events in the GUI event queue
+		/// </summary>
 		public void DispatchPendingEvents ()
 		{
 			try {
@@ -251,6 +321,11 @@ namespace Xwt
 			}
 		}
 
+		/// <summary>
+		/// Runs an Action after all user handlers have been processed and
+		/// the main GUI loop is about to proceed with its next iteration.
+		/// </summary>
+		/// <param name="action">Action to execute.</param>
 		public void QueueExitAction (Action action)
 		{
 			if (action == null)
@@ -265,7 +340,8 @@ namespace Xwt
 		Gtk = 1,
 		Cocoa = 2,
 		Wpf = 3,
-		XamMac = 4
+		XamMac = 4,
+		Gtk3 = 5,
 	}
 }
 

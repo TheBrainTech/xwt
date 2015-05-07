@@ -74,13 +74,18 @@ namespace Xwt
 			{
 				((TreeView)Parent).OnRowExpanding (new TreeViewRowEventArgs (position));
 			}
-			
+
+			public void OnRowCollapsing (TreePosition position)
+			{
+				((TreeView)Parent).OnRowCollapsing (new TreeViewRowEventArgs (position));
+			}
+
 			public override Size GetDefaultNaturalSize ()
 			{
 				return Xwt.Backends.DefaultNaturalSizes.TreeView;
 			}
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Xwt.TreeView"/> class.
 		/// </summary>
@@ -120,7 +125,25 @@ namespace Xwt
 			get { return Backend.HorizontalScrollPolicy; }
 			set { Backend.HorizontalScrollPolicy = value; }
 		}
-		
+
+		ScrollControl verticalScrollAdjustment;
+		public ScrollControl VerticalScrollControl {
+			get {
+				if (verticalScrollAdjustment == null)
+					verticalScrollAdjustment = new ScrollControl (Backend.CreateVerticalScrollControl ());
+				return verticalScrollAdjustment;
+			}
+		}
+
+		ScrollControl horizontalScrollAdjustment;
+		public ScrollControl HorizontalScrollControl {
+			get {
+				if (horizontalScrollAdjustment == null)
+					horizontalScrollAdjustment = new ScrollControl (Backend.CreateHorizontalScrollControl ());
+				return horizontalScrollAdjustment;
+			}
+		}
+
 		/// <summary>
 		/// Gets the tree columns.
 		/// </summary>
@@ -164,6 +187,12 @@ namespace Xwt
 			set {
 				Backend.HeadersVisible = value;
 			}
+		}
+
+		public GridLines GridLinesVisible
+		{
+			get { return Backend.GridLinesVisible; }
+			set { Backend.GridLinesVisible = value; }
 		}
 		
 		/// <summary>
@@ -221,6 +250,19 @@ namespace Xwt
 		public TreePosition[] SelectedRows {
 			get {
 				return Backend.SelectedRows;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the focused row.
+		/// </summary>
+		/// <value>The row with the keyboard focus.</value>
+		public TreePosition FocusedRow {
+			get {
+				return Backend.FocusedRow;
+			}
+			set {
+				Backend.FocusedRow = value;
 			}
 		}
 		
@@ -507,6 +549,32 @@ namespace Xwt
 		protected virtual void OnRowCollapsed(TreeViewRowEventArgs a) {
 			if(rowCollapsed != null)
 				rowCollapsed(this, a);
+		}
+
+		/// Raises the row collapsing event.
+		/// </summary>
+		/// <param name="a">The alpha component.</param>
+		[MappedEvent(TreeViewEvent.RowCollapsing)]
+		protected virtual void OnRowCollapsing (TreeViewRowEventArgs a)
+		{
+			if (rowCollapsing != null)
+				rowCollapsing (this, a);
+		}
+
+		EventHandler<TreeViewRowEventArgs> rowCollapsing;
+
+		/// <summary>
+		/// Occurs just before a row is collapsed.
+		/// </summary>
+		public event EventHandler<TreeViewRowEventArgs> RowCollapsing {
+			add {
+				BackendHost.OnBeforeEventAdd (TreeViewEvent.RowCollapsing, rowCollapsing);
+				rowCollapsing += value;
+			}
+			remove {
+				rowCollapsing -= value;
+				BackendHost.OnAfterEventRemove (TreeViewEvent.RowCollapsing, rowCollapsing);
+			}
 		}
 
 		EventHandler<TreeViewRowEventArgs> rowCollapsed;

@@ -91,6 +91,7 @@ namespace Samples
 			AddSample (w, "Paneds", typeof(PanedViews));
 			AddSample (w, "Popover", typeof(PopoverSample));
 			AddSample (w, "RadioButton", typeof (RadioButtonSample));
+			AddSample (w, "SpinButton", typeof (SpinButtonSample));
 			AddSample (w, "Scroll View", typeof(ScrollWindowSample));
 			AddSample (w, "Scrollbar", typeof(ScrollbarSample));
 			AddSample (w, "Slider", typeof (SliderSample));
@@ -114,16 +115,21 @@ namespace Samples
 			AddSample (n, "Custom Drawn Image", typeof (ImageScaling));
 			AddSample (n, "9-patch Image", typeof (Image9Patch));
 			AddSample (n, "Widget Rendering", typeof (WidgetRendering));
-
+			AddSample (n, "Text Input", typeof (TextInput));
 			var wf = AddSample (null, "Widget Features", null);
 			AddSample (wf, "Drag & Drop", typeof(DragDrop));
+			AddSample (wf, "Focus", typeof(WidgetFocus));
 			AddSample (wf, "Widget Events", typeof(WidgetEvents));
 			AddSample (wf, "Opacity", typeof(OpacitySample));
 			AddSample (wf, "Tooltips", typeof(Tooltips));
+			AddSample (wf, "Cursors", typeof(MouseCursors));
 
-			AddSample (null, "Windows", typeof(Windows));
+			var windows = AddSample (null, "Windows", typeof(Windows));
+			AddSample (windows, "Message Dialogs", typeof(MessageDialogs));
 			
 			AddSample (null, "Screens", typeof (ScreensSample));
+
+			AddSample (null, "Multithreading", typeof (MultithreadingSample));
 
 			samplesTree.DataSource = store;
 			
@@ -147,6 +153,8 @@ namespace Samples
 		void HandleCloseRequested (object sender, CloseRequestedEventArgs args)
 		{
 			args.AllowClose = MessageDialog.Confirm ("Samples will be closed", Command.Ok);
+			if (args.AllowClose)
+				Application.Exit ();
 		}
 		
 		protected override void Dispose (bool disposing)

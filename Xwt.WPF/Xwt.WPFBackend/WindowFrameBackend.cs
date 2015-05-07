@@ -169,6 +169,12 @@ namespace Xwt.WPFBackend
 			}
 		}
 
+		bool IWindowFrameBackend.Sensitive
+		{
+			get { return window.IsEnabled; }
+			set { window.IsEnabled = value;	}
+		}
+
 		public double Opacity
 		{
 			get { return window.Opacity; }

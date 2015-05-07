@@ -47,6 +47,7 @@ namespace Xwt.CairoBackend
 
 		struct Data {
 			public double PatternAlpha;
+			public double GlobalAlpha;
 		}
 
 		public CairoContextBackend (double scaleFactor)
@@ -54,7 +55,7 @@ namespace Xwt.CairoBackend
 			ScaleFactor = scaleFactor;
 		}
 
-		public void Dispose ()
+		public virtual void Dispose ()
 		{
 			IDisposable d = Context;
 			if (d != null) {
@@ -70,7 +71,8 @@ namespace Xwt.CairoBackend
 		{
 			Context.Save ();
 			dataStack.Push (new Data () {
-				PatternAlpha = PatternAlpha
+				PatternAlpha = PatternAlpha,
+				GlobalAlpha = GlobalAlpha
 			});
 		}
 
@@ -79,6 +81,7 @@ namespace Xwt.CairoBackend
 			Context.Restore ();
 			var d = dataStack.Pop ();
 			PatternAlpha = d.PatternAlpha;
+			GlobalAlpha = d.GlobalAlpha;
 		}
 	}
 	
@@ -278,7 +281,7 @@ namespace Xwt.CairoBackend
 		
 		public override void DrawTextLayout (object backend, TextLayout layout, double x, double y)
 		{
-			var be = (GtkTextLayoutBackendHandler.PangoBackend)Toolkit.GetBackend (layout);
+			var be = (GtkTextLayoutBackendHandler.PangoBackend)ApplicationContext.Toolkit.GetSafeBackend (layout);
 			var pl = be.Layout;
 			CairoContextBackend ctx = (CairoContextBackend)backend;
 			ctx.Context.MoveTo (x, y);
@@ -365,12 +368,9 @@ namespace Xwt.CairoBackend
 		public override Matrix GetCTM (object backend)
 		{
 			var cb = (CairoContextBackend)backend;
-
 			Cairo.Matrix t = cb.Context.Matrix;
-
-			// Adjust CTM OffsetX, OffsetY for ContextBackend Origin
+			// Adjust CTM X0,Y0 for ContextBackend Origin (ensures that new CTM is Identity Matrix)
 			Matrix ctm = new Matrix (t.Xx, t.Yx, t.Xy, t.Yy, t.X0-cb.Origin.X, t.Y0-cb.Origin.Y);
-
 			return ctm;
 		}
 

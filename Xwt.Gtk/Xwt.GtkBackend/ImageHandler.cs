@@ -268,7 +268,7 @@ namespace Xwt.GtkBackend
 				if (frames != null)
 					return new Size (frames[0].Pixbuf.Width, frames[0].Pixbuf.Height);
 				else
-					return Size.Zero;
+					return new Size (16, 16);
 			}
 		}
 
@@ -404,12 +404,14 @@ namespace Xwt.GtkBackend
 			Gdk.CairoHelper.SetSourcePixbuf (ctx, img, 0, 0);
 
 			#pragma warning disable 618
-			using (var pattern = (Cairo.SurfacePattern)ctx.Source) {
-				if (idesc.Size.Width > img.Width || idesc.Size.Height > img.Height) {
-					// Fixes blur issue when rendering on an image surface
-					pattern.Filter = Cairo.Filter.Fast;
-				} else
-					pattern.Filter = Cairo.Filter.Good;
+			using (var pattern = ctx.Source as Cairo.SurfacePattern) {
+				if (pattern != null) {
+					if (idesc.Size.Width > img.Width || idesc.Size.Height > img.Height) {
+						// Fixes blur issue when rendering on an image surface
+						pattern.Filter = Cairo.Filter.Fast;
+					} else
+						pattern.Filter = Cairo.Filter.Good;
+				}
 			}
 			#pragma warning restore 618
 
@@ -421,7 +423,7 @@ namespace Xwt.GtkBackend
 		}
 	}
 
-	public class ImageBox: Gtk.DrawingArea
+	public class ImageBox: GtkDrawingArea
 	{
 		ImageDescription image;
 		ApplicationContext actx;
@@ -434,14 +436,18 @@ namespace Xwt.GtkBackend
 
 		public ImageBox (ApplicationContext actx)
 		{
-			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
-			WidgetFlags |= Gtk.WidgetFlags.NoWindow;
+			this.SetHasWindow (false);
+			this.SetAppPaintable (true);
 			this.actx = actx;
 		}
 
 		public ImageDescription Image {
 			get { return image; }
-			set { image = value; QueueResize (); }
+			set { 
+				image = value;
+				SetSizeRequest ((int)image.Size.Width, (int)image.Size.Height);
+				QueueResize ();
+			}
 		}
 
 		public float Yalign {
@@ -453,7 +459,7 @@ namespace Xwt.GtkBackend
 			get { return xalign; }
 			set { xalign = value; QueueDraw (); }
 		}
-		
+
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
@@ -463,19 +469,17 @@ namespace Xwt.GtkBackend
 			}
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		protected override bool OnDrawn (Cairo.Context cr)
 		{
 			if (image.IsNull)
 				return true;
 
-			int x = Allocation.X + (int)(((float)Allocation.Width - (float)image.Size.Width) * xalign);
-			int y = Allocation.Y + (int)(((float)Allocation.Height - (float)image.Size.Height) * yalign);
+			int x = (int)(((float)Allocation.Width - (float)image.Size.Width) * xalign);
+			int y = (int)(((float)Allocation.Height - (float)image.Size.Height) * yalign);
 			if (x < 0) x = 0;
 			if (y < 0) y = 0;
-			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-				((GtkImage)image.Backend).Draw (actx, ctx, Util.GetScaleFactor (this), x, y, image);
-				return true;
-			}
+			((GtkImage)image.Backend).Draw (actx, cr, Util.GetScaleFactor (this), x, y, image);
+			return base.OnDrawn (cr);
 		}
 	}
 }

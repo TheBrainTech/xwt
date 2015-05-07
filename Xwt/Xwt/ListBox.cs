@@ -137,6 +137,12 @@ namespace Xwt
 				}
 			}
 		}
+
+		public bool GridLinesVisible
+		{
+			get { return Backend.GridLinesVisible; }
+			set { Backend.GridLinesVisible = value; }
+		}
 		
 		/// <summary>
 		/// Gets or sets the vertical scroll policy.
@@ -221,6 +227,19 @@ namespace Xwt
 				return Backend.SelectedRows;
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the focused row.
+		/// </summary>
+		/// <value>The row with the keyboard focus.</value>
+		public int FocusedRow {
+			get {
+				return Backend.FocusedRow;
+			}
+			set {
+				Backend.FocusedRow = value;
+			}
+		}
 		
 		/// <summary>
 		/// Selects a row.
@@ -262,6 +281,11 @@ namespace Xwt
 		public void UnselectAll ()
 		{
 			Backend.UnselectAll ();
+		}
+
+		public void ScrollToRow (int row)
+		{
+			Backend.ScrollToRow (row);
 		}
 		
 		void HandleModelChanged (object sender, ListRowEventArgs e)

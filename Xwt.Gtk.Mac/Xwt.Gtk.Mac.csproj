@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E95833C9-90AA-4366-9262-0A1BED148249}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Xwt.Gtk.Mac</RootNamespace>
@@ -30,12 +28,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="MonoMac" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Drawing" />
+    <Reference Include="Xamarin.Mac">
+      <HintPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\i386\full\Xamarin.Mac.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -43,6 +43,7 @@
     <Compile Include="WebViewBackend.cs" />
     <Compile Include="GtkMacDesktopBackend.cs" />
     <Compile Include="Carbon.cs" />
+    <Compile Include="GtkMacFontBackendHandler.cs" />
   </ItemGroup>
   <Import Project="..\BuildHelpers.targets" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

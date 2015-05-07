@@ -30,7 +30,7 @@ namespace Xwt.Backends
 {
 	public interface ISaveFileDialogBackend: IBackend
 	{
-		void Initialize (IEnumerable<FileDialogFilter> filters, string title);
+		void Initialize (IEnumerable<FileDialogFilter> filters, bool multiselect, string title);
 
 		/// <summary>
 		/// Gets or sets the title of the dialog

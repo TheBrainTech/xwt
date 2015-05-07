@@ -122,7 +122,7 @@ namespace Xwt
 		{
 			try {
 				running = true;
-				Backend.Initialize (filters, title);
+				Backend.Initialize (filters, false, title);
 				if (!string.IsNullOrEmpty (currentFolder))
 					Backend.CurrentFolder = currentFolder;
 				if (activeFilter != null)
