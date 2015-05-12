@@ -99,12 +99,6 @@ namespace Xwt.Drawing
 				return System.Math.Sqrt (Red * .241 + Green * .691 + Blue * .068);
 			}
 		}
-		
-		public bool IsNearWhite {
-			get {
-				return Red + Green + Blue > 2.9;
-			}
-		}
 
 		HslColor Hsl {
 			get {
