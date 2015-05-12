@@ -110,7 +110,7 @@ namespace Xwt.Mac
 			args.X = p.X;
 			args.Y = p.Y;
 			args.Button = PointerButton.Right;
-			args.MultiplePress = theEvent.ClickCount;
+			args.MultiplePress = (int)theEvent.ClickCount;
 			context.InvokeUserCode (delegate {
 				eventSink.OnButtonPressed (args);
 			});
@@ -123,7 +123,7 @@ namespace Xwt.Mac
 			args.X = p.X;
 			args.Y = p.Y;
 			args.Button = PointerButton.Right;
-			args.MultiplePress = theEvent.ClickCount;
+			args.MultiplePress = (int)theEvent.ClickCount;
 			context.InvokeUserCode (delegate {
 				eventSink.OnButtonReleased (args);
 			});
@@ -136,7 +136,7 @@ namespace Xwt.Mac
 			args.X = p.X;
 			args.Y = p.Y;
 			args.Button = PointerButton.Left;
-			args.MultiplePress = theEvent.ClickCount;
+			args.MultiplePress = (int)theEvent.ClickCount;
 			context.InvokeUserCode (delegate {
 				eventSink.OnButtonPressed (args);
 			});
@@ -148,8 +148,8 @@ namespace Xwt.Mac
 			ButtonEventArgs args = new ButtonEventArgs ();
 			args.X = p.X;
 			args.Y = p.Y;
-			args.Button = (PointerButton) theEvent.ButtonNumber + 1;
-			args.MultiplePress = theEvent.ClickCount;
+			args.Button = (PointerButton) (int)theEvent.ButtonNumber + 1;
+			args.MultiplePress = (int)theEvent.ClickCount;
 			context.InvokeUserCode (delegate {
 				eventSink.OnButtonReleased (args);
 			});

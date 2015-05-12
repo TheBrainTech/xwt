@@ -107,8 +107,8 @@ namespace Xwt.Mac
 			var range = new NSRange (0, attrStr.Length);
 
 			var singleUnderlineStyle = NSNumber.FromInt32 ((int)NSUnderlineStyle.Single);
-			attrStr.AddAttribute (NSAttributedString.ForegroundColorAttributeName, NSColor.Blue, range);
-			attrStr.AddAttribute (NSAttributedString.UnderlineStyleAttributeName, singleUnderlineStyle, range);
+			attrStr.AddAttribute (NSAttributedStringAttributeNames.ForegroundColorAttributeName, NSColor.Blue, range);
+			attrStr.AddAttribute (NSAttributedStringAttributeNames.UnderlineStyleAttributeName, singleUnderlineStyle, range);
 
 			return attrStr;
 		}

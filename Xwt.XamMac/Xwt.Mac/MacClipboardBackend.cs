@@ -32,9 +32,11 @@ using nint = System.Int32;
 using nfloat = System.Single;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
+using Class = MonoMac.ObjCRuntime.Class;
 #else
 using Foundation;
 using AppKit;
+using Class = ObjCRuntime.Class;
 #endif
 
 namespace Xwt.Mac
@@ -92,15 +94,16 @@ namespace Xwt.Mac
 				return false;
 			} else if (type == TransferDataType.Text) {
 				classes = new NSObject[] {
-					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSAttributedString))),
-					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSString)))
+					
+					NSObject.FromObject(new Class(typeof(NSAttributedString))),
+					NSObject.FromObject(new Class(typeof(NSString)))
 				};
 				options = new NSDictionary();
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;
 			} else if (type == TransferDataType.Uri) {
 				//files
-				classes = new NSObject[]{ NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl))) };
+				classes = new NSObject[]{ NSObject.FromObject(new Class(typeof(NSUrl))) };
 				options = NSDictionary.FromObjectAndKey(NSObject.FromObject(NSNumber.FromBoolean(true)), new NSString(type.ToUTI()));
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;

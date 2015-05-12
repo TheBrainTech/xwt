@@ -165,12 +165,12 @@ namespace Xwt.Mac
 				var ci = (CustomImage)handle;
 				ci.DrawInContext (ctx);
 
-				var img = new NSImage (((CGBitmapContext)bmp).ToImage (), new SizeF (pixelWidth, pixelHeight));
+				var img = new NSImage (((CGBitmapContext)bmp).ToImage (), new CGSize (pixelWidth, pixelHeight));
 				var imageData = img.AsTiff ();
 				var imageRep = (NSBitmapImageRep)NSBitmapImageRep.ImageRepFromData (imageData);
 				var im = new NSImage ();
 				im.AddRepresentation (imageRep);
-				im.Size = new SizeF ((float)width, (float)height);
+				im.Size = new CGSize ((float)width, (float)height);
 				bmp.Dispose ();
 				return im;
 			}
@@ -182,7 +182,7 @@ namespace Xwt.Mac
 					var imageRep = (NSBitmapImageRep)NSBitmapImageRep.ImageRepFromData (imageData);
 					var im = new NSImage ();
 					im.AddRepresentation (imageRep);
-					im.Size = new SizeF ((float)width, (float)height);
+					im.Size = new CGSize ((float)width, (float)height);
 					return im;
 				}
 				return handle;
@@ -332,7 +332,7 @@ namespace Xwt.Mac
 
 		internal void DrawInContext (CGContextBackend ctx)
 		{
-			var s = ctx.Size != SizeF.Empty ? ctx.Size : Size;
+			var s = ctx.Size != SizeF.Empty ? ctx.Size : new SizeF ((float)Size.Width, (float)Size.Height);
 			actx.InvokeUserCode (delegate {
 				drawCallback (ctx, new Rectangle (0, 0, s.Width, s.Height));
 			});

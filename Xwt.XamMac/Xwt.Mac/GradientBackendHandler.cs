@@ -33,6 +33,7 @@ using System.Collections.Generic;
 #if MONOMAC
 using nint = System.Int32;
 using nfloat = System.Single;
+using CGPoint = System.Drawing.PointF;
 using MonoMac.CoreGraphics;
 #else
 using CoreGraphics;
@@ -79,9 +80,9 @@ namespace Xwt.Mac
 			ctx.Clip ();
 			using (var cg = new CGGradient (Util.DeviceRGBColorSpace, gradient.Colors.ToArray (), gradient.Stops.ToArray ())) {
 				if (gradient.Linear)
-					ctx.DrawLinearGradient (cg, gradient.Start, gradient.End, CGGradientDrawingOptions.DrawsBeforeStartLocation | CGGradientDrawingOptions.DrawsAfterEndLocation);
+					ctx.DrawLinearGradient (cg, new CGPoint(gradient.Start.X, gradient.Start.Y), new CGPoint(gradient.End.X, gradient.End.Y), CGGradientDrawingOptions.DrawsBeforeStartLocation | CGGradientDrawingOptions.DrawsAfterEndLocation);
 				else
-					ctx.DrawRadialGradient (cg, gradient.Start, gradient.StartRadius, gradient.End, gradient.EndRadius, CGGradientDrawingOptions.DrawsBeforeStartLocation | CGGradientDrawingOptions.DrawsAfterEndLocation);
+					ctx.DrawRadialGradient (cg, new CGPoint(gradient.Start.X, gradient.Start.Y), gradient.StartRadius, new CGPoint(gradient.End.X, gradient.End.Y), gradient.EndRadius, CGGradientDrawingOptions.DrawsBeforeStartLocation | CGGradientDrawingOptions.DrawsAfterEndLocation);
 			}
 			ctx.RestoreState ();
 		}

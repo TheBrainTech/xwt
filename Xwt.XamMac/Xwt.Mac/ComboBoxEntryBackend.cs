@@ -55,7 +55,7 @@ namespace Xwt.Mac
 			ViewObject = new MacComboBox (EventSink, ApplicationContext);
 
 			#if !MONOMAC
-			this.Widget.WillPopup += (object sender, EventArgs e) => {
+			this.Widget.WillPopUp += (object sender, EventArgs e) => {
 				this.IsDropDownOpen = true;
 			};
 

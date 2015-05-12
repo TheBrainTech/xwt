@@ -31,6 +31,8 @@ using Xwt.Drawing;
 #if MONOMAC
 using nint = System.Int32;
 using nfloat = System.Single;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.CoreText;
@@ -154,7 +156,7 @@ namespace Xwt.Mac
 			using (CTFramesetter framesetter = new CTFramesetter (CreateAttributedString (li))) {
 				CGPath path = new CGPath ();
 				bool ellipsize = li.Width.HasValue && li.TextTrimming == TextTrimming.WordElipsis;
-				path.AddRect (new RectangleF (0, 0, li.Width.HasValue && !ellipsize ? li.Width.Value : float.MaxValue, li.Height ?? float.MaxValue));
+				path.AddRect (new CGRect (0, 0, li.Width.HasValue && !ellipsize ? li.Width.Value : float.MaxValue, li.Height ?? float.MaxValue));
 
 				return framesetter.GetFrame (new NSRange (0, li.Text.Length), path, null);
 			}
@@ -195,7 +197,7 @@ namespace Xwt.Mac
 				ctx.TextMatrix = CGAffineTransform.MakeScale (1f, -1f);
 				ctx.TranslateCTM ((float)x, (float)y + li.Font.Ascender);
 				foreach (var line in frame.GetLines ()) {
-					ctx.TextPosition = PointF.Empty;
+					ctx.TextPosition = CGPoint.Empty;
 					if (ellipsize) // we need to create a new CTLine here because the framesetter already truncated the text for the line
 						new CTLine (CreateAttributedString (li, li.Text.Substring ((int)line.StringRange.Location)))
 							.GetTruncatedLine (li.Width.Value, CTLineTruncation.End, ellipsis).Draw (ctx);

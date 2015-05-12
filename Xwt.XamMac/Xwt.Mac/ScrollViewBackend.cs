@@ -67,7 +67,7 @@ namespace Xwt.Mac
 		}
 
 		public void ScrollToPoint(Point point) {
-			(Widget.DocumentView as NSView).ScrollPoint(new System.Drawing.PointF((float)point.X, (float)point.Y));
+			(Widget.DocumentView as NSView).ScrollPoint(new CGPoint((float)point.X, (float)point.Y));
 		}
 
 		protected override Size GetNaturalSize ()
@@ -147,7 +147,7 @@ namespace Xwt.Mac
 
 		public Rectangle VisibleRect {
 			get {
-				System.Drawing.RectangleF rectF = Widget.ContentView.VisibleRect();
+				CGRect rectF = Widget.ContentView.VisibleRect();
 				return new Rectangle(rectF.X, rectF.Y, rectF.Width, rectF.Height);
 			}
 		}
@@ -298,7 +298,7 @@ namespace Xwt.Mac
 			var vr = DocumentVisibleRect ();
 			ratioX = hScroll.PageSize != 0 ? (float)vr.Width / (float)hScroll.PageSize : 1;
 			ratioY = vScroll.PageSize != 0 ? (float)vr.Height / (float)vScroll.PageSize : 1;
-			DocumentView.Frame = new System.Drawing.RectangleF (0, 0, (float)(hScroll.UpperValue - hScroll.LowerValue) * ratioX, (float)(vScroll.UpperValue - vScroll.LowerValue) * ratioY);
+			DocumentView.Frame = new CGRect (0, 0, (float)(hScroll.UpperValue - hScroll.LowerValue) * ratioX, (float)(vScroll.UpperValue - vScroll.LowerValue) * ratioY);
 		}
 	}
 

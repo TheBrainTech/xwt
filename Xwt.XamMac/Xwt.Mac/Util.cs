@@ -53,6 +53,22 @@ using SizeF = System.Drawing.SizeF;
 
 namespace Xwt.Mac
 {
+	public static class NSAttributedStringAttributeNames {
+		public static readonly NSString BackgroundColorAttributeName = (NSString)"NSBackgroundColor";
+
+		public static readonly NSString ForegroundColorAttributeName = (NSString)"NSColor";
+
+		public static readonly NSString ObliquenessAttributeName = (NSString)"NSObliqueness";
+
+		public static readonly NSString FontAttributeName = (NSString)"NSFont";
+
+		public static readonly NSString StrikethroughStyleAttributeName = (NSString)"NSStrikethrough";
+
+		public static readonly NSString UnderlineStyleAttributeName = (NSString)"NSUnderline";
+
+		public static readonly NSString LinkAttributeName = (NSString)"NSLink";
+	}
+
 	public static class Util
 	{
 		public static readonly string DeviceRGBString = NSColorSpace.DeviceRGB.ToString ();
@@ -297,7 +313,7 @@ namespace Xwt.Mac
 			else {
 				img = (NSImage)img.Copy ();
 			}
-			img.Size = new SizeF ((float)idesc.Size.Width, (float)idesc.Size.Height);
+			img.Size = new CGSize ((float)idesc.Size.Width, (float)idesc.Size.Height);
 			return img;
 		}
 
@@ -317,25 +333,25 @@ namespace Xwt.Mac
 				var r = new NSRange (att.StartIndex, att.Count);
 				if (att is BackgroundTextAttribute) {
 					var xa = (BackgroundTextAttribute)att;
-					ns.AddAttribute (NSAttributedString.BackgroundColorAttributeName, xa.Color.ToNSColor (), r);
+					ns.AddAttribute (NSAttributedStringAttributeNames.BackgroundColorAttributeName, xa.Color.ToNSColor (), r);
 				}
 				else if (att is ColorTextAttribute) {
 					var xa = (ColorTextAttribute)att;
-					ns.AddAttribute (NSAttributedString.ForegroundColorAttributeName, xa.Color.ToNSColor (), r);
+					ns.AddAttribute (NSAttributedStringAttributeNames.ForegroundColorAttributeName, xa.Color.ToNSColor (), r);
 				}
 				else if (att is UnderlineTextAttribute) {
 					var xa = (UnderlineTextAttribute)att;
 					int style = xa.Underline ? 0x01 /*NSUnderlineStyleSingle*/ : 0;
-					ns.AddAttribute (NSAttributedString.UnderlineStyleAttributeName, (NSNumber)style, r);
+					ns.AddAttribute (NSAttributedStringAttributeNames.UnderlineStyleAttributeName, (NSNumber)style, r);
 				}
 				else if (att is FontStyleTextAttribute) {
 					var xa = (FontStyleTextAttribute)att;
 					if (xa.Style == FontStyle.Italic) {
 						Messaging.void_objc_msgSend_int_NSRange (ns.Handle, applyFontTraits.Handle, (IntPtr)(long)NSFontTraitMask.Italic, r);
 					} else if (xa.Style == FontStyle.Oblique) {
-						ns.AddAttribute (NSAttributedString.ObliquenessAttributeName, (NSNumber)0.2f, r);
+						ns.AddAttribute (NSAttributedStringAttributeNames.ObliquenessAttributeName, (NSNumber)0.2f, r);
 					} else {
-						ns.AddAttribute (NSAttributedString.ObliquenessAttributeName, (NSNumber)0.0f, r);
+						ns.AddAttribute (NSAttributedStringAttributeNames.ObliquenessAttributeName, (NSNumber)0.0f, r);
 						Messaging.void_objc_msgSend_int_NSRange (ns.Handle, applyFontTraits.Handle, (IntPtr)(long)NSFontTraitMask.Unitalic, r);
 					}
 				}
@@ -346,19 +362,19 @@ namespace Xwt.Mac
 				}
 				else if (att is LinkTextAttribute) {
 					var xa = (LinkTextAttribute)att;
-					ns.AddAttribute (NSAttributedString.LinkAttributeName, new NSUrl (xa.Target.ToString ()), r);
-					ns.AddAttribute (NSAttributedString.ForegroundColorAttributeName, NSColor.Blue, r);
-					ns.AddAttribute (NSAttributedString.UnderlineStyleAttributeName, NSNumber.FromInt32 ((int)NSUnderlineStyle.Single), r);
+					ns.AddAttribute (NSAttributedStringAttributeNames.LinkAttributeName, new NSUrl (xa.Target.ToString ()), r);
+					ns.AddAttribute (NSAttributedStringAttributeNames.ForegroundColorAttributeName, NSColor.Blue, r);
+					ns.AddAttribute (NSAttributedStringAttributeNames.UnderlineStyleAttributeName, NSNumber.FromInt32 ((int)NSUnderlineStyle.Single), r);
 				}
 				else if (att is StrikethroughTextAttribute) {
 					var xa = (StrikethroughTextAttribute)att;
 					int style = xa.Strikethrough ? 0x01 /*NSUnderlineStyleSingle*/ : 0;
-					ns.AddAttribute (NSAttributedString.StrikethroughStyleAttributeName, (NSNumber)style, r);
+					ns.AddAttribute (NSAttributedStringAttributeNames.StrikethroughStyleAttributeName, (NSNumber)style, r);
 				}
 				else if (att is FontTextAttribute) {
 					var xa = (FontTextAttribute)att;
 					var nf = ((FontData)Toolkit.GetBackend (xa.Font)).Font;
-					ns.AddAttribute (NSAttributedString.FontAttributeName, nf, r);
+					ns.AddAttribute (NSAttributedStringAttributeNames.FontAttributeName, nf, r);
 				}
 			}
 			ns.EndEditing ();
@@ -488,7 +504,11 @@ namespace Xwt.Mac
 			// F- keys
 			if((modifierMask & NSEventModifierMask.FunctionKeyMask) != 0) {
 				if((NSKey)key >= NSKey.F1 && (NSKey)key <= NSKey.F10) {
+#if MONOMAC
 					return (Key)((NSKey)key - NSKey.F1 + Key.F1);
+#else
+					return (Key)((NSKey)key - NSKey.F1 + (ulong)Key.F1);
+#endif
 				}
 			}
 			

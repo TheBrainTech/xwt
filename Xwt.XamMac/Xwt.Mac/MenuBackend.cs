@@ -26,10 +26,10 @@
 
 using System;
 using Xwt.Backends;
-using MonoMac.Foundation;
 using System.Collections.Generic;
 
 #if MONOMAC
+using MonoMac.Foundation;
 using nint = System.Int32;
 using nfloat = System.Single;
 using MonoMac.AppKit;

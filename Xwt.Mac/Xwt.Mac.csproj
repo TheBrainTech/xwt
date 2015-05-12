@@ -9,6 +9,8 @@
     <AssemblyName>Xwt.Mac</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseMSBuildEngine>False</UseMSBuildEngine>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -291,12 +293,6 @@
     <Folder Include="Xwt.Mac.CellViews\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xwt\Xwt.csproj">
-      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
-      <Name>Xwt</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\Xwt.XamMac\icons\zoom-in.png">
       <LogicalName>zoom-in.png</LogicalName>
       <Link>icons\zoom-in.png</Link>
@@ -313,5 +309,11 @@
       <LogicalName>zoom-out@2x.png</LogicalName>
       <Link>icons\zoom-out%402x.png</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -30,6 +30,7 @@ using Xwt.Drawing;
 #if MONOMAC
 using nint = System.Int32;
 using nfloat = System.Single;
+using CGRect = System.Drawing.RectangleF;
 using CGSize = System.Drawing.SizeF;
 using MonoMac.AppKit;
 #else
@@ -55,11 +56,11 @@ namespace Xwt.Mac
 			switch (type) {
 			case FrameType.WidgetBox:
 				Widget.BoxType = NSBoxType.NSBoxPrimary;
-				Widget.ContentViewMargins = new System.Drawing.SizeF (5,5);
+				Widget.ContentViewMargins = new CGSize (5,5);
 				break;
 			case FrameType.Custom:
 				Widget.BoxType = NSBoxType.NSBoxCustom;
-				Widget.ContentViewMargins = new System.Drawing.SizeF (0,0);
+				Widget.ContentViewMargins = new CGSize (0,0);
 				break;
 			}
 		}
@@ -87,9 +88,9 @@ namespace Xwt.Mac
 			if (currentChild != null) {
 				var s = ((IViewObject)currentChild).Backend.Frontend.Surface.GetPreferredSize ();
 				var frame = (Frame)Frontend;
-				currentChild.Frame = new System.Drawing.RectangleF (0, 0, (float)s.Width, (float)s.Height);
+				currentChild.Frame = new CGRect (0, 0, (float)s.Width, (float)s.Height);
 				Widget.SizeToFit ();
-				Widget.SetFrameSize (new System.Drawing.SizeF ((float)(Widget.Frame.Width + frame.Padding.HorizontalSpacing), (float)(Widget.Frame.Height + frame.Padding.VerticalSpacing)));
+				Widget.SetFrameSize (new CGSize ((float)(Widget.Frame.Width + frame.Padding.HorizontalSpacing), (float)(Widget.Frame.Height + frame.Padding.VerticalSpacing)));
 			}
 		}
 

@@ -31,6 +31,7 @@ using System.Drawing;
 #if MONOMAC
 using nint = System.Int32;
 using nfloat = System.Single;
+using CGSize = System.Drawing.SizeF;
 using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
 #else
@@ -85,7 +86,7 @@ namespace Xwt.Mac
 		public override object CreateImage (object backend)
 		{
 			var gc = (CGContextBackend)backend;
-			var img = new NSImage (((CGBitmapContext)gc.Context).ToImage (), gc.Size);
+			var img = new NSImage (((CGBitmapContext)gc.Context).ToImage (), new CGSize(gc.Size.Width, gc.Size.Height));
 			var imageData = img.AsTiff ();
 			var imageRep = (NSBitmapImageRep) NSBitmapImageRep.ImageRepFromData (imageData);
 			var im = new NSImage ();

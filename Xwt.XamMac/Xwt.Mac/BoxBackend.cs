@@ -28,11 +28,13 @@ using System;
 using Xwt.Backends;
 
 #if MONOMAC
+using CGRect = System.Drawing.RectangleF;
 using nint = System.Int32;
 using nfloat = System.Single;
 using MonoMac.AppKit;
 #else
 using AppKit;
+using CoreGraphics;
 #endif
 
 namespace Xwt.Mac
@@ -67,7 +69,7 @@ namespace Xwt.Mac
 			for (int n=0; n<widgets.Length; n++) {
 				var w = GetWidget (widgets[n]);
 				var r = rects[n];
-				w.Frame = new System.Drawing.RectangleF((float)r.Left, (float)r.Top, (float)r.Width, (float)r.Height);
+				w.Frame = new CGRect((float)r.Left, (float)r.Top, (float)r.Width, (float)r.Height);
 				w.NeedsDisplay = true;
 			}
 		}

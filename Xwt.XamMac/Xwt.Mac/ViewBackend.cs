@@ -440,7 +440,7 @@ namespace Xwt.Mac
 		
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
 		{
-			var lo = Widget.ConvertPointToBase (new System.Drawing.PointF ((float)widgetCoordinates.X, (float)widgetCoordinates.Y));
+			var lo = Widget.ConvertPointToBase (new CGPoint ((float)widgetCoordinates.X, (float)widgetCoordinates.Y));
 			lo = Widget.Window.ConvertBaseToScreen (lo);
 			return MacDesktopBackend.ToDesktopRect (new CGRect (lo.X, lo.Y, 0, Widget.IsFlipped ? 0 : Widget.Frame.Height)).Location;
 		}
@@ -496,7 +496,7 @@ namespace Xwt.Mac
 			} else {
 				var s = CalcFittingSize ();
 				if (!s.IsZero)
-					Widget.SetFrameSize (new SizeF ((float)s.Width, (float)s.Height));
+					Widget.SetFrameSize (new CGSize ((float)s.Width, (float)s.Height));
 			}
 		}
 		
@@ -513,7 +513,7 @@ namespace Xwt.Mac
 
 		void AutoUpdateSize ()
 		{	var s = Frontend.Surface.GetPreferredSize ();
-			Widget.SetFrameSize (new SizeF ((float)s.Width, (float)s.Height));
+			Widget.SetFrameSize (new CGSize ((float)s.Width, (float)s.Height));
 		}
 
 		NSObject gotFocusObserver;
@@ -524,10 +524,6 @@ namespace Xwt.Mac
 				WidgetEvent ev = (WidgetEvent) eventId;
 				currentEvents |= ev;
 				switch (ev) {
-				case WidgetEvent.KeyPressed:
-				case WidgetEvent.KeyReleased:
-					SetupKeyEvents (Widget.GetType ());
-					break;
 				case WidgetEvent.GotFocus:
 				case WidgetEvent.LostFocus:
 					SetupFocusEvents (Widget.GetType ());
@@ -552,12 +548,9 @@ namespace Xwt.Mac
 		static Selector concludeDragOperationSel = new Selector ("concludeDragOperation:");
 		static Selector becomeFirstResponderSel = new Selector ("becomeFirstResponder");
 		static Selector resignFirstResponderSel = new Selector ("resignFirstResponder");
-		static Selector keyDownSel = new Selector ("keyDown:");
-		static Selector keyUpSel = new Selector ("keyUp:");
 
 		static HashSet<Type> typesConfiguredForDragDrop = new HashSet<Type> ();
 		static HashSet<Type> typesConfiguredForFocusEvents = new HashSet<Type> ();
-		static HashSet<Type> typesConfiguredForKeyEvents = new HashSet<Type> ();
 
 		// class_addmethod docs:
 		// and secret string syntax
@@ -590,39 +583,6 @@ namespace Xwt.Mac
 			}
 		}
 
-		static void SetupKeyEvents (Type type)
-		{
-			lock (typesConfiguredForKeyEvents) {
-				if (typesConfiguredForKeyEvents.Add (type)) {
-					Class c = new Class (type);
-					c.AddMethod (keyDownSel.Handle, new Action<IntPtr,IntPtr,IntPtr> (OnKeyDown), "v@:@");
-					c.AddMethod (keyUpSel.Handle, new Action<IntPtr,IntPtr,IntPtr> (OnKeyUp), "v@:@");
-				}
-			}
-		}
-
-		static void OnKeyDown (IntPtr sender, IntPtr sel, IntPtr evt)
-		{
-			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
-			if (ob == null)
-				return;
-			NSEvent theEvent = new NSEvent(evt);
-			Key key = Util.TranslateToXwtKey(theEvent.Characters, theEvent.ModifierFlags);
-			KeyEventArgs kea = new KeyEventArgs(key, theEvent.ModifierFlags.ToXwtValue(), theEvent.IsARepeat, (long) TimeSpan.FromSeconds (theEvent.Timestamp).TotalMilliseconds);
-			ob.Backend.EventSink.OnKeyPressed(kea);
-		}
-
-		static void OnKeyUp (IntPtr sender, IntPtr sel, IntPtr evt)
-		{
-			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
-			if (ob == null)
-				return;
-			NSEvent theEvent = new NSEvent(evt);
-			Key key = Util.TranslateToXwtKey(theEvent.Characters, theEvent.ModifierFlags);
-			KeyEventArgs kea = new KeyEventArgs(key, theEvent.ModifierFlags.ToXwtValue(), theEvent.IsARepeat, (long) TimeSpan.FromSeconds (theEvent.Timestamp).TotalMilliseconds);
-			ob.Backend.EventSink.OnKeyReleased(kea);
-		}
-
 		public void DragStart (DragStartData sdata)
 		{
 			var lo = Widget.ConvertPointToBase (new CGPoint (Widget.Bounds.X, Widget.Bounds.Y));
@@ -636,7 +596,7 @@ namespace Xwt.Mac
 			InitPasteboard (pb, sdata.Data);
 			var img = (NSImage)sdata.ImageBackend;
 			var pos = new CGPoint (ml.X - lo.X - (float)sdata.HotX, lo.Y - ml.Y - (float)sdata.HotY + img.Size.Height);
-			Widget.DragImage (img, pos, new SizeF (0, 0), NSApplication.SharedApplication.CurrentEvent, pb, Widget, true);
+			Widget.DragImage (img, pos, new CGSize (0, 0), NSApplication.SharedApplication.CurrentEvent, pb, Widget, true);
 		}
 		
 		public void SetDragSource (TransferDataType[] types, DragDropAction dragAction)
@@ -924,7 +884,7 @@ namespace Xwt.Mac
 				cy += (cheight - s.Height) * w.VerticalPlacement.GetValue ();
 				cheight = s.Height;
 			}
-			child.Frame = new RectangleF ((float)cx, (float)cy, (float)cwidth, (float)cheight);
+			child.Frame = new CGRect ((float)cx, (float)cy, (float)cwidth, (float)cheight);
 		}
 
 		public override void SizeToFit ()
