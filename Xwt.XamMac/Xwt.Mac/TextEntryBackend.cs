@@ -287,6 +287,8 @@ namespace Xwt.Mac
 				EventSink = eventSink,
 				Context = context,
 			};
+
+			this.StringValue = "";
 		}
 
 		public NSView View {
