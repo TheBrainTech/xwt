@@ -44,6 +44,15 @@ namespace Xwt
 		WidgetSpacing padding;
 		Widget content;
 		bool shown;
+		
+		public virtual bool StaysOpen {
+			get {
+				return this.Backend.StaysOpen;
+			}
+			set {
+				this.Backend.StaysOpen = value;
+			}
+		}
 
 		public bool IsVisible {
 			get { return this.Backend.IsVisible; }

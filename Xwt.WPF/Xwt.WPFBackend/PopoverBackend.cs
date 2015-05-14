@@ -43,7 +43,16 @@ namespace Xwt.WPFBackend
 		const int BORDER_PADDING = 7;
 		const int BORDER_THICKNESS = 1;
 		static readonly SolidColorBrush STROKE_COLOR = Brushes.Gray;
-		static readonly SolidColorBrush FILL_COLOR = Brushes.White;
+		static readonly SolidColorBrush BACKGROUND_COLOR = new SolidColorBrush(Color.FromRgb(235, 235, 235));
+
+		public bool StaysOpen {
+			get {
+				return NativeWidget.StaysOpen;
+			}
+			set {
+				NativeWidget.StaysOpen = value;
+			}
+		}
 
 		public bool IsVisible {
 			get { return this.NativeWidget.Child.IsVisible; }
@@ -87,7 +96,7 @@ namespace Xwt.WPFBackend
 			Geometry caretGeometry = PathGeometry.Parse(xamlCaretPath);
 			Path caretPath = new Path() {
 				Stroke = STROKE_COLOR,
-				Fill = FILL_COLOR,
+				Fill = BACKGROUND_COLOR,
 				Data = caretGeometry,
 				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Center
@@ -96,7 +105,7 @@ namespace Xwt.WPFBackend
 			string xamlBoundaryPath = string.Format("M 0,{0} L {1},{0}", CARET_HEIGHT + 1, CARET_WIDTH);
 			Geometry boundaryGeometry = PathGeometry.Parse(xamlBoundaryPath);
 			Path boundaryPath = new Path() {
-				Stroke = FILL_COLOR,
+				Stroke = BACKGROUND_COLOR,
 				Data = boundaryGeometry,
 				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Center
@@ -109,9 +118,11 @@ namespace Xwt.WPFBackend
 				BorderThickness = new Thickness(BORDER_THICKNESS),
 				Margin = new Thickness(0, CARET_HEIGHT - 1, 0, 0),
 				VerticalAlignment = VerticalAlignment.Top,
-				Background = FILL_COLOR
+				Background = BACKGROUND_COLOR
 			};
-			BackgroundColor = Xwt.Drawing.Color.FromBytes (230, 230, 230, 230);
+
+			//Set background color of popover
+			BackgroundColor = BACKGROUND_COLOR.ToXwtColor();
 
 			NativeWidget = new System.Windows.Controls.Primitives.Popup {
 				AllowsTransparency = true,
