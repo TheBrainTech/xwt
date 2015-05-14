@@ -62,6 +62,20 @@ namespace Xwt.Mac
 			get { return popover.Shown; }
 		}
 
+		public bool StaysOpen {
+			get {
+				return this.popover.Behavior == NSPopoverBehavior.ApplicationDefined;
+			}
+			set {
+				if(value) {
+					this.popover.Behavior = NSPopoverBehavior.ApplicationDefined;
+				} else {
+					this.popover.Behavior = NSPopoverBehavior.Transient;
+				}
+
+			}
+		}
+
 		NSPopover popover;
 		public event EventHandler Closed;
 
