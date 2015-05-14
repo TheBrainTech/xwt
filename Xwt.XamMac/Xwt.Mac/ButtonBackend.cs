@@ -185,8 +185,20 @@ namespace Xwt.Mac
 		#endregion
 
 		public override Color BackgroundColor {
-			get { return ((MacButton)Widget).BackgroundColor; }
-			set { ((MacButton)Widget).BackgroundColor = value; }
+			get { 
+				if(this.Widget.Bordered) {
+					return ((MacButton)Widget).BackgroundColor;
+				} else {
+					return base.BackgroundColor;
+				}
+			}
+			set {
+				if(this.Widget.Bordered) {
+					((MacButton)Widget).BackgroundColor = value;
+				} else {
+					base.BackgroundColor = value;
+				}
+			}
 		}
 	}
 	
