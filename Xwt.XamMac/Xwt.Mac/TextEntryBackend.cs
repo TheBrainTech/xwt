@@ -256,8 +256,11 @@ namespace Xwt.Mac
 
 		public override void SetFocus ()
 		{
-			if (Widget.Window != null && CanGetFocus)
-				Widget.Window.MakeFirstResponder (Widget);
+			if(Widget.Window != null && CanGetFocus) {
+				Widget.Window.MakeFirstResponder(Widget);
+				CursorPosition = Text.Length;
+			}
+			
 		}
 
 		public override bool HasFocus {
