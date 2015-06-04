@@ -24,6 +24,8 @@ namespace Xwt.Mac
 			base.Initialize ();
 			var view = new CustomSecureTextField (EventSink, ApplicationContext);
 			ViewObject = new CustomAlignedContainer (EventSink, ApplicationContext, (NSView)view);
+			((NSTextFieldCell)Widget.Cell).BezelStyle = NSTextFieldBezelStyle.Square;
+			((NSTextFieldCell)Widget.Cell).Bezeled = true;
 		}
 
 		protected override void OnSizeToFit ()
