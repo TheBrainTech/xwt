@@ -154,8 +154,13 @@ namespace Xwt.Drawing
 				i = name.LastIndexOf (' ', i - 1);
 			} while (true);
 
-			string fname = lasti > 0 ? name.Substring (0, lasti) : string.Empty;
-			fname = fname.Length > 0 ? GetSupportedFont (fname) : Font.SystemFont.Family;
+			// change to a supported font if the exact specified font name is not available
+			LoadInstalledFonts ();
+			string fname = name;
+			if(!installedFonts.ContainsKey(name)) {
+				fname = lasti > 0 ? name.Substring (0, lasti) : string.Empty;
+				fname = fname.Length > 0 ? GetSupportedFont (fname) : Font.SystemFont.Family;
+			}
 
 			if (size == -1)
 				size = SystemFont.Size;
