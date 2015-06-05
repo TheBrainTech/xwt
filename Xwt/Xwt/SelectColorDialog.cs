@@ -64,7 +64,12 @@ namespace Xwt
 		/// </summary>
 		public Color Color {
 			get { return color; }
-			set { color = value; }
+			set { 
+				if(color != value) {
+					color = value; 
+					OnColorChanged();
+				}
+			}
 		}
 		
 		public bool SupportsAlpha {
@@ -89,12 +94,21 @@ namespace Xwt
 			try {
 				if (color != Colors.Transparent)
 					backend.Color = color;
-				return backend.Run ((IWindowFrameBackend)Toolkit.CurrentEngine.GetSafeBackend (parentWindow), title, supportsAlpha);
+				return backend.Run ((IWindowFrameBackend)Toolkit.CurrentEngine.GetSafeBackend (parentWindow), title, supportsAlpha, this);
 			} finally {
 				color = backend.Color;
 				backend.Dispose ();
 			}
 		}
+
+		public event EventHandler ColorChanged;
+
+		private void OnColorChanged() {
+			if(ColorChanged != null) {
+				ColorChanged(null, EventArgs.Empty);
+			}
+		}
+
 	}
 }
 

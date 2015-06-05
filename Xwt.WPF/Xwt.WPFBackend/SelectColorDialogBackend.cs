@@ -45,7 +45,7 @@ namespace Xwt.WPFBackend
 			dialog = new ColorDialogWithTitle();
 		}
 
-		public bool Run(IWindowFrameBackend parent, string title, bool supportsAlpha)
+		public bool Run(IWindowFrameBackend parent, string title, bool supportsAlpha, SelectColorDialog frontend)
 		{
 			//TODO: Support alpha + create custom WPF solution?
 			dialog.Title = title;
