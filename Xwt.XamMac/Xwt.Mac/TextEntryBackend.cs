@@ -265,7 +265,14 @@ namespace Xwt.Mac
 
 		public override bool HasFocus {
 			get {
-				return Widget.Window != null && Widget.Window.FirstResponder == Widget;
+				if(Widget.Window.FirstResponder == Widget) {
+					return true;
+				}
+				NSTextView textView = Widget.Window.FirstResponder as NSTextView;
+				if(textView != null && textView.WeakDelegate == Widget) {
+					return true;
+				}
+				return false;
 			}
 		}
 		#endregion
