@@ -70,6 +70,14 @@ namespace Xwt.Mac
 				((NSTextFieldCell)Widget.Cell).PlaceholderString = value ?? string.Empty;
 			}
 		}
+
+
+		public override void SetFocus ()
+		{
+			if(Widget.Window != null && CanGetFocus) {
+				Widget.Window.MakeFirstResponder(Widget);
+			}
+		}
 	}
 
 	class CustomSecureTextField : NSSecureTextField, IViewObject
