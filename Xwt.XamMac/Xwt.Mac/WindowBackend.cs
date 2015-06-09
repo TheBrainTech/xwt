@@ -485,7 +485,8 @@ namespace Xwt.Mac
 		void IWindowFrameBackend.Move (double x, double y)
 		{
 			var r = FrameRectFor (new CGRect ((nfloat)x, (nfloat)y, Frame.Width, Frame.Height));
-			SetFrame (r, true);
+			var dr = MacDesktopBackend.ToDesktopRect(r);
+			SetFrame (new CGRect(dr.X, dr.Y, dr.Width, dr.Height), true);
 		}
 		
 		void IWindowFrameBackend.SetSize (double width, double height)
@@ -507,8 +508,9 @@ namespace Xwt.Mac
 				return new Rectangle ((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height);
 			}
 			set {
-				CGRect r = new CGRect((float)value.X, (float)value.Y, (float)value.Width, (float)value.Height);
-				var fr = FrameRectFor (r);
+				RectangleF r = MacDesktopBackend.FromDesktopRect(value);
+				CGRect cgr = new CGRect(r.X, r.Y, r.Width, r.Height);
+				CGRect fr = FrameRectFor (cgr);
 				SetFrame (fr, true);
 			}
 		}
