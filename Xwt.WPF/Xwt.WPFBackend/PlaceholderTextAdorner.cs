@@ -99,6 +99,7 @@ namespace Xwt.WPFBackend
 				alignment = ConvertAlignment (AdornedPasswordBox.HorizontalContentAlignment);
 				flowDirection = AdornedPasswordBox.FlowDirection;
 				fontSize = AdornedPasswordBox.FontSize;
+				AdornedPasswordBox.FontFamily = new FontFamily("Segoe UI");
 				typeFace = AdornedPasswordBox.FontFamily.GetTypefaces ().FirstOrDefault ();
 			}
 			else if (AdornedTextBox != null) {
