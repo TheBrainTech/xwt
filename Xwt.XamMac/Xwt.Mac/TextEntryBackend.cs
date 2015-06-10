@@ -265,15 +265,25 @@ namespace Xwt.Mac
 
 		public override bool HasFocus {
 			get {
-				if(Widget.Window.FirstResponder == Widget) {
-					return true;
-				}
-				NSTextView textView = Widget.Window.FirstResponder as NSTextView;
-				if(textView != null && textView.WeakDelegate == Widget) {
-					return true;
-				}
-				return false;
+				return HasFocusForWindow(Widget.Window);
 			}
+		}
+
+		public bool HasKeyboardFocus {
+			get {
+				return HasFocusForWindow(NSApplication.SharedApplication.KeyWindow);
+			}
+		}
+
+		public bool HasFocusForWindow (NSWindow window) {
+			if(window.FirstResponder == Widget) {
+				return true;
+			}
+			NSTextView textView = window.FirstResponder as NSTextView;
+			if(textView != null && textView.WeakDelegate == Widget) {
+				return true;
+			}
+			return false;
 		}
 		#endregion
 	}
