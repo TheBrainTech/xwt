@@ -248,5 +248,9 @@ namespace Xwt.WPFBackend
 		{
 			UpdatePlaceholder (this.placeholderText, focused: false);
 		}
+
+		public bool HasKeyboardFocus {
+			get { return Widget.IsKeyboardFocused; }
+		}
 	}
 }

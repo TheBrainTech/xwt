@@ -184,6 +184,12 @@ namespace Xwt
 				BackendHost.OnAfterEventRemove (TextEntryEvent.Activated, activated);
 			}
 		}
+
+		public bool HasKeyboardFocus {
+			get {
+				return this.Backend.HasKeyboardFocus;
+			}
+		}
 	}
 }
 

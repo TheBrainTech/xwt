@@ -259,5 +259,9 @@ namespace Xwt.WPFBackend
 		{
 			Context.InvokeUserCode (EventSink.OnSelectionChanged);
 		}
+
+		public bool HasKeyboardFocus {
+			get { return Widget.IsKeyboardFocused; }
+		}
 	}
 }

@@ -39,6 +39,7 @@ namespace Xwt.Backends
 		int SelectionStart { get; set; }
 		int SelectionLength { get; set; }
 		string SelectedText { get; set; }
+		bool HasKeyboardFocus { get; }
 	}
 	
 	public interface ITextEntryEventSink: IWidgetEventSink
