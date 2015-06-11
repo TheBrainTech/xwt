@@ -390,7 +390,8 @@ namespace Xwt.Mac
 					cachedCursorPosition = SelectedRange.Location;
 					Context.InvokeUserCode (delegate {
 						EventSink.OnSelectionChanged ();
-						EventSink.OnKeyReleased (theEvent.ToXwtKeyEventArgs ());
+						//KeyReleased is already called at Widget Level, do not call again here.
+						//EventSink.OnKeyReleased (theEvent.ToXwtKeyEventArgs ());
 					});
 				}
 				base.KeyUp (theEvent);
