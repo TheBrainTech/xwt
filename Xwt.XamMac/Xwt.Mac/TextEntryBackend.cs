@@ -286,6 +286,22 @@ namespace Xwt.Mac
 			return false;
 		}
 		#endregion
+
+		public override Xwt.Drawing.Color BackgroundColor {
+			get { return Widget.BackgroundColor.ToXwtColor(); }
+			set {
+				((NSTextFieldCell)Widget.Cell).BackgroundColor = value.ToNSColor();
+				Widget.BackgroundColor = value.ToNSColor();
+			}
+		}
+
+		public override Xwt.Drawing.Color TextColor {
+			get { return Widget.TextColor.ToXwtColor(); }
+			set {
+				((NSTextFieldCell)Widget.Cell).TextColor = value.ToNSColor();
+				Widget.TextColor = value.ToNSColor();
+			}
+		}
 	}
 	
 	class CustomTextField: NSTextField, IViewObject
