@@ -276,7 +276,7 @@ namespace Xwt.Mac
 		}
 
 		public bool HasFocusForWindow (NSWindow window) {
-			if(window.FirstResponder == Widget) {
+			if(window != null && window.FirstResponder == Widget) {
 				return true;
 			}
 			NSTextView textView = window.FirstResponder as NSTextView;
