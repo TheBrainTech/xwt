@@ -76,7 +76,7 @@ namespace Xwt.Mac
 		Size lastFittingSize;
 		bool sizeCalcPending = true;
 		bool sensitive = true;
-		bool canGetFocus = true;
+		bool canGetFocus = false;
 		bool mouseDownCanMoveWindow = false;
 		Xwt.Drawing.Color backgroundColor;
 		Xwt.Drawing.Color textColor;
