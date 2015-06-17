@@ -77,10 +77,11 @@ namespace Xwt.Mac
 			}
 		}
 
-		public override bool AcceptsFirstResponder ()
-		{
-			return Backend.CanGetFocus;
-		}
+		//comment this to fix: using TAB key navigate among textfield needs to TAB twice. 
+//		public override bool AcceptsFirstResponder ()
+//		{
+//			return Backend.CanGetFocus;
+//		}
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
