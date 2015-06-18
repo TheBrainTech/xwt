@@ -36,16 +36,6 @@ namespace Xwt
 	{
 		Widget container;
 
-		static CellView ()
-		{
-			EventHost.MapEvent (WidgetEvent.KeyPressed, typeof(CellView), "OnKeyPressed");
-			EventHost.MapEvent (WidgetEvent.KeyReleased, typeof(CellView), "OnKeyReleased");
-			EventHost.MapEvent (WidgetEvent.MouseEntered, typeof(CellView), "OnMouseEntered");
-			EventHost.MapEvent (WidgetEvent.MouseExited, typeof(CellView), "OnMouseExited");
-			EventHost.MapEvent (WidgetEvent.ButtonPressed, typeof(CellView), "OnButtonPressed");
-			EventHost.MapEvent (WidgetEvent.ButtonReleased, typeof(CellView), "OnButtonReleased");
-			EventHost.MapEvent (WidgetEvent.MouseMoved, typeof(CellView), "OnMouseMoved");
-		}
 
 		/// <summary>
 		/// Gets the default cell view for the provided field type
@@ -234,42 +224,49 @@ namespace Xwt
 		public event EventHandler<ButtonEventArgs> ButtonPressed;
 		public event EventHandler<ButtonEventArgs> ButtonReleased;
 
+		[MappedEvent(WidgetEvent.KeyPressed)]
 		internal protected virtual void OnKeyPressed (KeyEventArgs args)
 		{
 			if (KeyPressed != null)
 				KeyPressed (this, args);
 		}
 
+		[MappedEvent(WidgetEvent.KeyReleased)]
 		internal protected virtual void OnKeyReleased (KeyEventArgs args)
 		{
 			if (KeyReleased != null)
 				KeyReleased (this, args);
 		}
 
+		[MappedEvent(WidgetEvent.MouseEntered)]
 		internal protected virtual void OnMouseEntered ()
 		{
 			if (MouseEntered != null)
 				MouseEntered (this, EventArgs.Empty);
 		}
 
+		[MappedEvent(WidgetEvent.MouseExited)]
 		internal protected virtual void OnMouseExited ()
 		{
 			if (MouseExited != null)
 				MouseExited (this, EventArgs.Empty);
 		}
 
+		[MappedEvent(WidgetEvent.MouseMoved)]
 		internal protected virtual void OnMouseMoved (MouseMovedEventArgs args)
 		{
 			if (MouseMoved != null)
 				MouseMoved (this, args);
 		}
 
+		[MappedEvent(WidgetEvent.ButtonPressed)]
 		internal protected virtual void OnButtonPressed (ButtonEventArgs args)
 		{
 			if (ButtonPressed != null)
 				ButtonPressed (this, args);
 		}
 
+		[MappedEvent(WidgetEvent.ButtonReleased)]
 		internal protected virtual void OnButtonReleased (ButtonEventArgs args)
 		{
 			if (ButtonReleased != null)

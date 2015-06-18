@@ -47,7 +47,7 @@ namespace Xwt.Backends
 		/// like <see cref="Xwt.Backends.WidgetEvent"/>, identifying component specific events).</param>
 		/// <param name="type">The Xwt component type.</param>
 		/// <param name="methodName">The <see cref="System.Reflection.MethodInfo.Name"/> of the event handler.</param>
-		public static void MapEvent (object eventId, Type type, string methodName)
+		private static void MapEvent (object eventId, Type type, string methodName)
 		{
 			List<EventMap> events;
 			if (!overridenEventMap.TryGetValue (type, out events)) {
