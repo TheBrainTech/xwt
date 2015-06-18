@@ -211,6 +211,7 @@ namespace Xwt.Mac
 		// This event is used by the RadioButton backend to implement radio groups
 		//
 		internal event Action <MacButton> ActivatedInternal;
+		IButtonEventSink eventSink;
 
 		public MacButton (IntPtr p): base (p)
 		{
@@ -218,6 +219,7 @@ namespace Xwt.Mac
 		
 		public MacButton (IButtonEventSink eventSink, ApplicationContext context)
 		{
+			this.eventSink = eventSink;
 			Cell = new ColoredButtonCell ();
 			BezelStyle = NSBezelStyle.Rounded;
 			Activated += delegate {
@@ -292,6 +294,13 @@ namespace Xwt.Mac
 			{
 				controlView.DrawWithColorTransform(Color, delegate { base.DrawBezelWithFrame (frame, controlView); });
 			}
+		}
+
+		public override void KeyUp(NSEvent theEvent) {
+			base.KeyUp(theEvent);
+			//radio button eventSink could be null
+			if (eventSink != null) 
+				eventSink.OnKeyReleased(theEvent.ToXwtKeyEventArgs());
 		}
 	}
 }
