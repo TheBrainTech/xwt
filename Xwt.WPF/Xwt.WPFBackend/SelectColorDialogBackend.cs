@@ -39,39 +39,31 @@ namespace Xwt.WPFBackend
 		: Backend, ISelectColorDialogBackend
 	{
 		private ColorDialogWithTitle dialog;
-
-		public SelectColorDialogBackend()
-		{
-			dialog = new ColorDialogWithTitle();
-		}
-
-		public bool Run(IWindowFrameBackend parent, string title, bool supportsAlpha, SelectColorDialog frontend)
+		
+		public bool Run(IWindowFrameBackend parent, string title, bool supportsAlpha, Action<Color> colorChangedCallback)
 		{
 			//TODO: Support alpha + create custom WPF solution?
+			dialog = new ColorDialogWithTitle();
 			dialog.Title = title;
+			dialog.Color = System.Drawing.Color.FromArgb((byte)(this.Color.Alpha * 255), (byte)(this.Color.Red * 255), (byte)(this.Color.Green * 255), (byte)(this.Color.Blue * 255));
+			bool output;
 			if (parent != null)
-				return (this.dialog.ShowDialog(new WpfWin32Window(((WindowFrameBackend)parent).Window)) == DialogResult.OK);
+				output = (this.dialog.ShowDialog(new WpfWin32Window(((WindowFrameBackend)parent).Window)) == DialogResult.OK);
 			else
-				return (this.dialog.ShowDialog() == DialogResult.OK);
+				output = (this.dialog.ShowDialog() == DialogResult.OK);
+
+			this.Color = Color.FromBytes(this.dialog.Color.R, this.dialog.Color.G, this.dialog.Color.B, this.dialog.Color.A);
+			colorChangedCallback.Invoke(this.Color);
+			this.Close();
+			return output;
 		}
 
-		public void Dispose()
+		public void Close()
 		{
 			this.dialog.Dispose();
 		}
 
-		public Color Color
-		{
-			get
-			{
-				return Color.FromBytes(this.dialog.Color.R, this.dialog.Color.G, this.dialog.Color.B, this.dialog.Color.A);
-			}
-			set
-			{
-				this.dialog.Color = System.Drawing.Color.FromArgb((byte)(value.Alpha * 255), (byte)(value.Red * 255), (byte)(value.Green * 255), (byte)(value.Blue * 255));
-			}
-		}
-
+		public Color Color { get; set; }
 
 		private class ColorDialogWithTitle : ColorDialog
 		{
