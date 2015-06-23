@@ -55,12 +55,12 @@ namespace Xwt.Backends
 		/// The dialog must be shown in modal mode. The method returns when the user clicks on
 		/// OK or Cancel. The dialog must be already closed when this method returns.
 		/// </remarks>
-		bool Run (IWindowFrameBackend parent, string title, bool supportsAlpha, SelectColorDialog frontend);
+		bool Run (IWindowFrameBackend parent, string title, bool supportsAlpha, Action<Color> colorChangedCallback);
 		
 		/// <summary>
-		/// Frees native resources
+		/// Close the native control
 		/// </summary>
-		void Dispose ();	
+		void Close ();	
 	}
 }
 

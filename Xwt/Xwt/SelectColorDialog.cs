@@ -32,12 +32,13 @@ namespace Xwt
 {
 	public sealed class SelectColorDialog
 	{
-		Color color = Colors.Transparent;
 		string title = "";
 		bool supportsAlpha;
 		
+		Xwt.Backends.ISelectColorDialogBackend backend;
 		public SelectColorDialog ()
 		{
+			backend = Toolkit.CurrentEngine.Backend.CreateBackend<ISelectColorDialogBackend>();
 		}
 
 		/// <summary>
@@ -63,50 +64,32 @@ namespace Xwt
 		/// Gets or sets the selected color
 		/// </summary>
 		public Color Color {
-			get { return color; }
-			set { 
-				if(color != value) {
-					color = value; 
-					OnColorChanged();
+			get { return backend.Color; }
+			set {
+				if (backend.Color != value) {
+					backend.Color = value; 
 				}
 			}
 		}
-		
+
 		public bool SupportsAlpha {
 			get { return supportsAlpha; }
 			set { supportsAlpha = value; }
 		}
-		
-		/// <summary>
-		/// Shows the dialog.
-		/// </summary>
-		public bool Run ()
-		{
-			return Run (null);
+
+		public void Close () {
+			this.backend.Close();
 		}
 
 		/// <summary>
 		/// Shows the dialog.
 		/// </summary>
-		public bool Run (WindowFrame parentWindow)
+		public bool Run (WindowFrame parentWindow, Action<Color> colorChangedCallback)
 		{
-			var backend = Toolkit.CurrentEngine.Backend.CreateBackend<ISelectColorDialogBackend> ();
-			try {
-				if (color != Colors.Transparent)
-					backend.Color = color;
-				return backend.Run ((IWindowFrameBackend)Toolkit.CurrentEngine.GetSafeBackend (parentWindow), title, supportsAlpha, this);
-			} finally {
-				color = backend.Color;
-				backend.Dispose ();
+			if(backend.Color != Colors.Transparent) {
+				backend.Color = backend.Color;
 			}
-		}
-
-		public event EventHandler ColorChanged;
-
-		private void OnColorChanged() {
-			if(ColorChanged != null) {
-				ColorChanged(null, EventArgs.Empty);
-			}
+			return backend.Run((IWindowFrameBackend)Toolkit.CurrentEngine.GetSafeBackend(parentWindow), title, supportsAlpha, colorChangedCallback);
 		}
 
 	}

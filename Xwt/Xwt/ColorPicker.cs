@@ -145,7 +145,7 @@ namespace Xwt
 			SelectColorDialog dlg = new SelectColorDialog (Title);
 			dlg.SupportsAlpha = SupportsAlpha;
 			dlg.Color = Color;
-			if (dlg.Run (ParentWindow)) {
+			if (dlg.Run (ParentWindow, (c) => {})) {
 				Color = dlg.Color;
 				if (enabledOnColorChanged)
 					EventSink.OnColorChanged ();

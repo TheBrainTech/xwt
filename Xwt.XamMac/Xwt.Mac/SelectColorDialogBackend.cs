@@ -37,39 +37,51 @@ namespace Xwt.Mac
 	public class SelectColorDialogBackend : ISelectColorDialogBackend
 	{
 		private NSColorPanel colorPanel;
+		private Action<Color> callback;
+		private NSObject observer;
+		private Color color;
 
 		public SelectColorDialogBackend()
 		{
 			colorPanel = NSColorPanel.SharedColorPanel;
 		}
 
-		private SelectColorDialog frontend;
-
-		public bool Run(IWindowFrameBackend parent, string title, bool supportsAlpha, SelectColorDialog frontend)
+		public bool Run(IWindowFrameBackend parent, string title, bool supportsAlpha, Action<Color> colorChangedCallback)
 		{
 			colorPanel.ShowsAlpha = supportsAlpha;
 			colorPanel.OrderFront(null);
-
-			this.frontend = frontend;
-			NSNotificationCenter.DefaultCenter.AddObserver(NSColorPanel.ColorChangedNotification, OnColorChanged);
+			this.callback = colorChangedCallback;
+			colorPanel.AnimationBehavior = NSWindowAnimationBehavior.None;
+			colorPanel.WillClose += (object sender, EventArgs e) => {
+				HandleClosing();
+			};
+			observer = NSNotificationCenter.DefaultCenter.AddObserver(NSColorPanel.ColorChangedNotification, OnColorChanged);
 			return true;
 		}
 
-		void OnColorChanged(NSNotification notification) {
-			frontend.Color = this.Color;
-		}
-
-		public void Dispose() {
-		}
-
-		public Color Color
+		void OnColorChanged(NSNotification notification) 
 		{
+			this.Color = colorPanel.Color.ToXwtColor();
+			callback.Invoke(this.Color);
+		}
+
+		public void Close() {
+			HandleClosing();
+			this.colorPanel.Close();
+		}
+
+		public void HandleClosing() {
+			NSNotificationCenter.DefaultCenter.RemoveObserver(observer);
+		}
+
+		public Color Color { 
 			get
 			{
-				return colorPanel.Color.ToXwtColor();
+				return color;
 			}
-			set
-			{
+			set 
+			{ 
+				this.color = value;
 				colorPanel.Color = value.ToNSColor();
 			}
 		}
