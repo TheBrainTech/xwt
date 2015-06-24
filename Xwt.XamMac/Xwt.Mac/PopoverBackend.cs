@@ -168,6 +168,7 @@ namespace Xwt.Mac
 				positionRect.Width = 1;
 			if (Math.Abs (positionRect.Height) < double.Epsilon)
 				positionRect.Height = 1;
+			positionRect = new Rectangle(positionRect.X, positionRect.Y, positionRect.Width * 2, positionRect.Height); //It appears to be necessary to multiply the width by a factor of 2
 
 			popover.Show (positionRect.ToCGRect (),
 			              reference,

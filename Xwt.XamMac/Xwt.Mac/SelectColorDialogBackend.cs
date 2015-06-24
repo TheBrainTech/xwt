@@ -31,6 +31,7 @@ using Xwt.Drawing;
 using System.Runtime.InteropServices;
 using AppKit;
 using Foundation;
+using CoreGraphics;
 
 namespace Xwt.Mac
 {
@@ -83,6 +84,19 @@ namespace Xwt.Mac
 			{ 
 				this.color = value;
 				colorPanel.Color = value.ToNSColor();
+			}
+		}
+
+		public Size Size {
+			get {
+				return new Size(colorPanel.Frame.Width, colorPanel.Frame.Height);
+			}
+		}
+
+		public Point ScreenPosition {
+			set {
+				Rectangle r = MacDesktopBackend.ToDesktopRect(new CGRect(value.X, value.Y, colorPanel.Frame.Width, colorPanel.Frame.Height));
+				colorPanel.SetFrame(r.ToCGRect(), true);
 			}
 		}
 	}
