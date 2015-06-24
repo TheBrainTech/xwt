@@ -61,6 +61,10 @@ namespace Xwt.Backends
 		/// Close the native control
 		/// </summary>
 		void Close ();	
+
+		Size Size { get; }
+
+		Point ScreenPosition { set; }
 	}
 }
 

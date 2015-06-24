@@ -162,7 +162,7 @@ namespace Xwt.WPFBackend
 			NativeWidget.CustomPopupPlacementCallback = (popupSize, targetSize, offset) => {
 				System.Windows.Point location;
 				if (ActualPosition == Popover.Position.Top)
-					location = new System.Windows.Point (positionRect.Left, positionRect.Bottom);
+					location = new System.Windows.Point (-child.ScreenBounds.Width / 2 - BORDER_PADDING + positionRect.Right, positionRect.Bottom);
 				else
 					location = new System.Windows.Point (positionRect.Left, positionRect.Top - popupSize.Height);
 

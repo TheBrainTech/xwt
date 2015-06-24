@@ -92,6 +92,17 @@ namespace Xwt
 			return backend.Run((IWindowFrameBackend)Toolkit.CurrentEngine.GetSafeBackend(parentWindow), title, supportsAlpha, colorChangedCallback);
 		}
 
+		public Size Size {
+			get {
+				return backend.Size;
+			}
+		}
+
+		public Point ScreenPosition {
+			set {
+				backend.ScreenPosition = value;
+			}
+		}
 	}
 }
 
