@@ -284,10 +284,33 @@ namespace Xwt.WPFBackend
 		private static readonly Setter BorderBrushSetter = new Setter (ListViewItem.BorderBrushProperty, System.Windows.Media.Brushes.LightGray);
 
 
-        public int GetRowAtPosition(Point p)
-        {
-            throw new NotImplementedException();
-        }
+		public int GetRowAtPosition(Point p) {
+
+			System.Windows.Point targetPosition = this.ListView.PointToScreen(new System.Windows.Point(p.X, p.Y));
+
+			DependencyObject container;
+			ListViewItem listViewItem;
+
+			for(int i = 0; i < this.ListView.Items.Count; i++) {
+				container = this.ListView.ItemContainerGenerator.ContainerFromIndex(i);
+
+				if(container == null) {
+					continue;
+				}
+
+				listViewItem = container as ListViewItem;
+
+				System.Windows.Point itemLocation = listViewItem.PointToScreen(new System.Windows.Point(0, 0));
+
+				System.Windows.Rect itemBounds = new System.Windows.Rect(itemLocation, listViewItem.RenderSize);
+
+				if(itemBounds.Contains(targetPosition)) {
+					return i;
+				}
+			}
+
+			return -1;
+		}
 
         public Rectangle GetCellBounds(int row, CellView cell, bool includeMargin)
         {
