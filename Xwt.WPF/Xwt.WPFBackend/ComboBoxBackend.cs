@@ -87,8 +87,8 @@ namespace Xwt.WPFBackend
 			}
 			
 			double itemWidth = 0;
-			ComboBox frontend = (ComboBox)Frontend;
-			for (int i = 0; i < frontend.Items.Count; i++) {
+
+			for (int i = 0; i < this.ComboBox.Items.Count; i++) {
 
 				var item = this.ComboBox.ItemContainerGenerator.ContainerFromIndex(i);
 				if (item == null) {
