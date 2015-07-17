@@ -34,6 +34,7 @@ using WindowsSeparator = System.Windows.Controls.Separator;
 using WindowsComboBox = System.Windows.Controls.ComboBox;
 using WindowsOrientation = System.Windows.Controls.Orientation;
 using WindowsComboBoxItem = System.Windows.Controls.ComboBoxItem;
+using System;
 
 namespace Xwt.WPFBackend
 {
@@ -42,6 +43,9 @@ namespace Xwt.WPFBackend
 	{
 		private static readonly Style ContainerStyle;
 		//private static readonly DataTemplate DefaultTemplate;
+
+		double COMBO_BOX_STARTING_WIDTH = 18D;
+		double longestItemWidth;
 
 		static ComboBoxBackend()
 		{
@@ -67,6 +71,37 @@ namespace Xwt.WPFBackend
 			ComboBox.DisplayMemberPath = ".[0]";
 			//ComboBox.ItemTemplate = DefaultTemplate;
 			ComboBox.ItemContainerStyle = ContainerStyle;
+
+			this.ComboBox.Loaded += ComboBox_Loaded;
+			this.ComboBox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+		}
+
+		void ComboBox_Loaded(object sender, RoutedEventArgs e) {
+			this.ComboBox.IsDropDownOpen = true; //Open the combo box to trigger ItemContainerGenerator to load ComboBoxItems
+			this.ComboBox.IsDropDownOpen = false;
+		}
+
+		void ItemContainerGenerator_StatusChanged(object sender, EventArgs e) {
+			if (this.ComboBox.ItemContainerGenerator.Status != System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated) {
+				return;
+			}
+			
+			double itemWidth = 0;
+			ComboBox frontend = (ComboBox)Frontend;
+			for (int i = 0; i < frontend.Items.Count; i++) {
+
+				var item = this.ComboBox.ItemContainerGenerator.ContainerFromIndex(i);
+				if (item == null) {
+					continue;
+				}
+				ComboBoxItem comboBoxItem = item as ComboBoxItem;
+
+				comboBoxItem.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+				if (comboBoxItem.DesiredSize.Width > itemWidth) {
+					itemWidth = comboBoxItem.DesiredSize.Width;
+				}
+			}
+			longestItemWidth = itemWidth;
 		}
 
 		public void SetViews (CellViewCollection views)
@@ -158,6 +193,12 @@ namespace Xwt.WPFBackend
 
 			template.VisualTree = root;
 			return template;
+		}
+
+		public override Size GetPreferredSize(SizeConstraint widthConstraint, SizeConstraint heightConstraint) {
+			Size baseSize = base.GetPreferredSize(widthConstraint, heightConstraint);
+			Size outputSize = new Size(longestItemWidth > 0 ? longestItemWidth + COMBO_BOX_STARTING_WIDTH : baseSize.Width, baseSize.Height);
+			return outputSize;
 		}
 	}
 }
