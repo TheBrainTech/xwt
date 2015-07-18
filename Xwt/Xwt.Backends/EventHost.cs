@@ -61,7 +61,7 @@ namespace Xwt.Backends
 			events.Add (emap);
 		}
 
-		public EventHost () {
+		static EventHost () {
 			DiscoverMappedEvents();
 		}
 
