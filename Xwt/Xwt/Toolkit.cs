@@ -372,7 +372,7 @@ namespace Xwt
 		/// Invokes an action after the user code has been processed.
 		/// </summary>
 		/// <param name="a">The action to invoke after processing user code.</param>
-		internal void InvokePlatformCode (Action a)
+		public void InvokePlatformCode (Action a)
 		{
 			int prevCount = inUserCode;
 			try {
