@@ -157,7 +157,7 @@ namespace Xwt.Mac
 					Widget.Cell.Scrollable = false;
 					Widget.Cell.Wraps = true;
 				} else {
-					Widget.Cell.UsesSingleLineMode = true;
+					Widget.Cell.UsesSingleLineMode = false; //Bug in monomac causes single line mode to display with incorrect vertical alignment
 					Widget.Cell.Scrollable = true;
 					Widget.Cell.Wraps = false;
 				}

@@ -161,7 +161,7 @@ namespace Xwt.Mac
 			set {
 				if (value == WrapMode.None) {
 					Widget.Cell.Wraps = false;
-					Widget.Cell.UsesSingleLineMode = true;
+					Widget.Cell.UsesSingleLineMode = false; //Bug in monomac causes single line mode to display with incorrect vertical alignment
 				} else {
 					Widget.Cell.Wraps = true;
 					Widget.Cell.UsesSingleLineMode = false;
