@@ -71,6 +71,7 @@ namespace Xwt.Mac
 		public override Point GetMouseLocation ()
 		{
 			var loc = NSEvent.CurrentMouseLocation;
+			loc.Y = (nfloat)Xwt.Desktop.Bounds.Height - loc.Y;
 			return new Point (loc.X, loc.Y);
 		}
 
