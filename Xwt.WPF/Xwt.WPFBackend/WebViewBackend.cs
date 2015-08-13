@@ -47,26 +47,26 @@ namespace Xwt.WPFBackend
 			webBrowser = new WebBrowser ();
 			Widget = webBrowser;
 
-			webBrowser.LoadCompleted += WebBrowser_LoadCompleted;
+            webBrowser.Navigated += WebBrowser_Navigated;
 		}
 
-		private void WebBrowser_LoadCompleted(object sender, NavigationEventArgs e) {
-			if(!scriptErrorsSuppressed) {
-				SupressScriptErrors();
-				scriptErrorsSuppressed = true;
-			}
-		}
+        private void WebBrowser_Navigated(object sender, NavigationEventArgs e) {
+            if (!scriptErrorsSuppressed) {
+                SupressScriptErrors();
+                scriptErrorsSuppressed = true;
+            }
+        }
 
-		private void SupressScriptErrors() {
-			FieldInfo field = typeof(WebBrowser).GetField("_axIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
-			if(field != null) {
-				object axIWebBrowser2 = field.GetValue(webBrowser);
-				if(axIWebBrowser2 != null) {
-					// The property IWebBrowser2:Silent specifies whether the browser control shows script errors in dialogs or not. Set it to true.
-					axIWebBrowser2.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, axIWebBrowser2, new object[] { true });
-				}
-			}
-		}
+        private void SupressScriptErrors() {
+            FieldInfo field = typeof(WebBrowser).GetField("_axIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field != null) {
+                object axIWebBrowser2 = field.GetValue(webBrowser);
+                if (axIWebBrowser2 != null) {
+                    // The property IWebBrowser2:Silent specifies whether the browser control shows script errors in dialogs or not. Set it to true.
+                    axIWebBrowser2.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, axIWebBrowser2, new object[] { true });
+                }
+            }
+        }
 
 		internal WebViewBackend (WebBrowser browser)
 		{
