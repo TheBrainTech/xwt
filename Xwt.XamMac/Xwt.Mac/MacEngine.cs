@@ -71,6 +71,10 @@ namespace Xwt.Mac
 			var info = NSBundle.MainBundle.InfoDictionary;
 			if (info.ValueForKey ((NSString)"NSPrincipalClass") == null)
 				info.SetValueForKey ((NSString)"NSApplication", (NSString)"NSPrincipalClass");
+
+			//Application listeners
+			NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidResignActiveNotification, OnDeactivated);
+			NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidBecomeActiveNotification, OnActivated);
 		}
 
 		public override void InitializeBackends ()
@@ -260,6 +264,14 @@ namespace Xwt.Mac
 			im.AddRepresentation (imageRep);
 			im.Size = new CGSize ((float)view.Bounds.Width, (float)view.Bounds.Height);
 			return im;
+		}
+
+		private void OnActivated(NSNotification notification) {
+			Xwt.Application.OnActivated();
+		}
+
+		private void OnDeactivated(NSNotification notifcation) {
+			Xwt.Application.OnDeactivated();
 		}
 	}
 
