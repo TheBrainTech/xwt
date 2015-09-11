@@ -294,6 +294,24 @@ namespace Xwt
 				Console.WriteLine (ex);
 			}
 		}
+
+		public static event EventHandler Activated;
+		public static void OnActivated()
+		{
+			if (Activated != null)
+			{
+				Activated(null, EventArgs.Empty);
+			}
+		}
+
+		public static event EventHandler Deactivated;
+		public static void OnDeactivated()
+		{
+			if (Deactivated != null)
+			{
+				Deactivated(null, EventArgs.Empty);
+			}
+		}
 	}
 
 	/// <summary>

@@ -58,6 +58,9 @@ namespace Xwt.WPFBackend
 			if (application == null)
 				application = new System.Windows.Application ();
 
+			application.Activated += application_Activated;
+			application.Deactivated += application_Deactivated;
+
 			application.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
 			RegisterBackend<IWindowBackend, WindowBackend> ();
@@ -120,6 +123,16 @@ namespace Xwt.WPFBackend
 			RegisterBackend<IPasswordEntryBackend, PasswordEntryBackend> ();
 			RegisterBackend<IWebViewBackend, WebViewBackend> ();
 			RegisterBackend<KeyboardHandler, WpfKeyboardHandler> ();
+		}
+
+		void application_Activated(object sender, EventArgs e)
+		{
+			Xwt.Application.OnActivated();
+		}
+
+		void application_Deactivated(object sender, EventArgs e)
+		{
+			Xwt.Application.OnDeactivated();
 		}
 
 		public override void DispatchPendingEvents()

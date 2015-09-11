@@ -57,7 +57,7 @@ namespace Xwt.WPFBackend {
 
 		public void Close()
 		{
-			this.dialog.Dispose();
+			this.dialog.Close();
 		}
 
 		public Color Color { get; set; }
@@ -114,6 +114,10 @@ namespace Xwt.WPFBackend {
 			private string title = null;
 			#endregion
 
+			#region cached
+			private IntPtr hWnd;
+			#endregion
+
 			#region private static methods imports
 			//WinAPI definitions
 
@@ -140,6 +144,9 @@ namespace Xwt.WPFBackend {
 			[DllImport("user32.dll", SetLastError = true)]
 			[return: MarshalAs(UnmanagedType.Bool)]
 			private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+			[DllImport("user32.dll", ExactSpelling = true)]
+			private static extern bool EndDialog(IntPtr hWnd, IntPtr result);
 			#endregion
 
 			#region public constructor
@@ -170,6 +177,7 @@ namespace Xwt.WPFBackend {
 			protected override IntPtr HookProc(IntPtr hWnd, int msg, IntPtr wparam, IntPtr lparam) {
 				//We do the base initialization
 				IntPtr hookProc = base.HookProc(hWnd, msg, wparam, lparam);
+				this.hWnd = hWnd;
 				//When we init the dialog
 				if (msg == WM_INITDIALOG) {
 					//We change the title
@@ -183,7 +191,13 @@ namespace Xwt.WPFBackend {
 				return hookProc;
 			}
 			#endregion
-		}
 
+			#region public methods
+			public void Close()
+			{
+				EndDialog(hWnd, IntPtr.Zero);
+			}
+			#endregion
+		}
 	}
 }
