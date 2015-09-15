@@ -40,6 +40,7 @@ namespace Xwt.Backends
 		void Reload ();
 		void StopLoading ();
 		void LoadHtml (string content, string base_uri);
+		void Unload ();
 	}
 
 	public interface IWebViewEventSink : IWidgetEventSink

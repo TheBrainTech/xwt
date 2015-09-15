@@ -125,6 +125,12 @@ namespace Xwt.WPFBackend
 			view.NavigateToString (content);
 		}
 
+		public void Unload()
+		{
+			webBrowser.Dispose();
+			this.Dispose();
+		}
+
 		string prevTitle = String.Empty;
 
 		public string Title { get; private set; }
