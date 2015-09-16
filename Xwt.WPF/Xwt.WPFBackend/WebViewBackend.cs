@@ -31,23 +31,29 @@ using Xwt.Backends;
 using System.Windows.Navigation;
 using System.Windows.Controls;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Xwt.WPFBackend
 {
 	public class WebViewBackend : WidgetBackend, IWebViewBackend
 	{
+		const int DISP_E_UNKNOWNNAME_ERROR = -2147352570;
+
 		private WebBrowser webBrowser;
 		private string url;
 		private bool scriptErrorsSuppressed = false;
-		WebBrowser view;
 		bool enableNavigatingEvent, enableLoadingEvent, enableLoadedEvent, enableTitleChangedEvent;
 
-		public WebViewBackend () : this (new WebBrowser ())
+		public WebViewBackend ()
 		{
 			webBrowser = new WebBrowser ();
 			Widget = webBrowser;
 
             webBrowser.Navigated += WebBrowser_Navigated;
+
+			webBrowser.Navigating += HandleNavigating;
+			webBrowser.Navigated += HandleNavigated;
+			webBrowser.LoadCompleted += HandleLoadCompleted;
 		}
 
         private void WebBrowser_Navigated(object sender, NavigationEventArgs e) {
@@ -68,21 +74,11 @@ namespace Xwt.WPFBackend
             }
         }
 
-		internal WebViewBackend (WebBrowser browser)
-		{
-			view = browser;
-			view.Navigating += HandleNavigating;
-			view.Navigated += HandleNavigated;
-			view.LoadCompleted += HandleLoadCompleted;
-			Widget = view;
-		}
-
 		public string Url {
 			get { return url; }
 			set {
 				url = value;
 				webBrowser.Navigate (url);
-				view.Navigate (url);
 			}
 		}
 
@@ -90,39 +86,39 @@ namespace Xwt.WPFBackend
 
 		public bool CanGoBack {
 			get {
-				return view.CanGoBack;
+				return webBrowser.CanGoBack;
 			}
 		}
 
 		public bool CanGoForward {
 			get {
-				return view.CanGoForward;
+				return webBrowser.CanGoForward;
 			}
 		}
 
 		public void GoBack ()
 		{
-			view.GoBack ();
+			webBrowser.GoBack ();
 		}
 
 		public void GoForward ()
 		{
-			view.GoForward ();
+			webBrowser.GoForward ();
 		}
 
 		public void Reload ()
 		{
-			view.Refresh ();
+			webBrowser.Refresh ();
 		}
 
 		public void StopLoading ()
 		{
-			view.InvokeScript ("eval", "document.execCommand('Stop');");
+			webBrowser.InvokeScript ("eval", "document.execCommand('Stop');");
 		}
 
 		public void LoadHtml (string content, string base_uri)
 		{
-			view.NavigateToString (content);
+			webBrowser.NavigateToString (content);
 		}
 
 		public void Unload()
@@ -196,7 +192,22 @@ namespace Xwt.WPFBackend
 			LoadProgress = 1;
 			if (enableLoadedEvent)
 				Context.InvokeUserCode (EventSink.OnLoaded);
-			Title = (string)view.InvokeScript("eval", "document.title.toString()");
+			try
+			{
+				Title = (string)webBrowser.InvokeScript("eval", "document.title.toString()");
+			}
+			catch (COMException ex)
+			{
+				if (ex.ErrorCode == DISP_E_UNKNOWNNAME_ERROR)
+				{
+					//Some web sites appear to disable the Eval method
+					Console.WriteLine("DISP_E_UNKNOWN error from WebViewBackend");
+				}
+				else
+				{
+					throw;
+				}
+			}
 			if (enableTitleChangedEvent && (prevTitle != Title))
 				Context.InvokeUserCode (EventSink.OnTitleChanged);
 			prevTitle = Title;
