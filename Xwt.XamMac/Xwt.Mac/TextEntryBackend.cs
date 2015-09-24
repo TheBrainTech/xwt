@@ -381,6 +381,14 @@ namespace Xwt.Mac
 
 		class CustomEditor : NSTextView
 		{
+			public override string[] CompletionsForPartialWord(NSRange charRange, out nint index) {
+				if (string.IsNullOrEmpty(this.Value)) {
+					index = 0;
+					return new string[] {};
+				}
+				return base.CompletionsForPartialWord(charRange, out index);
+			}
+
 			public ApplicationContext Context {
 				get; set;
 			}
