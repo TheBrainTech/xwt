@@ -35,6 +35,8 @@ using WindowsComboBox = System.Windows.Controls.ComboBox;
 using WindowsOrientation = System.Windows.Controls.Orientation;
 using WindowsComboBoxItem = System.Windows.Controls.ComboBoxItem;
 using System;
+using System.Globalization;
+using System.Windows.Media;
 
 namespace Xwt.WPFBackend
 {
@@ -44,7 +46,7 @@ namespace Xwt.WPFBackend
 		private static readonly Style ContainerStyle;
 		//private static readonly DataTemplate DefaultTemplate;
 
-		double COMBO_BOX_STARTING_WIDTH = 18D;
+		double COMBO_BOX_STARTING_WIDTH = 28D;
 		double longestItemWidth;
 
 		static ComboBoxBackend()
@@ -73,32 +75,18 @@ namespace Xwt.WPFBackend
 			ComboBox.ItemContainerStyle = ContainerStyle;
 
 			this.ComboBox.Loaded += ComboBox_Loaded;
-			this.ComboBox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
 		}
 
 		void ComboBox_Loaded(object sender, RoutedEventArgs e) {
-			this.ComboBox.IsDropDownOpen = true; //Open the combo box to trigger ItemContainerGenerator to load ComboBoxItems
-			this.ComboBox.IsDropDownOpen = false;
-		}
-
-		void ItemContainerGenerator_StatusChanged(object sender, EventArgs e) {
-			if (this.ComboBox.ItemContainerGenerator.Status != System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated) {
-				return;
-			}
-			
 			double itemWidth = 0;
-
-			for (int i = 0; i < this.ComboBox.Items.Count; i++) {
-
-				var item = this.ComboBox.ItemContainerGenerator.ContainerFromIndex(i);
-				if (item == null) {
-					continue;
-				}
-				ComboBoxItem comboBoxItem = item as ComboBoxItem;
-
-				comboBoxItem.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
-				if (comboBoxItem.DesiredSize.Width > itemWidth) {
-					itemWidth = comboBoxItem.DesiredSize.Width;
+			foreach (Xwt.WPFBackend.ValuesContainer item in this.ComboBox.Items)
+			{
+				System.Windows.Media.FormattedText formattedText = new System.Windows.Media.FormattedText(item[0].ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, 
+					new Typeface(this.ComboBox.FontFamily, this.ComboBox.FontStyle, this.ComboBox.FontWeight, this.ComboBox.FontStretch), this.ComboBox.FontSize, null);
+				float formattedTextWidth = (float)formattedText.WidthIncludingTrailingWhitespace;
+				if (formattedTextWidth > itemWidth)
+				{
+					itemWidth = formattedTextWidth;
 				}
 			}
 			longestItemWidth = itemWidth;
