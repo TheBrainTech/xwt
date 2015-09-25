@@ -95,7 +95,7 @@ namespace Xwt.Mac
 				return null;
 			}
 			set {
-
+				this.AllowedFileTypes = value.Patterns.ToArray();
 			}
 		}
 
