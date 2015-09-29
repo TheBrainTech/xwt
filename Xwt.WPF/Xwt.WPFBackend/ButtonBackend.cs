@@ -129,10 +129,11 @@ namespace Xwt.WPFBackend
 			var accessText = new SWC.AccessText ();
 			accessText.Text = label;
 			if (image.IsNull)
-				if (useMnemonic)
-					Button.Content = accessText;
-				else
-					Button.Content = accessText.Text.Replace ("_", "__");
+				//if (useMnemonic)
+				//	Button.Content = accessText;
+				//else
+				//	Button.Content = accessText.Text.Replace ("_", "__");
+				Button.Content = label;
 			else {
 				SWC.DockPanel grid = new SWC.DockPanel ();
 
@@ -197,6 +198,20 @@ namespace Xwt.WPFBackend
 
 				return buttonsDictionary;
 			}
+		}
+
+		public override Size GetPreferredSize(SizeConstraint widthConstraint, SizeConstraint heightConstraint) {
+			Size preSize = base.GetPreferredSize(widthConstraint, heightConstraint);
+
+			if(Button.Content is string) {
+				string label = (string)Button.Content;
+				System.Windows.Media.FormattedText formattedText = new System.Windows.Media.FormattedText(label, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+									new Typeface(Button.FontFamily, Button.FontStyle, Button.FontWeight, Button.FontStretch), Button.FontSize, null);
+				double formattedTextWidth = formattedText.WidthIncludingTrailingWhitespace;
+				preSize.Width = formattedTextWidth + 10;
+			}
+
+			return preSize;
 		}
 	}
 
