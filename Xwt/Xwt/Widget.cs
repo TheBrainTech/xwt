@@ -504,7 +504,15 @@ namespace Xwt
 		{
 			Visible = false;
 		}
-		
+
+		/// <summary>
+		/// Allow custom drag/drop regions for custom <see cref="Xwt.Widget"/> that are not the entire widget.
+		/// Inside the widget the cursor can turn on and off to tell the user that they do or do not have
+		/// a valid place to drop file, etc.
+		/// </summary>
+		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		public Predicate<Point> ShouldPreventDragByLocation = null;
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Xwt.Widget"/> is visible.
 		/// </summary>

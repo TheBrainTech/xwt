@@ -625,7 +625,14 @@ namespace Xwt.Mac
 			NSDraggingInfo di = (NSDraggingInfo) Runtime.GetNSObject (dragInfo);
 			var types = di.DraggingPasteboard.Types.Select (t => ToXwtDragType (t)).ToArray ();
 			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
-			
+
+			var widget = backend.Frontend;
+			if (widget.ShouldPreventDragByLocation != null) {
+				if (widget.ShouldPreventDragByLocation(pos)) {
+					return NSDragOperation.None;
+				}
+			}
+
 			if ((backend.currentEvents & WidgetEvent.DragOverCheck) != 0) {
 				var args = new DragOverCheckEventArgs (pos, types, ConvertAction (di.DraggingSourceOperationMask));
 				backend.OnDragOverCheck (di, args);
