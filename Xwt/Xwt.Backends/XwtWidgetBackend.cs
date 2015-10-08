@@ -104,6 +104,10 @@ namespace Xwt.Backends
 			this.SetDragDropTarget (dragAction, types);
 		}
 
+		void IWidgetBackend.UnregsiterDragTarget() {
+			this.UnregisterDragDropTarget();
+		}
+
 		void IWidgetBackend.SetCursor (CursorType cursorType)
 		{
 			Cursor = cursorType;

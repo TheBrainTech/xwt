@@ -869,6 +869,10 @@ namespace Xwt
 		{
 			Backend.SetDragTarget (types.Select (t => TransferDataType.FromType (t)).ToArray(), dragAction);
 		}
+
+		public void UnregisterDragDropTarget() {
+			Backend.UnregsiterDragTarget();
+		}
 		
 		/// <summary>
 		/// Sets up this widget so that XWT will start a drag operation when the user clicks and drags on this widget.

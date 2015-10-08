@@ -168,6 +168,8 @@ namespace Xwt.Backends
 		/// Bitmask of possible actions for a drop on this widget
 		/// </param>
 		void SetDragTarget (TransferDataType[] types, DragDropAction dragAction);
+
+		void UnregsiterDragTarget();
 		
 		/// <summary>
 		/// Gets or sets the native font of this widget.

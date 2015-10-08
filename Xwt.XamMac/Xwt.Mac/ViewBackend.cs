@@ -609,6 +609,10 @@ namespace Xwt.Mac
 			var dtypes = types.Select (t => ToNSDragType (t)).ToArray ();
 			Widget.RegisterForDraggedTypes (dtypes);
 		}
+
+		public void UnregsiterDragTarget() {
+			Widget.UnregisterDraggedTypes();
+		}
 		
 		static NSDragOperation DraggingEntered (IntPtr sender, IntPtr sel, IntPtr dragInfo)
 		{
