@@ -736,6 +736,10 @@ namespace Xwt.WPFBackend
 			Widget.AllowDrop = true;
 		}
 
+		public void UnregisterDragTarget() {
+			Widget.AllowDrop = false;
+		}
+
 		public void SetDragSource (TransferDataType [] types, DragDropAction dragAction)
 		{
 			if (DragDropInfo.AutodetectDrag)
@@ -887,6 +891,16 @@ namespace Xwt.WPFBackend
 		{
 			var types = e.Data.GetFormats ().Select (t => t.ToXwtTransferType ()).ToArray ();
 			var pos = e.GetPosition (Widget).ToXwtPoint ();
+
+			if(Frontend.ShouldPreventDragByLocation != null) {
+				if(Frontend.ShouldPreventDragByLocation(pos)) {
+					Mouse.SetCursor(Cursors.No);
+					e.Effects = currentDragEffect = DragDropEffects.None;
+					e.Handled = true;
+					return;
+				}
+			}
+
 			var proposedAction = DetectDragAction (e.KeyStates);
 
 			e.Handled = true; // Prevent default handlers from being used.

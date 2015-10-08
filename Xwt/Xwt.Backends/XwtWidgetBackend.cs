@@ -104,7 +104,7 @@ namespace Xwt.Backends
 			this.SetDragDropTarget (dragAction, types);
 		}
 
-		void IWidgetBackend.UnregsiterDragTarget() {
+		void IWidgetBackend.UnregisterDragTarget() {
 			this.UnregisterDragDropTarget();
 		}
 

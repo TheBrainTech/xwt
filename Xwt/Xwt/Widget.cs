@@ -871,7 +871,7 @@ namespace Xwt
 		}
 
 		public void UnregisterDragDropTarget() {
-			Backend.UnregsiterDragTarget();
+			Backend.UnregisterDragTarget();
 		}
 		
 		/// <summary>
