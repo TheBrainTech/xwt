@@ -610,7 +610,7 @@ namespace Xwt.Mac
 			Widget.RegisterForDraggedTypes (dtypes);
 		}
 
-		public void UnregsiterDragTarget() {
+		public void UnregisterDragTarget() {
 			Widget.UnregisterDraggedTypes();
 		}
 		
