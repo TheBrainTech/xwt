@@ -86,8 +86,8 @@ namespace Xwt.Mac
 					return false;
 				}
 				var item = pb.PasteboardItems[0];
-				for (int i= 0; i< item.Types.Length; i++) {
-					if (item.Types[i].Equals("public.tiff") || item.Types[i].Equals("public.png")) {
+				foreach (string itemType in item.Types) {
+					if (itemType == "public.tiff" || itemType == "public.png") {
 						return true;
 					}
 				}
