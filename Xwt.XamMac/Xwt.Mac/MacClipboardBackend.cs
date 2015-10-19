@@ -96,7 +96,8 @@ namespace Xwt.Mac
 				classes = new NSObject[] {
 					
 					NSObject.FromObject(new Class(typeof(NSAttributedString))),
-					NSObject.FromObject(new Class(typeof(NSString)))
+					NSObject.FromObject(new Class(typeof(NSString))),
+					NSObject.FromObject(new Class(typeof(NSUrl)))
 				};
 				options = new NSDictionary();
 				isType = pb.CanReadObjectForClasses(classes, options);
