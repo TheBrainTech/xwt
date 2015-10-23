@@ -146,7 +146,7 @@ namespace Xwt.Mac
 			// Url as text!
 			if (type == TransferDataType.Text) {
 				NSUrl url = NSUrl.FromPasteboard(NSPasteboard.GeneralPasteboard);
-				if(url.IsFileUrl) {
+				if(url != null && url.IsFileUrl) {
 					return "file://" + new Uri(url.Path).AbsolutePath;
 				}
 			}
