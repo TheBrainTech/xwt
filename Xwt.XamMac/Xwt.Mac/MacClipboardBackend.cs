@@ -93,11 +93,18 @@ namespace Xwt.Mac
 				}
 				return false;
 			} else if (type == TransferDataType.Text) {
+
+				var item = pb.PasteboardItems[0];
+				foreach (string itemType in item.Types) {
+					if (itemType == "public.file-url") {
+						return true;
+					}
+				}
+
 				classes = new NSObject[] {
-					
 					NSObject.FromObject(new Class(typeof(NSAttributedString))),
 					NSObject.FromObject(new Class(typeof(NSString))),
-					NSObject.FromObject(new Class(typeof(NSUrl)))
+					NSObject.FromObject(new Class(typeof(NSUrl))),
 				};
 				options = new NSDictionary();
 				isType = pb.CanReadObjectForClasses(classes, options);
@@ -133,6 +140,14 @@ namespace Xwt.Mac
 						NSImage nsImg = new NSImage(imgData);
 						return ApplicationContext.Toolkit.WrapImage (nsImg);
 					}
+				}
+			}
+
+			// Url as text!
+			if (type == TransferDataType.Text) {
+				NSUrl url = NSUrl.FromPasteboard(NSPasteboard.GeneralPasteboard);
+				if(url.IsFileUrl) {
+					return "file://" + new Uri(url.Path).AbsolutePath;
 				}
 			}
 
