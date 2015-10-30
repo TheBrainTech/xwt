@@ -793,7 +793,13 @@ namespace Xwt
 		/// The widget bounds
 		/// </value>
 		public Rectangle ScreenBounds {
-			get { return new Rectangle (ConvertToScreenCoordinates (new Point (0,0)), Size); }
+			get {
+				Rectangle rect = new Rectangle (ConvertToScreenCoordinates (new Point (0,0)), Size);
+				double scaleFactor = Xwt.Desktop.PrimaryScreen.ScaleFactor;
+				rect.X = rect.X / scaleFactor;
+				rect.Y = rect.Y / scaleFactor;
+				return rect;
+			}
 		}
 		
 		/// <summary>
