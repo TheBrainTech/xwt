@@ -363,8 +363,7 @@ namespace Xwt
 		internal virtual Rectangle BackendBounds {
 			get {
 				BackendHost.EnsureBackendLoaded ();
-				Point scaledPoint = new Point(location.X / Xwt.Desktop.PrimaryScreen.ScaleFactor, location.Y / Xwt.Desktop.PrimaryScreen.ScaleFactor);
-				return new Rectangle (scaledPoint, size);
+				return new Rectangle(location, size);
 			}
 			set {
 				size = value.Size;

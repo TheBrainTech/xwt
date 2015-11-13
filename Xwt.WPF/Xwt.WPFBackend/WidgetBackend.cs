@@ -256,8 +256,8 @@ namespace Xwt.WPFBackend
 		{
 			var p = Widget.PointToScreen (new System.Windows.Point (
 				widgetCoordinates.X, widgetCoordinates.Y));
-
-			return new Point (p.X, p.Y);
+			double scaleFactor = Xwt.Desktop.PrimaryScreen.ScaleFactor;
+			return new Point (p.X / scaleFactor, p.Y / scaleFactor);
 		}
 
 		SW.Size lastNaturalSize;

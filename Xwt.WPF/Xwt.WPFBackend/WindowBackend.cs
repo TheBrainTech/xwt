@@ -105,7 +105,9 @@ namespace Xwt.WPFBackend
 		{
 			get
 			{
-				return Window.ClientBounds;
+				Rectangle bounds = Window.ClientBounds;
+				double scaleFactor = Xwt.Desktop.PrimaryScreen.ScaleFactor;
+				return new Xwt.Rectangle(bounds.X / scaleFactor, bounds.Y / scaleFactor, bounds.Width, bounds.Height);
 			}
 			set
 			{
