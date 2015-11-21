@@ -85,6 +85,14 @@ namespace Xwt.WPFBackend
 			if (type == null)
 				throw new ArgumentNullException ("type");
 
+			if (type == TransferDataType.Text) {
+				if (WindowsClipboard.ContainsFileDropList()) {
+					foreach (string s in WindowsClipboard.GetFileDropList()) {
+						return true;
+					}
+				}
+			}
+
 			return WindowsClipboard.ContainsData (type.ToWpfDataFormat ());
 		}
 
@@ -95,6 +103,14 @@ namespace Xwt.WPFBackend
 
 			if (!IsTypeAvailable (type))
 				return null;
+
+			if (type == TransferDataType.Text) {
+				if (WindowsClipboard.ContainsFileDropList()) {
+					foreach (string s in WindowsClipboard.GetFileDropList()) {
+						return "file://" + s;
+					}
+				}
+			}
 
 			if(type == TransferDataType.Image) {
 				return ApplicationContext.Toolkit.WrapImage(WindowsClipboard.GetImage());
