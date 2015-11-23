@@ -93,7 +93,9 @@ namespace Xwt.Mac
 				}
 				return false;
 			} else if (type == TransferDataType.Text) {
-
+				if (pb.PasteboardItems.Length == 0) {
+					return false;
+				}
 				var item = pb.PasteboardItems[0];
 				foreach (string itemType in item.Types) {
 					if (itemType == "public.file-url") {
