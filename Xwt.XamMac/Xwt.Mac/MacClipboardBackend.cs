@@ -68,9 +68,13 @@ namespace Xwt.Mac
 		public override bool IsTypeAvailable (TransferDataType type)
 		{ 
 			NSPasteboard pb = NSPasteboard.GeneralPasteboard;
-			NSObject[] classes;
+			Class[] classes;
 			NSDictionary options;
 			bool isType;
+
+			if (pb.PasteboardItems.Length == 0) {
+				return false;
+			}
 
 			if (type == TransferDataType.Image) {
 				//The below only works for images copied from web browsers, doesn't work for raw images.
@@ -82,9 +86,6 @@ namespace Xwt.Mac
 //				options = NSDictionary.FromObjectAndKey(imageClassObj, a);
 //				isType = pb.CanReadObjectForClasses(classes, options);
 //				return isType;
-				if (pb.PasteboardItems.Length == 0) {
-					return false;
-				}
 				var item = pb.PasteboardItems[0];
 				foreach (string itemType in item.Types) {
 					if (itemType == "public.tiff" || itemType == "public.png") {
@@ -93,7 +94,7 @@ namespace Xwt.Mac
 				}
 				return false;
 			} else if (type == TransferDataType.Text) {
-
+				// text
 				var item = pb.PasteboardItems[0];
 				foreach (string itemType in item.Types) {
 					if (itemType == "public.file-url") {
@@ -101,17 +102,17 @@ namespace Xwt.Mac
 					}
 				}
 
-				classes = new NSObject[] {
-					NSObject.FromObject(new Class(typeof(NSAttributedString))),
-					NSObject.FromObject(new Class(typeof(NSString))),
-					NSObject.FromObject(new Class(typeof(NSUrl))),
+				classes = new Class[] {
+					new Class(typeof(NSAttributedString)),
+					new Class(typeof(NSString)),
+					new Class(typeof(NSUrl)),
 				};
 				options = new NSDictionary();
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;
 			} else if (type == TransferDataType.Uri) {
 				//files
-				classes = new NSObject[]{ NSObject.FromObject(new Class(typeof(NSUrl))) };
+				classes = new Class[]{ new Class(typeof(NSUrl)) };
 				options = NSDictionary.FromObjectAndKey(NSObject.FromObject(NSNumber.FromBoolean(true)), new NSString(type.ToUTI()));
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;
