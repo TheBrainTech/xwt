@@ -72,6 +72,10 @@ namespace Xwt.Mac
 			NSDictionary options;
 			bool isType;
 
+			if (pb.PasteboardItems.Length == 0) {
+				return false;
+			}
+
 			if (type == TransferDataType.Image) {
 				//The below only works for images copied from web browsers, doesn't work for raw images.
 
@@ -82,9 +86,6 @@ namespace Xwt.Mac
 //				options = NSDictionary.FromObjectAndKey(imageClassObj, a);
 //				isType = pb.CanReadObjectForClasses(classes, options);
 //				return isType;
-				if (pb.PasteboardItems.Length == 0) {
-					return false;
-				}
 				var item = pb.PasteboardItems[0];
 				foreach (string itemType in item.Types) {
 					if (itemType == "public.tiff" || itemType == "public.png") {
@@ -93,9 +94,7 @@ namespace Xwt.Mac
 				}
 				return false;
 			} else if (type == TransferDataType.Text) {
-				if (pb.PasteboardItems.Length == 0) {
-					return false;
-				}
+				// text
 				var item = pb.PasteboardItems[0];
 				foreach (string itemType in item.Types) {
 					if (itemType == "public.file-url") {
