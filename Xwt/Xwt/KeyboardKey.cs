@@ -89,6 +89,8 @@ namespace Xwt {
 			allKeys.Add(new KeyboardKey { ConfigurationString = "PgUp",  MacInputKeyCode = -1,  MacInputCharacter = (char)11,  MacMenuCharacter = (char)63276, ConsoleKey = ConsoleKey.PageUp });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "PgDn",  MacInputKeyCode = -1,  MacInputCharacter = (char)12,  MacMenuCharacter = (char)63277, ConsoleKey = ConsoleKey.PageDown });
 
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Backspace", MacInputKeyCode = 51,  MacInputCharacter = '\0', MacMenuCharacter = (char)63274, ConsoleKey = ConsoleKey.Backspace });
+
 			allKeys.Add(new KeyboardKey { ConfigurationString = "F1",    MacInputKeyCode = 122, MacInputCharacter = '\0',      MacMenuCharacter = (char)63236, ConsoleKey = ConsoleKey.F1 });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "F2",    MacInputKeyCode = 120, MacInputCharacter = '\0',      MacMenuCharacter = (char)63237, ConsoleKey = ConsoleKey.F2 });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "F3",    MacInputKeyCode = 99,  MacInputCharacter = '\0',      MacMenuCharacter = (char)63238, ConsoleKey = ConsoleKey.F3 });
