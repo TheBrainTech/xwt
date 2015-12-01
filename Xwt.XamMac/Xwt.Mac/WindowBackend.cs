@@ -183,7 +183,7 @@ namespace Xwt.Mac
 			get {
 				if(this.IsMiniaturized) {
 					return WindowState.Minimized;
-				} else if(this.ContentView.IsInFullscreenMode) {
+				} else if(this.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow)) {
 					return WindowState.FullScreen;
 				} else if(this.IsZoomed) {
 					return WindowState.Maximized;
@@ -198,7 +198,7 @@ namespace Xwt.Mac
 
 				switch(value) {
 				case WindowState.Minimized:
-					if(this.ContentView.IsInFullscreenMode) {
+					if(this.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow)) {
 						this.ToggleFullScreen(this);
 					}
 					this.Miniaturize(this);
@@ -207,12 +207,12 @@ namespace Xwt.Mac
 					if(this.IsMiniaturized) {
 						this.Deminiaturize(this);
 					}
-					if(!this.ContentView.IsInFullscreenMode) {
+					if(!this.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow)) {
 						this.ToggleFullScreen(this);
 					}
 					break;
 				case WindowState.Maximized:
-					if(this.ContentView.IsInFullscreenMode) {
+					if(this.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow)) {
 						this.ToggleFullScreen(this);
 					}
 					if(this.IsMiniaturized) {
@@ -223,7 +223,7 @@ namespace Xwt.Mac
 					}
 					break;
 				case WindowState.Normal:
-					if(this.ContentView.IsInFullscreenMode) {
+					if(this.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow)) {
 						this.ToggleFullScreen(this);
 					}
 					if(IsZoomed) {
