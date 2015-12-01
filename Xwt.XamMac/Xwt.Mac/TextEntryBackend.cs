@@ -293,8 +293,21 @@ namespace Xwt.Mac
 		public override Xwt.Drawing.Color BackgroundColor {
 			get { return Widget.BackgroundColor.ToXwtColor(); }
 			set {
+				bool startedWithFocus = false;
+				int cursorPosition = -1;
+				if(this.HasKeyboardFocus) {
+					startedWithFocus = true;
+					cursorPosition = this.CursorPosition;
+					this.Widget.ResignFirstResponder();
+				}
+
 				((NSTextFieldCell)Widget.Cell).BackgroundColor = value.ToNSColor();
 				Widget.BackgroundColor = value.ToNSColor();
+
+				if(startedWithFocus) {
+					this.SetFocus();
+					this.CursorPosition = cursorPosition;
+				}
 			}
 		}
 
