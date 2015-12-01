@@ -64,9 +64,11 @@ namespace Xwt.Mac
 		}
 
 		private void HandleWindowStateChanging(object sender, EventArgs e) {
-			Rectangle restoreBounds = new Rectangle(this.Frame.X, this.Frame.Y, this.Frame.Width, this.Frame.Height);
-			restoreBounds.Y = this.frontend.Screen.Bounds.Height - (restoreBounds.Y + restoreBounds.Height); //Invert Y
-			cachedRestoreBounds = restoreBounds;
+			if(this.WindowState == WindowState.Normal) {
+				Rectangle restoreBounds = new Rectangle(this.Frame.X, this.Frame.Y, this.Frame.Width, this.Frame.Height);
+				restoreBounds.Y = Desktop.Bounds.Height - (restoreBounds.Y + restoreBounds.Height); //Invert Y
+				cachedRestoreBounds = restoreBounds;
+			}
 		}
 		
 		public WindowBackend ()
