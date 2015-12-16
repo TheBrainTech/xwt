@@ -585,8 +585,9 @@ namespace Xwt.Mac
 
 		public void DragStart (DragStartData sdata)
 		{
-			var lo = Widget.ConvertPointToBase (new CGPoint (Widget.Bounds.X, Widget.Bounds.Y));
-			lo = Widget.Window.ConvertBaseToScreen (lo);
+			CGRect  frameRelativeToWindow = Widget.ConvertRectToView(Widget.Bounds, null);
+			frameRelativeToWindow = new CGRect(frameRelativeToWindow.X, frameRelativeToWindow.Y + frameRelativeToWindow.Height, frameRelativeToWindow.Width, frameRelativeToWindow.Height); //Invert y
+			var lo = Widget.Window.ConvertRectToScreen(frameRelativeToWindow); //Top left corner of view from the bottom left corner of the screen
 			var ml = NSEvent.CurrentMouseLocation;
 			var pb = NSPasteboard.FromName (NSPasteboard.NSDragPasteboardName);
 			if (pb == null)
