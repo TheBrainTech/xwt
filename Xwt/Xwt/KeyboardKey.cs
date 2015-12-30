@@ -83,13 +83,13 @@ namespace Xwt {
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Left",  MacInputKeyCode = -1,  MacInputCharacter = (char)28,  MacMenuCharacter = (char)63234, ConsoleKey = ConsoleKey.LeftArrow });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Right", MacInputKeyCode = -1,  MacInputCharacter = (char)29,  MacMenuCharacter = (char)63235, ConsoleKey = ConsoleKey.RightArrow });
 
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Del",   MacInputKeyCode = -1,  MacInputCharacter = (char)127, MacMenuCharacter = (char)63272, ConsoleKey = ConsoleKey.Delete });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Del",   MacInputKeyCode = -1,  MacInputCharacter = (char)127, MacMenuCharacter = (char)8998, ConsoleKey = ConsoleKey.Delete });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Home",  MacInputKeyCode = -1,  MacInputCharacter = (char)1,   MacMenuCharacter = (char)63273, ConsoleKey = ConsoleKey.Home });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "End",   MacInputKeyCode = -1,  MacInputCharacter = (char)4,   MacMenuCharacter = (char)63275, ConsoleKey = ConsoleKey.End });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "PgUp",  MacInputKeyCode = -1,  MacInputCharacter = (char)11,  MacMenuCharacter = (char)63276, ConsoleKey = ConsoleKey.PageUp });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "PgDn",  MacInputKeyCode = -1,  MacInputCharacter = (char)12,  MacMenuCharacter = (char)63277, ConsoleKey = ConsoleKey.PageDown });
 
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Backspace", MacInputKeyCode = 51,  MacInputCharacter = '\0', MacMenuCharacter = (char)63274, ConsoleKey = ConsoleKey.Backspace });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Backspace", MacInputKeyCode = 51,  MacInputCharacter = '\0', MacMenuCharacter = (char)9003, ConsoleKey = ConsoleKey.Backspace });
 
 			allKeys.Add(new KeyboardKey { ConfigurationString = "F1",    MacInputKeyCode = 122, MacInputCharacter = '\0',      MacMenuCharacter = (char)63236, ConsoleKey = ConsoleKey.F1 });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "F2",    MacInputKeyCode = 120, MacInputCharacter = '\0',      MacMenuCharacter = (char)63237, ConsoleKey = ConsoleKey.F2 });
