@@ -233,6 +233,12 @@ namespace Xwt.WPFBackend
 
 		public void SetMinSize (Size size)
 		{
+			if(size.Height < 0 && size.Height != -1) {
+				size.Height = 0;
+			}
+			if(size.Width < 0 && size.Width != -1) {
+				size.Width = 0;
+			}
 			if (borderCalculated) {
 				if (size.Width != -1)
 					MinWidth = size.Width + frameBorder.HorizontalSpacing;
