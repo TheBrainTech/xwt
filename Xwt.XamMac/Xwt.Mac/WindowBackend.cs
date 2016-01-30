@@ -119,6 +119,8 @@ namespace Xwt.Mac
 				return this;
 			}
 		}
+
+		public string Name { get; set; }
 		
 		internal void InternalShow ()
 		{
@@ -498,7 +500,7 @@ namespace Xwt.Mac
 				width = cr.Width;
 			if (height == -1)
 				height = cr.Height;
-			var r = FrameRectFor (new CGRect ((float)cr.X, (float)(cr.Y - height + cr.Height), (float)width, (float)height));
+			var r = FrameRectFor (new CGRect ((nfloat)cr.X, (nfloat)(cr.Y - height + cr.Height), (nfloat)width, (nfloat)height));
 			SetFrame (r, true);
 			LayoutWindow ();
 		}
@@ -566,7 +568,7 @@ namespace Xwt.Mac
 			if (b != ((IWindowBackend)this).Bounds)
 				((IWindowBackend)this).Bounds = b;
 
-			var r = FrameRectFor (new CGRect (0, 0, (float)s.Width, (float)s.Height));
+			var r = FrameRectFor (new CGRect (0, 0, (nfloat)s.Width, (nfloat)s.Height));
 			MinSize = r.Size;
 		}
 

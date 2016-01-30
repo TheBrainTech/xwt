@@ -59,7 +59,7 @@ namespace Xwt.Mac
 		protected override void OnSizeToFit ()
 		{
 			var s = EventSink.GetPreferredSize ();
-			Widget.SetFrameSize (new CGSize ((float)s.Width, (float)s.Height)); 
+			Widget.SetFrameSize (new CGSize ((nfloat)s.Width, (nfloat)s.Height)); 
 		}
 
 		public Rectangle Bounds {
@@ -75,7 +75,7 @@ namespace Xwt.Mac
 		
 		public void QueueDraw (Rectangle rect)
 		{
-			view.SetNeedsDisplayInRect (new CGRect ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height));
+			view.SetNeedsDisplayInRect (new CGRect ((nfloat)rect.X, (nfloat)rect.Y, (nfloat)rect.Width, (nfloat)rect.Height));
 		}
 		
 		public void AddChild (IWidgetBackend widget, Rectangle rect)
@@ -84,7 +84,7 @@ namespace Xwt.Mac
 			view.AddSubview (v);
 			
 			// Not using SetWidgetBounds because the view is flipped
-			v.Frame = new CGRect ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);;
+			v.Frame = new CGRect ((nfloat)rect.X, (nfloat)rect.Y, (nfloat)rect.Width, (nfloat)rect.Height);;
 			v.NeedsDisplay = true;
 		}
 		
@@ -99,7 +99,7 @@ namespace Xwt.Mac
 			var w = GetWidget (widget);
 			
 			// Not using SetWidgetBounds because the view is flipped
-			w.Frame = new CGRect ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);;
+			w.Frame = new CGRect ((nfloat)rect.X, (nfloat)rect.Y, (nfloat)rect.Width, (nfloat)rect.Height);;
 			w.NeedsDisplay = true;
 		}
 	}

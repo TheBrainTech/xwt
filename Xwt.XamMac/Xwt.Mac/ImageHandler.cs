@@ -157,7 +157,7 @@ namespace Xwt.Mac
 
 				var ctx = new CGContextBackend {
 					Context = bmp,
-					Size = new SizeF ((float)width, (float)height),
+					Size = new CGSize ((nfloat)width, (nfloat)height),
 					InverseViewTransform = bmp.GetCTM ().Invert (),
 					ScaleFactor = scaleFactor
 				};
@@ -170,7 +170,7 @@ namespace Xwt.Mac
 				var imageRep = (NSBitmapImageRep)NSBitmapImageRep.ImageRepFromData (imageData);
 				var im = new NSImage ();
 				im.AddRepresentation (imageRep);
-				im.Size = new CGSize ((float)width, (float)height);
+				im.Size = new CGSize ((nfloat)width, (nfloat)height);
 				bmp.Dispose ();
 				return im;
 			}
@@ -182,7 +182,7 @@ namespace Xwt.Mac
 					var imageRep = (NSBitmapImageRep)NSBitmapImageRep.ImageRepFromData (imageData);
 					var im = new NSImage ();
 					im.AddRepresentation (imageRep);
-					im.Size = new CGSize ((float)width, (float)height);
+					im.Size = new CGSize ((nfloat)width, (nfloat)height);
 					return im;
 				}
 				bitmap.Size = new CGSize(width, height);
@@ -333,7 +333,7 @@ namespace Xwt.Mac
 
 		internal void DrawInContext (CGContextBackend ctx)
 		{
-			var s = ctx.Size != SizeF.Empty ? ctx.Size : new SizeF ((float)Size.Width, (float)Size.Height);
+			var s = ctx.Size != CGSize.Empty ? ctx.Size : Size;
 			actx.InvokeUserCode (delegate {
 				drawCallback (ctx, new Rectangle (0, 0, s.Width, s.Height));
 			});

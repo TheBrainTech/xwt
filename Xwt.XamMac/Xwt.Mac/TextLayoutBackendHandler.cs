@@ -37,6 +37,9 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.CoreText;
 using MonoMac.CoreGraphics;
+using CGPoint = System.Drawing.PointF;
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
 #else
 using Foundation;
 using AppKit;
@@ -44,9 +47,6 @@ using CoreText;
 using CoreGraphics;
 #endif
 
-using PointF = System.Drawing.PointF;
-using SizeF = System.Drawing.SizeF;
-using RectangleF = System.Drawing.RectangleF;
 using System.Collections.Generic;
 
 namespace Xwt.Mac
@@ -146,6 +146,12 @@ namespace Xwt.Mac
 				line.GetTypographicBounds (out ascent, out descent, out leading);
 				return (double)ascent;
 			}
+		}
+
+		public override double GetMeanline (object backend)
+		{
+			LayoutInfo li = (LayoutInfo)backend;
+			return GetBaseline (backend) - li.Font.XHeight / 2;
 		}
 
 		static CTFrame CreateFrame (LayoutInfo li)

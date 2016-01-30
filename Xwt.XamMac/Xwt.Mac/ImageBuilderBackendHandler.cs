@@ -73,7 +73,7 @@ namespace Xwt.Mac
 			bmp.ScaleCTM (1, -1);
 			return new CGContextBackend {
 				Context = bmp,
-				Size = new SizeF (width, height),
+				Size = new CGSize (width, height),
 				InverseViewTransform = bmp.GetCTM ().Invert ()
 			};
 		}

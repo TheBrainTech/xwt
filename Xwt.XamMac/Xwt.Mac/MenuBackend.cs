@@ -87,6 +87,7 @@ namespace Xwt.Mac
 		public void InitializeBackend (object frontend, ApplicationContext context)
 		{
 			this.context = context;
+			AutoEnablesItems = false;
 		}
 
 		public void InsertItem (int index, IMenuItemBackend menuItem)
@@ -134,12 +135,21 @@ namespace Xwt.Mac
 		public void Popup ()
 		{
 			var evt = NSApplication.SharedApplication.CurrentEvent;
-			NSMenu.PopUpContextMenu (this, evt, evt.Window.ContentView, null);
+			NSMenu.PopUpContextMenu (this, evt, evt.Window.ContentView);
 		}
 		
 		public void Popup (IWidgetBackend widget, double x, double y)
 		{
-			NSMenu.PopUpContextMenu (this, NSApplication.SharedApplication.CurrentEvent, ((ViewBackend)widget).Widget, null);
+			NSMenu.PopUpContextMenu (this, NSApplication.SharedApplication.CurrentEvent, ((ViewBackend)widget).Widget);
+		}
+
+		object IMenuBackend.Font {
+			get {
+				return FontData.FromFont (Font);
+			}
+			set {
+				Font = ((FontData)value).Font;
+			}
 		}
 	}
 }

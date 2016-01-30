@@ -20,11 +20,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>False</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>True</SignAssembly>
@@ -149,6 +150,7 @@
     <Compile Include="Xwt.WPFBackend\WpfKeyboardHandler.cs" />
     <Compile Include="Xwt.WPFBackend\WebViewBackend.cs" />
     <Compile Include="Xwt.WPFBackend\ScrollControlBackend.cs" />
+    <Compile Include="Xwt.WPFBackend\CalendarBackend.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

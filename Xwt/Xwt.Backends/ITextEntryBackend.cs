@@ -40,6 +40,8 @@ namespace Xwt.Backends
 		int SelectionLength { get; set; }
 		string SelectedText { get; set; }
 		bool HasKeyboardFocus { get; }
+		void SetCompletions (string[] completions);
+		void SetCompletionMatchFunc (Func<string, string, bool> matchFunc);
 	}
 	
 	public interface ITextEntryEventSink: IWidgetEventSink

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
+using System.Linq;
 using Xwt.Backends;
 
 #if MONOMAC
@@ -117,7 +118,7 @@ namespace Xwt.Mac
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;
 			}
-			return NSPasteboard.GeneralPasteboard.CanReadItemWithDataConformingToTypes (new string[] {type.ToUTI ()});
+			return NSPasteboard.GeneralPasteboard.Types.Contains (type.ToUTI ());
 		}
 
 

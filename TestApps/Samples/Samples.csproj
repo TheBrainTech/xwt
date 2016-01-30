@@ -19,12 +19,13 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>False</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -107,6 +108,10 @@
     <Compile Include="Samples\MessageDialogs.cs" />
     <Compile Include="Samples\MultithreadingSample.cs" />
     <Compile Include="Samples\WidgetFocus.cs" />
+    <Compile Include="Samples\ListViewCellBounds.cs" />
+    <Compile Include="Samples\TreeViewCellBounds.cs" />
+    <Compile Include="Samples\CalendarSample.cs" />
+    <Compile Include="Samples\FontSelectorSample.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

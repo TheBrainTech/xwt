@@ -49,7 +49,7 @@ namespace Xwt.Mac
 {
 	class CGContextBackend {
 		public CGContext Context;
-		public SizeF Size;
+		public CGSize Size;
 		public CGAffineTransform? InverseViewTransform;
 		public Stack<ContextStatus> StatusStack = new Stack<ContextStatus> ();
 		public ContextStatus CurrentStatus = new ContextStatus ();
@@ -173,7 +173,7 @@ namespace Xwt.Mac
 
 		public override void Rectangle (object backend, double x, double y, double width, double height)
 		{
-			((CGContextBackend)backend).Context.AddRect (new CGRect ((float)x, (float)y, (float)width, (float)height));
+			((CGContextBackend)backend).Context.AddRect (new CGRect ((nfloat)x, (nfloat)y, (nfloat)width, (nfloat)height));
 		}
 
 		public override void RelCurveTo (object backend, double dx1, double dy1, double dx2, double dy2, double dx3, double dy3)
@@ -241,7 +241,8 @@ namespace Xwt.Mac
 		public override void SetPattern (object backend, object p)
 		{
 			CGContextBackend gc = (CGContextBackend)backend;
-			gc.CurrentStatus.Pattern = p;
+			var toolkit = ApplicationContext.Toolkit;
+			gc.CurrentStatus.Pattern = toolkit.GetSafeBackend (p);
 		}
 
 		void SetupPattern (CGContextBackend gc)
@@ -304,7 +305,7 @@ namespace Xwt.Mac
 
 			double rx = destRect.Width / srcRect.Width;
 			double ry = destRect.Height / srcRect.Height;
-			ctx.AddRect (new CGRect ((float)destRect.X, (float)destRect.Y, (float)destRect.Width, (float)destRect.Height));
+			ctx.AddRect (new CGRect ((nfloat)destRect.X, (nfloat)destRect.Y, (nfloat)destRect.Width, (nfloat)destRect.Height));
 			ctx.Clip ();
 			ctx.TranslateCTM ((float)(destRect.X - (srcRect.X * rx)), (float)(destRect.Y - (srcRect.Y * ry)));
 			ctx.ScaleCTM ((float)rx, (float)ry);
@@ -375,12 +376,12 @@ namespace Xwt.Mac
 
 		public override bool IsPointInFill (object backend, double x, double y)
 		{
-			return ((CGContextBackend)backend).Context.PathContainsPoint (new CGPoint ((float)x, (float)y), CGPathDrawingMode.Fill);
+			return ((CGContextBackend)backend).Context.PathContainsPoint (new CGPoint ((nfloat)x, (nfloat)y), CGPathDrawingMode.Fill);
 		}
 
 		public override bool IsPointInStroke (object backend, double x, double y)
 		{
-			return ((CGContextBackend)backend).Context.PathContainsPoint (new CGPoint ((float)x, (float)y), CGPathDrawingMode.Stroke);
+			return ((CGContextBackend)backend).Context.PathContainsPoint (new CGPoint ((nfloat)x, (nfloat)y), CGPathDrawingMode.Stroke);
 		}
 
 		public override void Dispose (object backend)

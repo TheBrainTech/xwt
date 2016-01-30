@@ -142,6 +142,8 @@ namespace Xwt.Mac
 			RegisterBackend <Xwt.Backends.ISaveFileDialogBackend, SaveFileDialogBackend> ();
 			RegisterBackend <Xwt.Backends.IColorPickerBackend, ColorPickerBackend> ();
 			RegisterBackend <Xwt.Backends.ISelectColorDialogBackend, SelectColorDialogBackend>();
+			RegisterBackend <Xwt.Backends.ICalendarBackend,CalendarBackend> ();
+			RegisterBackend <Xwt.Backends.ISelectFontDialogBackend, SelectFontDialogBackend> ();
 		}
 
 		public override void RunApplication ()
@@ -262,7 +264,7 @@ namespace Xwt.Mac
 			var imageRep = (NSBitmapImageRep)NSBitmapImageRep.ImageRepFromData (imageData);
 			var im = new NSImage ();
 			im.AddRepresentation (imageRep);
-			im.Size = new CGSize ((float)view.Bounds.Width, (float)view.Bounds.Height);
+			im.Size = new CGSize ((nfloat)view.Bounds.Width, (nfloat)view.Bounds.Height);
 			return im;
 		}
 
@@ -279,6 +281,11 @@ namespace Xwt.Mac
 	{
 		bool launched;
 		List<WindowBackend> pendingWindows = new List<WindowBackend> ();
+
+		public event EventHandler<TerminationEventArgs> Terminating;
+		public event EventHandler Unhidden;
+		public event EventHandler<OpenFilesEventArgs> OpenFilesRequest;
+		public event EventHandler<OpenUrlEventArgs> OpenUrl;
 		
 		public AppDelegate (bool launched)
 		{
@@ -300,12 +307,88 @@ namespace Xwt.Mac
 			launched = true;
 			foreach (var w in pendingWindows)
 				w.InternalShow ();
+
+			NSAppleEventManager eventManager = NSAppleEventManager.SharedAppleEventManager;
+			eventManager.SetEventHandler (this, new Selector ("handleGetURLEvent:withReplyEvent:"), AEEventClass.Internet, AEEventID.GetUrl);
+		}
+			
+		[Export("handleGetURLEvent:withReplyEvent:")]
+		void HandleGetUrlEvent(NSAppleEventDescriptor descriptor, NSAppleEventDescriptor reply)
+		{
+			var openUrlEvent = OpenUrl;
+			if (openUrlEvent == null)
+				return;
+			
+			string keyDirectObjectString = "----";
+			uint keywordDirectObject = (((uint)keyDirectObjectString [0]) << 24 |
+				((uint)keyDirectObjectString [1]) << 16 |
+				((uint)keyDirectObjectString [2]) << 8 |
+				((uint)keyDirectObjectString [3]));
+			
+			string urlString = descriptor.ParamDescriptorForKeyword (keywordDirectObject).ToString ();
+			openUrlEvent (NSApplication.SharedApplication, new OpenUrlEventArgs (urlString));
 		}
 
 		public override void ScreenParametersChanged (NSNotification notification)
 		{
 			if (MacDesktopBackend.Instance != null)
 				MacDesktopBackend.Instance.NotifyScreensChanged ();
+		}
+
+		public override NSApplicationTerminateReply ApplicationShouldTerminate (NSApplication sender)
+		{
+			var terminatingEvent = Terminating;
+			if (terminatingEvent != null) {
+				var args = new TerminationEventArgs ();
+				terminatingEvent (NSApplication.SharedApplication, args);
+				return args.Reply;
+			}
+
+			return NSApplicationTerminateReply.Now;
+		}
+
+		public override void DidUnhide (NSNotification notification)
+		{
+			var unhiddenEvent = Unhidden;
+			if (unhiddenEvent != null)
+				unhiddenEvent (NSApplication.SharedApplication, EventArgs.Empty);
+		}
+
+		public override void OpenFiles (NSApplication sender, string[] filenames)
+		{
+			var openFilesEvent = OpenFilesRequest;
+			if (openFilesEvent != null) {
+				var args = new OpenFilesEventArgs (filenames);
+				openFilesEvent (NSApplication.SharedApplication, args);
+			}
+		}
+	}
+
+	public class TerminationEventArgs : EventArgs
+	{
+		public NSApplicationTerminateReply Reply {get; set;}
+
+		public TerminationEventArgs ()
+		{
+			Reply = NSApplicationTerminateReply.Now;
+		}
+	}
+
+	public class OpenFilesEventArgs : EventArgs
+	{
+		public string[] Filenames { get; set; }
+		public OpenFilesEventArgs (string[] filenames)
+		{
+			Filenames = filenames;
+		}
+	}
+
+	public class OpenUrlEventArgs : EventArgs
+	{
+		public string Url { get; set; }
+		public OpenUrlEventArgs (string url)
+		{
+			Url = url;
 		}
 	}
 }

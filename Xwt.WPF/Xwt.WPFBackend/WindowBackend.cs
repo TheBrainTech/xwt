@@ -259,7 +259,7 @@ namespace Xwt.WPFBackend
 				if (PresentationSource.FromVisual (c) == null)
 					return new Rectangle (initialX, initialY, w, h);
 				else {
-					var p = c.PointToScreen (new SW.Point (0, 0));
+					var p = c.PointToScreenDpiAware (new SW.Point (0, 0));
 					return new Rectangle (p.X, p.Y, w, h);
 				}
 			}
@@ -326,8 +326,7 @@ namespace Xwt.WPFBackend
 			var c = (FrameworkElement)Content;
 
 			if(this.WindowStyle != SW.WindowStyle.None) {
-				var p = c.PointToScreen(new SW.Point(0, 0));
-
+				var p = c.PointToScreenDpiAware (new SW.Point (0, 0));
 				left = p.X - Left;
 				top = p.Y - Top;
 				right = windowWidth - c.ActualWidth - left;

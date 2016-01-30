@@ -144,6 +144,8 @@ namespace Xwt.Mac
 					viewObject.Backend = this;
 			}
 		}
+
+		public string Name { get; set; }
 		
 		public bool Visible {
 			get { return !Widget.Hidden; }
@@ -440,7 +442,7 @@ namespace Xwt.Mac
 		
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
 		{
-			var lo = Widget.ConvertPointToBase (new CGPoint ((float)widgetCoordinates.X, (float)widgetCoordinates.Y));
+			var lo = Widget.ConvertPointToBase (new CGPoint ((nfloat)widgetCoordinates.X, (nfloat)widgetCoordinates.Y));
 			lo = Widget.Window.ConvertBaseToScreen (lo);
 			return MacDesktopBackend.ToDesktopRect (new CGRect (lo.X, lo.Y, 0, Widget.IsFlipped ? 0 : Widget.Frame.Height)).Location;
 		}
@@ -496,7 +498,7 @@ namespace Xwt.Mac
 			} else {
 				var s = CalcFittingSize ();
 				if (!s.IsZero)
-					Widget.SetFrameSize (new CGSize ((float)s.Width, (float)s.Height));
+					Widget.SetFrameSize (new CGSize ((nfloat)s.Width, (nfloat)s.Height));
 			}
 		}
 		
@@ -513,7 +515,7 @@ namespace Xwt.Mac
 
 		void AutoUpdateSize ()
 		{	var s = Frontend.Surface.GetPreferredSize ();
-			Widget.SetFrameSize (new CGSize ((float)s.Width, (float)s.Height));
+			Widget.SetFrameSize (new CGSize ((nfloat)s.Width, (nfloat)s.Height));
 		}
 
 		NSObject gotFocusObserver;
@@ -896,7 +898,7 @@ namespace Xwt.Mac
 				cy += (cheight - s.Height) * w.VerticalPlacement.GetValue ();
 				cheight = s.Height;
 			}
-			child.Frame = new CGRect ((float)cx, (float)cy, (float)cwidth, (float)cheight);
+			child.Frame = new CGRect ((nfloat)cx, (nfloat)cy, (nfloat)cwidth, (nfloat)cheight);
 		}
 
 		public override void SizeToFit ()

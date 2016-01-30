@@ -72,7 +72,7 @@ namespace Xwt
 		EventHandler dragLeave;
 		EventHandler<KeyEventArgs> keyPressed;
 		EventHandler<KeyEventArgs> keyReleased;
-		EventHandler<PreviewTextInputEventArgs> previewTextInput;
+		EventHandler<TextInputEventArgs> textInput;
 		EventHandler mouseEntered;
 		EventHandler mouseExited;
 		EventHandler<ButtonEventArgs> buttonPressed;
@@ -180,9 +180,9 @@ namespace Xwt
 				Parent.OnKeyReleased (args);
 			}
 
-			void IWidgetEventSink.OnPreviewTextInput (PreviewTextInputEventArgs args)
+			void IWidgetEventSink.OnTextInput (TextInputEventArgs args)
 			{
-				Parent.OnPreviewTextInput (args);
+				Parent.OnTextInput (args);
 			}
 			
 			Size IWidgetEventSink.GetPreferredSize (SizeConstraint widthConstraint, SizeConstraint heightConstraint)
@@ -575,7 +575,10 @@ namespace Xwt
 		/// <value>The widgets name.</value>
 		/// <remarks>The name can be used to identify this widget by e.g. designers.</remarks>
 		[DefaultValue (null)]
-		public string Name { get; set; }
+		public override string Name {
+			get { return Backend.Name; }
+			set { Backend.Name = value; }
+		}
 		
 		/// <summary>
 		/// Gets the parent widget of this <see cref="Xwt.Widget"/>.
@@ -1122,7 +1125,7 @@ namespace Xwt
 				keyReleased (this, args);
 		}
 
-		[MappedEvent(WidgetEvent.GotFocus)]
+		[MappedEvent(WidgetEvent.TextInput)]
 		/// <summary>
 		/// Raises the preview text input event.
 		/// </summary>
@@ -1133,12 +1136,13 @@ namespace Xwt
 		/// The event will be enabled in the backend automatically, if <see cref="Xwt.Widget.OnPreviewTextInput"/>
 		/// is overridden.
 		/// </remarks>
-		internal protected virtual void OnPreviewTextInput (PreviewTextInputEventArgs args)
+		internal protected virtual void OnTextInput (TextInputEventArgs args)
 		{
-			if (previewTextInput != null)
-				previewTextInput (this, args);
+			if (textInput != null)
+				textInput (this, args);
 		}
 
+		[MappedEvent(WidgetEvent.GotFocus)]
 		/// <summary>
 		/// Raises the got focus event.
 		/// </summary>
@@ -1966,14 +1970,14 @@ namespace Xwt
 		/// <summary>
 		/// Raised when a text has been entered.
 		/// </summary>
-		public event EventHandler<PreviewTextInputEventArgs> PreviewTextInput {
+		public event EventHandler<TextInputEventArgs> TextInput {
 			add {
-				BackendHost.OnBeforeEventAdd (WidgetEvent.PreviewTextInput, previewTextInput);
-				previewTextInput += value;
+				BackendHost.OnBeforeEventAdd (WidgetEvent.TextInput, textInput);
+				textInput += value;
 			}
 			remove {
-				previewTextInput -= value;
-				BackendHost.OnAfterEventRemove (WidgetEvent.PreviewTextInput, previewTextInput);
+				textInput -= value;
+				BackendHost.OnAfterEventRemove (WidgetEvent.TextInput, textInput);
 			}
 		}
 		

@@ -40,7 +40,7 @@ namespace Xwt.WPFBackend
 {
 	public class MenuItemBackend : Backend, IMenuItemBackend
 	{
-		object item;
+		UIElement item;
 		SWC.MenuItem menuItem;
 		MenuBackend subMenu;
 		MenuItemType type;
@@ -87,7 +87,7 @@ namespace Xwt.WPFBackend
 		{
 		}
 
-		protected MenuItemBackend (object item)
+		protected MenuItemBackend (UIElement item)
 		{
 			this.item = item;
 			this.menuItem = item as SWC.MenuItem;
@@ -112,9 +112,12 @@ namespace Xwt.WPFBackend
 		}
 
 		public bool Checked {
-			get { return this.menuItem.IsCheckable && this.menuItem.IsChecked; }
+			get {
+				if (this.menuItem == null)
+					return false;
+				return this.menuItem.IsCheckable && this.menuItem.IsChecked; }
 			set {
-				if (!this.menuItem.IsCheckable)
+				if (this.menuItem == null || !this.menuItem.IsCheckable)
 					return;
 				this.menuItem.IsChecked = value;
 			}
@@ -124,7 +127,8 @@ namespace Xwt.WPFBackend
 			get { return label; }
 			set {
 				label = value;
-				menuItem.Header = UseMnemonic ? value : value.Replace ("_", "__");
+				if (this.menuItem != null)
+					menuItem.Header = UseMnemonic ? value : value.Replace ("_", "__");
 			}
 		}
 
@@ -138,8 +142,8 @@ namespace Xwt.WPFBackend
 		}
 
 		public bool Sensitive {
-			get { return this.menuItem.IsEnabled; }
-			set { this.menuItem.IsEnabled = value; }
+			get { return this.item.IsEnabled; }
+			set { this.item.IsEnabled = value; }
 		}
 
 		public string ToolTip {
@@ -148,8 +152,8 @@ namespace Xwt.WPFBackend
 		}
 
 		public bool Visible {
-			get { return this.menuItem.IsVisible; }
-			set { this.menuItem.Visibility = (value) ? Visibility.Visible : Visibility.Collapsed; }
+			get { return this.item.IsVisible; }
+			set { this.item.Visibility = (value) ? Visibility.Visible : Visibility.Collapsed; }
 		}
 
 		public void SetImage (ImageDescription imageBackend)
@@ -195,6 +199,15 @@ namespace Xwt.WPFBackend
 			}
 
 			this.type = type;
+		}
+
+		internal void SetFont (FontData font)
+		{
+			MenuItem.FontFamily = font.Family;
+			MenuItem.FontSize = font.GetDeviceIndependentPixelSize(MenuItem);
+			MenuItem.FontStyle = font.Style;
+			MenuItem.FontWeight = font.Weight;
+			MenuItem.FontStretch = font.Stretch;
 		}
 
 		public override void EnableEvent (object eventId)

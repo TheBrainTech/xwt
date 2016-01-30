@@ -39,7 +39,6 @@ using SWC = System.Windows.Controls; // When we need to resolve ambigituies.
 using SW = System.Windows; // When we need to resolve ambigituies.
 
 using Xwt.Backends;
-
 using Color = Xwt.Drawing.Color;
 
 namespace Xwt.WPFBackend
@@ -178,6 +177,12 @@ namespace Xwt.WPFBackend
 			set { Widget.Opacity = value; }
 		}
 
+		public string Name
+		{
+			get { return Widget.Name; }
+			set { Widget.Name = value; }
+		}
+
 		FontData GetWidgetFont ()
 		{
 			if (!(Widget is Control)) {
@@ -254,7 +259,7 @@ namespace Xwt.WPFBackend
 
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
 		{
-			var p = Widget.PointToScreen (new System.Windows.Point (
+			var p = Widget.PointToScreenDpiAware (new System.Windows.Point (
 				widgetCoordinates.X, widgetCoordinates.Y));
 			double scaleFactor = Xwt.Desktop.PrimaryScreen.ScaleFactor;
 			return new Point (p.X / scaleFactor, p.Y / scaleFactor);
@@ -302,6 +307,10 @@ namespace Xwt.WPFBackend
 		public System.Windows.Size MeasureOverride (System.Windows.Size constraint, System.Windows.Size wpfMeasure)
 		{
 			var defNaturalSize = eventSink.GetDefaultNaturalSize ();
+			if (!double.IsPositiveInfinity (constraint.Width))
+				defNaturalSize.Width = Math.Min (defNaturalSize.Width, constraint.Width);
+			if (!double.IsPositiveInfinity (constraint.Height))
+				defNaturalSize.Height = Math.Min (defNaturalSize.Height, constraint.Height);
 
 			// -2 means use the WPF default, -1 use the XWT default, any other other value is used as custom natural size
 			var nw = DefaultNaturalWidth;
@@ -453,7 +462,7 @@ namespace Xwt.WPFBackend
 					case WidgetEvent.KeyReleased:
 						Widget.PreviewKeyUp += WidgetKeyUpHandler;
 						break;
-					case WidgetEvent.PreviewTextInput:
+					case WidgetEvent.TextInput:
 						TextCompositionManager.AddPreviewTextInputHandler(Widget, WidgetPreviewTextInputHandler);
 						break;
 					case WidgetEvent.ButtonPressed:
@@ -508,7 +517,7 @@ namespace Xwt.WPFBackend
 					case WidgetEvent.KeyReleased:
 						Widget.PreviewKeyUp -= WidgetKeyUpHandler;
 						break;
-					case WidgetEvent.PreviewTextInput:
+					case WidgetEvent.TextInput:
 						TextCompositionManager.RemovePreviewTextInputHandler(Widget, WidgetPreviewTextInputHandler);
 						break;
 					case WidgetEvent.ButtonPressed:
@@ -618,10 +627,10 @@ namespace Xwt.WPFBackend
 
 		void WidgetPreviewTextInputHandler (object sender, System.Windows.Input.TextCompositionEventArgs e)
 		{
-			PreviewTextInputEventArgs args = new PreviewTextInputEventArgs(e.Text);
+			TextInputEventArgs args = new TextInputEventArgs(e.Text);
 			Context.InvokeUserCode(delegate
 			{
-				eventSink.OnPreviewTextInput(args);
+				eventSink.OnTextInput(args);
 			});
 			if (args.Handled)
 				e.Handled = true;

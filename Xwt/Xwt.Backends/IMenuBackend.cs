@@ -31,6 +31,12 @@ namespace Xwt.Backends
 	public interface IMenuBackend: IBackend
 	{
 		void Initialize (IMenuEventSink eventSink);
+
+		/// <summary>
+		/// Gets or sets the native font of this menu.
+		/// </summary>
+		/// <value>The font.</value>
+		object Font { get; set; }
 		void InsertItem (int index, IMenuItemBackend menuItem);
 		void RemoveItem (IMenuItemBackend menuItem);
 		void Popup ();

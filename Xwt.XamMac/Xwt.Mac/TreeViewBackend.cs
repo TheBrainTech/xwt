@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using nint = System.Int32;
+using nfloat = System.Single;
 using CGPoint = System.Drawing.PointF;
 #else
 using AppKit;
@@ -205,11 +206,35 @@ namespace Xwt.Mac
 				p = source.GetParent (p);
 			}
 		}
+
+		public TreePosition GetRowAtPosition (Point p)
+		{
+			var row = Table.GetRow (new CGPoint ((float)p.X, (float)p.Y));
+			return row >= 0 ? ((TreeItem)Tree.ItemAtRow (row)).Position : null;
+		}
+
+		public Rectangle GetCellBounds (TreePosition pos, CellView cell, bool includeMargin)
+		{
+			var it = tsource.GetItem (pos);
+			if (it == null)
+				return Rectangle.Zero;
+			var row = (int)Tree.RowForItem (it);
+			return GetCellBounds (row, cell, includeMargin);
+		}
+
+		public Rectangle GetRowBounds (TreePosition pos, bool includeMargin)
+		{
+			var it = tsource.GetItem (pos);
+			if (it == null)
+				return Rectangle.Zero;
+			var row = (int)Tree.RowForItem (it);
+			return GetRowBounds (row, includeMargin);
+		}
 		
 		public bool GetDropTargetRow (double x, double y, out RowDropPosition pos, out TreePosition nodePosition)
 		{
 			// Get row
-			nint row = Tree.GetRow(new CGPoint ((float)x, (float)y));
+			nint row = Tree.GetRow(new CGPoint ((nfloat)x, (nfloat)y));
 			pos = RowDropPosition.Into;
 			nodePosition = null;
 			if (row >= 0) {
@@ -221,7 +246,7 @@ namespace Xwt.Mac
 /*		protected override void OnDragOverCheck (NSDraggingInfo di, DragOverCheckEventArgs args)
 		{
 			base.OnDragOverCheck (di, args);
-			var row = Tree.GetRow (new System.Drawing.PointF (di.DraggingLocation.X, di.DraggingLocation.Y));
+			var row = Tree.GetRow (new CGPoint (di.DraggingLocation.X, di.DraggingLocation.Y));
 			if (row != -1) {
 				var item = Tree.ItemAtRow (row);
 				Tree.SetDropItem (item, row);
@@ -255,6 +280,11 @@ namespace Xwt.Mac
 		
 		object ITablePosition.Position {
 			get { return Position; }
+		}
+
+		public override NSObject Copy ()
+		{
+			return new TreeItem { Position = this.Position };
 		}
 	}
 	

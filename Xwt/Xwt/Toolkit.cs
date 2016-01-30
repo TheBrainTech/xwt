@@ -471,7 +471,7 @@ namespace Xwt
 		/// </summary>
 		/// <returns>An Xwt widget with the specified native widget backend.</returns>
 		/// <param name="nativeWidget">The native widget.</param>
-		public Widget WrapWidget (object nativeWidget)
+		public Widget WrapWidget (object nativeWidget, NativeWidgetSizing preferredSizing = NativeWidgetSizing.External)
 		{
 			var externalWidget = nativeWidget as Widget;
 			if (externalWidget != null) {
@@ -480,7 +480,7 @@ namespace Xwt
 				nativeWidget = externalWidget.Surface.ToolkitEngine.GetNativeWidget (externalWidget);
 			}
 			var embedded = CreateObject<EmbeddedNativeWidget> ();
-			embedded.Initialize (nativeWidget, externalWidget);
+			embedded.Initialize (nativeWidget, externalWidget, preferredSizing);
 			return embedded;
 		}
 
@@ -535,6 +535,8 @@ namespace Xwt
 				}
 
 				font.InitForToolkit (this);
+			} else if (obj is Gradient) {
+				((Gradient)obj).InitForToolkit (this);
 			} else if (obj is IFrontend) {
 				if (((IFrontend)obj).ToolkitEngine != this)
 					throw new InvalidOperationException ("Object belongs to a different toolkit");
