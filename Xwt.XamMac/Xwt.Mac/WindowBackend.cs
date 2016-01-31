@@ -512,8 +512,7 @@ namespace Xwt.Mac
 				return new Rectangle ((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height);
 			}
 			set {
-				RectangleF r = MacDesktopBackend.FromDesktopRect(value);
-				CGRect cgr = new CGRect(r.X, r.Y, r.Width, r.Height);
+				CGRect cgr = MacDesktopBackend.FromDesktopRect(value);
 				CGRect fr = FrameRectFor (cgr);
 				SetFrame (fr, true);
 			}

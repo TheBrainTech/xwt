@@ -57,11 +57,6 @@ namespace Xwt
 			DateTime = initialDateTime;
 		}
 
-		static DatePicker ()
-		{
-			MapEvent (DatePickerEvent.ValueChanged, typeof (Label), "OnValueChanged");
-		}
-
 		protected new class WidgetBackendHost: Widget.WidgetBackendHost, IDatePickerEventSink
 		{
 			public void ValueChanged ()
@@ -115,6 +110,7 @@ namespace Xwt
 			}
 		}
 		
+		[MappedEvent(DatePickerEvent.ValueChanged)]
 		protected virtual void OnValueChanged (EventArgs e)
 		{
 			if (valueChanged != null)

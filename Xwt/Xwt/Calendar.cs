@@ -33,11 +33,6 @@ namespace Xwt
 	{
 		EventHandler valueChanged, doubleClick;
 
-		static Calendar ()
-		{
-			MapEvent (CalendarEvent.ValueChanged, typeof(Calendar), "OnValueChanged");
-		}
-
 		protected new class WidgetBackendHost: Widget.WidgetBackendHost, ICalendarEventSink
 		{
 			public void OnValueChanged ()
@@ -97,6 +92,7 @@ namespace Xwt
 			}
 		}
 
+		[MappedEvent(CalendarEvent.ValueChanged)]
 		protected virtual void OnValueChanged (EventArgs e)
 		{
 			if (valueChanged != null)
