@@ -111,6 +111,15 @@ namespace Xwt.WPFBackend
 			}
 		}
 
+		public bool IsDefault {
+			get {
+				return (this.Button as WpfButton).IsDefault;
+			}
+			set {
+				(this.Button as WpfButton).IsDefault = value;
+			}
+		}
+
 		public virtual void SetButtonType (ButtonType type) {
 			switch (type) {
 			case ButtonType.Normal:

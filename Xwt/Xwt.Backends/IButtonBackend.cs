@@ -34,6 +34,7 @@ namespace Xwt.Backends
 		void SetButtonStyle (ButtonStyle style);
 		void SetButtonType (ButtonType type);
 		bool IsToggled { get; set; }
+		bool IsDefault { get; set; }
 		void SetContent (string label, bool useMnemonic, ImageDescription image, ContentPosition position);
 	}
 	
