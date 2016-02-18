@@ -181,6 +181,19 @@ namespace Xwt.Mac
 				}
 			}
 		}
+			
+		public bool IsDefault {
+			get {
+				return Widget.KeyEquivalent == "\r";
+			}
+			set {
+				if(value == true) {
+					Widget.KeyEquivalent = "\r";
+				} else {
+					Widget.KeyEquivalent = "";
+				}
+			}
+		}
 		
 		#endregion
 
