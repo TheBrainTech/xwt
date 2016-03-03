@@ -135,6 +135,9 @@ namespace Xwt.Mac
 		public void Popup ()
 		{
 			var evt = NSApplication.SharedApplication.CurrentEvent;
+			if (evt == null || evt.Window == null) {
+				return; // bail out on null pointers
+			}
 			NSMenu.PopUpContextMenu (this, evt, evt.Window.ContentView);
 		}
 		
