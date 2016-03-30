@@ -78,10 +78,10 @@ namespace Xwt {
 			allKeys.Add(new KeyboardKey { ConfigurationString = ".",     MacInputKeyCode = -1,  MacInputCharacter = '.',       MacMenuCharacter = '.',         ConsoleKey = ConsoleKey.OemPeriod });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "/",     MacInputKeyCode = -1,  MacInputCharacter = '/',       MacMenuCharacter = '/',         ConsoleKey = ConsoleKey.Oem2 });
 
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Up",    MacInputKeyCode = -1,  MacInputCharacter = (char)30,  MacMenuCharacter = (char)63232, ConsoleKey = ConsoleKey.UpArrow });
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Down",  MacInputKeyCode = -1,  MacInputCharacter = (char)31,  MacMenuCharacter = (char)63233, ConsoleKey = ConsoleKey.DownArrow });
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Left",  MacInputKeyCode = -1,  MacInputCharacter = (char)28,  MacMenuCharacter = (char)63234, ConsoleKey = ConsoleKey.LeftArrow });
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Right", MacInputKeyCode = -1,  MacInputCharacter = (char)29,  MacMenuCharacter = (char)63235, ConsoleKey = ConsoleKey.RightArrow });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Up",    MacInputKeyCode = -1,  MacInputCharacter = (char)30,  MacMenuCharacter = (char)8593, ConsoleKey = ConsoleKey.UpArrow });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Down",  MacInputKeyCode = -1,  MacInputCharacter = (char)31,  MacMenuCharacter = (char)8595, ConsoleKey = ConsoleKey.DownArrow });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Left",  MacInputKeyCode = -1,  MacInputCharacter = (char)28,  MacMenuCharacter = (char)8592, ConsoleKey = ConsoleKey.LeftArrow });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Right", MacInputKeyCode = -1,  MacInputCharacter = (char)29,  MacMenuCharacter = (char)8594, ConsoleKey = ConsoleKey.RightArrow });
 
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Del",   MacInputKeyCode = -1,  MacInputCharacter = (char)127, MacMenuCharacter = (char)8998, ConsoleKey = ConsoleKey.Delete });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Home",  MacInputKeyCode = -1,  MacInputCharacter = (char)1,   MacMenuCharacter = (char)63273, ConsoleKey = ConsoleKey.Home });
@@ -111,8 +111,8 @@ namespace Xwt {
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Clear", MacInputKeyCode = 71,  MacInputCharacter = '\0',      MacMenuCharacter = (char)63289, ConsoleKey = ConsoleKey.Clear });
 
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Space", MacInputKeyCode = -1,  MacInputCharacter = ' ',       MacMenuCharacter = ' ',         ConsoleKey = ConsoleKey.Spacebar });
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Tab",   MacInputKeyCode = -1,  MacInputCharacter = '\t',      MacMenuCharacter = '\t',        ConsoleKey = ConsoleKey.Tab });
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Enter", MacInputKeyCode = -1,  MacInputCharacter = '\r',      MacMenuCharacter = '\r',        ConsoleKey = ConsoleKey.Enter });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Tab",   MacInputKeyCode = -1,  MacInputCharacter = '\t',      MacMenuCharacter = (char)8633,  ConsoleKey = ConsoleKey.Tab });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Enter", MacInputKeyCode = -1,  MacInputCharacter = '\r',      MacMenuCharacter = (char)9166,  ConsoleKey = ConsoleKey.Enter });
 
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Num 0", MacInputKeyCode = -1,  MacInputCharacter = '\0',      MacMenuCharacter = (char)0,     ConsoleKey = ConsoleKey.NumPad0 });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Num 1", MacInputKeyCode = -1,  MacInputCharacter = '\0',      MacMenuCharacter = (char)0,     ConsoleKey = ConsoleKey.NumPad1 });
