@@ -107,7 +107,7 @@ namespace Xwt {
 			allKeys.Add(new KeyboardKey { ConfigurationString = "F14",   MacInputKeyCode = 107, MacInputCharacter = '\0',      MacMenuCharacter = (char)63249, ConsoleKey = ConsoleKey.F14 });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "F15",   MacInputKeyCode = 113, MacInputCharacter = '\0',      MacMenuCharacter = (char)63250, ConsoleKey = ConsoleKey.F15 });
 
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Esc",   MacInputKeyCode = 53,  MacInputCharacter = '\0',      MacMenuCharacter = (char)27,    ConsoleKey = ConsoleKey.Escape });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Esc",   MacInputKeyCode = 53,  MacInputCharacter = '\0',      MacMenuCharacter = (char)9099,  ConsoleKey = ConsoleKey.Escape });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Clear", MacInputKeyCode = 71,  MacInputCharacter = '\0',      MacMenuCharacter = (char)63289, ConsoleKey = ConsoleKey.Clear });
 
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Space", MacInputKeyCode = -1,  MacInputCharacter = ' ',       MacMenuCharacter = ' ',         ConsoleKey = ConsoleKey.Spacebar });
