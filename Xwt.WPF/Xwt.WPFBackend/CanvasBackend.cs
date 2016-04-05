@@ -35,7 +35,7 @@ namespace Xwt.WPFBackend
 
 		protected override void SetWidgetColor (Drawing.Color value)
 		{
-			// Do nothing
+			QueueDraw();
 		}
 
 		private void Render (System.Windows.Media.DrawingContext dc)
