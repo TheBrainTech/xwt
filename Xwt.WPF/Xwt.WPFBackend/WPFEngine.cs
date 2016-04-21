@@ -151,6 +151,14 @@ namespace Xwt.WPFBackend
 			application.Shutdown();
 		}
 
+		public override void Invoke (Action action)
+		{
+			if (action == null)
+				throw new ArgumentNullException ("action");
+
+			application.Dispatcher.Invoke (action);
+		}
+
 		public override void InvokeAsync (Action action)
 		{
 			if (action == null)

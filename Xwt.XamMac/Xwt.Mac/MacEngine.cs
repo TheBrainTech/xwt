@@ -176,6 +176,16 @@ namespace Xwt.Mac
 				return true;
 			return Messaging.bool_objc_msgSend_IntPtr_IntPtr (self, hijackedSel.Handle, filePath, owner);
 		}
+
+		public override void Invoke(Action action)
+		{
+			if (action == null)
+				throw new ArgumentNullException ("action");
+
+			NSRunLoop.Main.InvokeOnMainThread (delegate {
+				action();
+			});
+		}
 		
 		public override void InvokeAsync (Action action)
 		{

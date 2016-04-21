@@ -175,12 +175,12 @@ namespace Xwt
 		/// <param name='action'>
 		/// The action to execute.
 		/// </param>
-		public static void Invoke (Action action)
+		public static void Invoke (Action action, bool invokeAsync = true)
 		{
 			if (action == null)
 				throw new ArgumentNullException ("action");
 
-			engine.InvokeAsync (delegate {
+			Action d = delegate () {
 				try {
 					toolkit.EnterUserCode ();
 					action ();
@@ -188,7 +188,14 @@ namespace Xwt
 				} catch (Exception ex) {
 					toolkit.ExitUserCode (ex);
 				}
-			});
+			};
+
+			if (invokeAsync) {
+				engine.InvokeAsync(d);
+			}
+			else {
+				engine.Invoke(d);
+			}
 		}
 		
 		/// <summary>

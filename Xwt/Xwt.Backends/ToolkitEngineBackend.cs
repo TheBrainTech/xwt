@@ -129,6 +129,13 @@ namespace Xwt.Backends
 		public abstract void InvokeAsync (Action action);
 
 		/// <summary>
+		/// Synchronously invokes <paramref name="action"/> on the engine UI thread.
+		/// </summary>
+		/// <param name="action">The action to invoke.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="action"/> is <c>null</c>.</exception>
+		public abstract void Invoke (Action action);
+
+		/// <summary>
 		/// Begins invoking <paramref name="action"/> on a timer period of <paramref name="timeSpan"/>.
 		/// </summary>
 		/// <param name="action">The function to invoke. Returning <c>false</c> stops the timer.</param>
