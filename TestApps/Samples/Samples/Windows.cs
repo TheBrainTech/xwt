@@ -95,12 +95,10 @@ namespace Samples
 			PackStart (b);
 			b.Clicked += delegate {
 				SaveFileDialog dlg = new SaveFileDialog ("Select a file");
-				dlg.InitialFileName = "Some file";
-				dlg.Multiselect = true;
-				dlg.Filters.Add (new FileDialogFilter ("Xwt files", "*.xwt"));
-				dlg.Filters.Add (new FileDialogFilter ("All files", "*.*"));
+				dlg.FileName = "Some file";
+				dlg.ActiveFilter = new FileDialogFilter ("Xwt files", "*.xwt");
 				if (dlg.Run ())
-					MessageDialog.ShowMessage ("Files have been selected!", string.Join ("\n", dlg.FileNames));
+					MessageDialog.ShowMessage ("Files have been selected!", string.Join ("\n", dlg.FileName));
 			};
 			
 			b = new Button ("Show Select Folder dialog (Multi select)");
@@ -137,7 +135,7 @@ namespace Samples
 				SelectColorDialog dlg = new SelectColorDialog ("Select a color");
 				dlg.SupportsAlpha = true;
 				dlg.Color = Xwt.Drawing.Colors.AliceBlue;
-				if (dlg.Run (ParentWindow))
+				if (dlg.Run (ParentWindow, null))
 					MessageDialog.ShowMessage ("A color has been selected!", dlg.Color.ToString ());
 			};
 

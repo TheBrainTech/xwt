@@ -490,7 +490,7 @@ namespace Xwt.Mac
 		{
 			var r = FrameRectFor (new CGRect ((nfloat)x, (nfloat)y, Frame.Width, Frame.Height));
 			var dr = MacDesktopBackend.ToDesktopRect(r);
-			SetFrame (new CGRect(dr.X, dr.Y, dr.Width, dr.Height), true);
+			SetFrame (new CGRect((nfloat)dr.X, (nfloat)dr.Y, (nfloat)dr.Width, (nfloat)dr.Height), true);
 		}
 		
 		void IWindowFrameBackend.SetSize (double width, double height)

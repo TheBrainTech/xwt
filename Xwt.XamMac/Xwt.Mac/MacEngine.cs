@@ -141,7 +141,6 @@ namespace Xwt.Mac
 			RegisterBackend <Xwt.Backends.IWebViewBackend, WebViewBackend> ();
 			RegisterBackend <Xwt.Backends.ISaveFileDialogBackend, SaveFileDialogBackend> ();
 			RegisterBackend <Xwt.Backends.IColorPickerBackend, ColorPickerBackend> ();
-			RegisterBackend <Xwt.Backends.ISelectColorDialogBackend, SelectColorDialogBackend>();
 			RegisterBackend <Xwt.Backends.ICalendarBackend,CalendarBackend> ();
 			RegisterBackend <Xwt.Backends.ISelectFontDialogBackend, SelectFontDialogBackend> ();
 		}

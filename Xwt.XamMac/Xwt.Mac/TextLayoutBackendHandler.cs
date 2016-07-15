@@ -37,9 +37,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.CoreText;
 using MonoMac.CoreGraphics;
-using CGPoint = System.Drawing.PointF;
 using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
 #else
 using Foundation;
 using AppKit;

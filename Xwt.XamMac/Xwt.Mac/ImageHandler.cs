@@ -185,7 +185,7 @@ namespace Xwt.Mac
 					im.Size = new CGSize ((nfloat)width, (nfloat)height);
 					return im;
 				}
-				bitmap.Size = new CGSize(width, height);
+				bitmap.Size = new CGSize((float)width, (float)height);
 				return handle;
 			}
 		}

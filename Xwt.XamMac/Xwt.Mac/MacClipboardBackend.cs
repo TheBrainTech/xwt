@@ -69,7 +69,7 @@ namespace Xwt.Mac
 		public override bool IsTypeAvailable (TransferDataType type)
 		{ 
 			NSPasteboard pb = NSPasteboard.GeneralPasteboard;
-			Class[] classes;
+			NSObject[] classes;
 			NSDictionary options;
 			bool isType;
 
@@ -103,17 +103,17 @@ namespace Xwt.Mac
 					}
 				}
 
-				classes = new Class[] {
-					new Class(typeof(NSAttributedString)),
-					new Class(typeof(NSString)),
-					new Class(typeof(NSUrl)),
+				classes = new NSObject[] {
+					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSAttributedString))),
+					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSString))),
+					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl))),
 				};
 				options = new NSDictionary();
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;
 			} else if (type == TransferDataType.Uri) {
 				//files
-				classes = new Class[]{ new Class(typeof(NSUrl)) };
+				classes = new NSObject[]{ NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl))) };
 				options = NSDictionary.FromObjectAndKey(NSObject.FromObject(NSNumber.FromBoolean(true)), new NSString(type.ToUTI()));
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;
