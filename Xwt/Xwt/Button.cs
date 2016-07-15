@@ -84,6 +84,13 @@ namespace Xwt
 			return new WidgetBackendHost ();
 		}
 		
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			if(image != null)
+				image.Dispose ();
+		}
+
 		IButtonBackend Backend {
 			get { return (IButtonBackend) BackendHost.Backend; }
 		}
