@@ -93,7 +93,7 @@ namespace Xwt.GtkBackend
 			}
 		}
 		
-		public bool ShowFrame {
+		public virtual bool ShowFrame {
 			get {
 				return Widget.HasFrame;
 			}
@@ -173,6 +173,13 @@ namespace Xwt.GtkBackend
 
 		public bool MultiLine {
 			get; set;
+		}
+
+		public bool HasCompletions {
+			get {
+				var widgetCompletion = Widget.Completion;
+				return widgetCompletion == null || widgetCompletion.Model == null;
+			}
 		}
 
 		/// <summary>

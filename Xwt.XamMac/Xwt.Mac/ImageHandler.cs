@@ -128,12 +128,14 @@ namespace Xwt.Mac
 			return img != null && img.Representations ().OfType<NSBitmapImageRep> ().Any ();
 		}
 
-		public override object ConvertToBitmap (object handle, double width, double height, double scaleFactor, ImageFormat format)
+		public override object ConvertToBitmap (ImageDescription idesc, double scaleFactor, ImageFormat format)
 		{
+			double width = idesc.Size.Width;
+			double height = idesc.Size.Height;
 			int pixelWidth = (int)(width * scaleFactor);
 			int pixelHeight = (int)(height * scaleFactor);
 
-			if (handle is CustomImage) {
+			if (idesc.Backend is CustomImage) {
 				var flags = CGBitmapFlags.ByteOrderDefault;
 				int bytesPerRow;
 				switch (format) {
@@ -162,8 +164,8 @@ namespace Xwt.Mac
 					ScaleFactor = scaleFactor
 				};
 
-				var ci = (CustomImage)handle;
-				ci.DrawInContext (ctx);
+				var ci = (CustomImage)idesc.Backend;
+				ci.DrawInContext (ctx, idesc);
 
 				var img = new NSImage (((CGBitmapContext)bmp).ToImage (), new CGSize (pixelWidth, pixelHeight));
 				var imageData = img.AsTiff ();
@@ -175,7 +177,7 @@ namespace Xwt.Mac
 				return im;
 			}
 			else {
-				NSImage img = (NSImage)handle;
+				NSImage img = (NSImage)idesc.Backend;
 				NSBitmapImageRep bitmap = img.Representations ().OfType<NSBitmapImageRep> ().FirstOrDefault ();
 				if (bitmap == null) {
 					var imageData = img.AsTiff ();
@@ -186,7 +188,7 @@ namespace Xwt.Mac
 					return im;
 				}
 				bitmap.Size = new CGSize((float)width, (float)height);
-				return handle;
+				return idesc.Backend;
 			}
 		}
 		
@@ -268,8 +270,8 @@ namespace Xwt.Mac
 		static NSImage LoadStockIcon (string id)
 		{
 			switch (id) {
-			case StockIconId.ZoomIn: return NSImageFromResource ("zoom-in.png");
-			case StockIconId.ZoomOut: return NSImageFromResource ("zoom-out.png");
+			case StockIconId.ZoomIn: return NSImageFromResource ("zoom-in-16.png");
+			case StockIconId.ZoomOut: return NSImageFromResource ("zoom-out-16.png");
 			}
 
 			NSImage image = null;
@@ -302,6 +304,8 @@ namespace Xwt.Mac
 		ApplicationContext actx;
 		NSCustomImageRep imgRep;
 
+		internal ImageDescription Image = ImageDescription.Null;
+
 		public CustomImage (ApplicationContext actx, ImageDrawCallback drawCallback)
 		{
 			this.actx = actx;
@@ -328,14 +332,19 @@ namespace Xwt.Mac
 				Context = ctx,
 				InverseViewTransform = ctx.GetCTM ().Invert ()
 			};
-			DrawInContext (backend);
+			DrawInContext (backend, Image);
 		}
 
 		internal void DrawInContext (CGContextBackend ctx)
 		{
+			DrawInContext (ctx, Image);
+		}
+
+		internal void DrawInContext (CGContextBackend ctx, ImageDescription idesc)
+		{
 			var s = ctx.Size != CGSize.Empty ? ctx.Size : Size;
 			actx.InvokeUserCode (delegate {
-				drawCallback (ctx, new Rectangle (0, 0, s.Width, s.Height));
+				drawCallback (ctx, new Rectangle (0, 0, s.Width, s.Height), Image, actx.Toolkit);
 			});
 		}
 
@@ -343,6 +352,13 @@ namespace Xwt.Mac
 		{
 			return new CustomImage (actx, drawCallback);
 		}
+
+		#if !MONOMAC
+		public override NSObject Copy (NSZone zone)
+		{
+			return new CustomImage (actx, drawCallback);
+		}
+		#endif
 	}
 }
 

@@ -333,10 +333,18 @@
     <Compile Include="Xwt\XwtSynchronizationContext.cs" />
     <Compile Include="Xwt\Calendar.cs" />
     <Compile Include="Xwt.Backends\ICalendarBackend.cs" />
+    <Compile Include="Xwt.Drawing\ThemedImage.cs" />
+    <Compile Include="Xwt.Drawing\IImageLoader.cs" />
     <Compile Include="Xwt\FontSelector.cs" />
     <Compile Include="Xwt.Backends\IFontSelectorBackend.cs" />
     <Compile Include="Xwt\SelectFontDialog.cs" />
     <Compile Include="Xwt.Backends\ISelectFontDialogBackend.cs" />
+    <Compile Include="Xwt.Drawing\StyleSet.cs" />
+    <Compile Include="Xwt\FileSelector.cs" />
+    <Compile Include="Xwt.Backends\IFileSelectorBackend.cs" />
+    <Compile Include="Xwt\FolderSelector.cs" />
+    <Compile Include="Xwt.Backends\IFolderSelectorBackend.cs" />
+    <Compile Include="Xwt\ToolkitDefaults.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

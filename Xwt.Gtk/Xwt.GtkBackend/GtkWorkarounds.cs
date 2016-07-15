@@ -1295,6 +1295,39 @@ namespace Xwt.GtkBackend
 			if (bindingSet != IntPtr.Zero)
 				gtk_binding_entry_remove (bindingSet, (uint)key, modifiers);
 		}
+
+		[DllImport (GtkInterop.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
+		static extern void gtk_object_set_data (IntPtr raw, IntPtr key, IntPtr data);
+
+		public static void SetData<T> (GLib.Object gtkobject, string key, T data) where T : struct
+		{
+			IntPtr pkey = GLib.Marshaller.StringToPtrGStrdup (key);
+			IntPtr pdata = Marshal.AllocHGlobal (Marshal.SizeOf (data));
+			Marshal.StructureToPtr (data, pdata, false);
+			gtk_object_set_data (gtkobject.Handle, pkey, pdata);
+			Marshal.FreeHGlobal (pdata);
+			GLib.Marshaller.Free (pkey);
+			gtkobject.Data [key] = data;
+		}
+
+		public static void SetTransparentBgHint (this Gtk.Widget widget, bool enable)
+		{
+			SetData (widget, "transparent-bg-hint", enable);
+		}
+
+		[DllImport (GtkInterop.LIBGTK)]
+		static extern IntPtr gdk_x11_drawable_get_xid (IntPtr window);
+
+		public static IntPtr GetGtkWindowNativeHandle (Gtk.Window window)
+		{
+			if (window?.GdkWindow == null)
+				return IntPtr.Zero;
+			if (Platform.IsMac)
+				return gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
+			if (Platform.IsWindows)
+				return gdk_win32_drawable_get_handle (window.GdkWindow.Handle);
+			return gdk_x11_drawable_get_xid (window.GdkWindow.Handle);
+		}
 	}
 	
 	public struct KeyboardShortcut : IEquatable<KeyboardShortcut>

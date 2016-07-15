@@ -66,10 +66,22 @@ namespace Xwt.Drawing
 				var style = Style;
 				var weight = Weight;
 				var stretch = Stretch;
+				var oldHandler = ToolkitEngine.FontBackendHandler;
 				ToolkitEngine = tk;
 				handler = tk.FontBackendHandler;
-				var fb = handler.Create (fname, size, style, weight, stretch);
-				Backend = fb ?? handler.GetSystemDefaultFont ();
+
+				if (fname == oldHandler.SystemFont.Family)
+					Backend = handler.WithSettings (handler.SystemFont.Backend, size, style, weight, stretch);
+				else if (fname == oldHandler.SystemMonospaceFont.Family)
+					Backend = handler.WithSettings (handler.SystemMonospaceFont.Backend, size, style, weight, stretch);
+				else if (fname == oldHandler.SystemSansSerifFont.Family)
+					Backend = handler.WithSettings (handler.SystemSansSerifFont.Backend, size, style, weight, stretch);
+				else if (fname == oldHandler.SystemSerifFont.Family)
+					Backend = handler.WithSettings (handler.SystemSerifFont.Backend, size, style, weight, stretch);
+				else {
+					var fb = handler.Create (fname, size, style, weight, stretch);
+					Backend = fb ?? handler.WithSettings(handler.GetSystemDefaultFont (), size, style, weight, stretch);
+				}
 			}
 		}
 
@@ -121,6 +133,8 @@ namespace Xwt.Drawing
 
 		internal static Font FromName (string name, Toolkit toolkit)
 		{
+			if (string.IsNullOrWhiteSpace (name))
+				throw new ArgumentNullException (nameof (name), "Font name cannot be null or empty");
 			var handler = toolkit.FontBackendHandler;
 
 			double size = -1;
@@ -131,13 +145,18 @@ namespace Xwt.Drawing
 			int i = name.LastIndexOf (' ');
 			int lasti = name.Length;
 			do {
+				if (lasti > 0 && IsFontSupported (name.Substring (0, lasti)))
+					break;
+				
 				string token = name.Substring (i + 1, lasti - i - 1);
 				FontStyle st;
 				FontWeight fw;
 				FontStretch fs;
 				double siz;
-				if (double.TryParse (token, NumberStyles.Any, CultureInfo.InvariantCulture, out siz)) // Try parsing the number first, since Enum.TryParse can also parse numbers
-					size = siz;
+				if (double.TryParse (token, NumberStyles.Any, CultureInfo.InvariantCulture, out siz)) { // Try parsing the number first, since Enum.TryParse can also parse numbers
+					if (size == -1) // take only first number
+						size = siz;
+				}
 				else if (Enum.TryParse<FontStyle> (token, true, out st) && st != FontStyle.Normal)
 					style = st;
 				else if (Enum.TryParse<FontWeight> (token, true, out fw) && fw != FontWeight.Normal)
@@ -172,6 +191,17 @@ namespace Xwt.Drawing
 				return Font.SystemFont;
 		}
 
+		static bool IsFontSupported (string fontNames)
+		{
+			LoadInstalledFonts ();
+
+			string[] names = fontNames.Split (new [] {','}, StringSplitOptions.RemoveEmptyEntries);
+			if (names.Length == 0)
+				throw new ArgumentException ("Font family name not provided");
+			
+			return names.Any (name => installedFonts.ContainsKey (name.Trim ()));
+		}
+
 		static string GetSupportedFont (string fontNames)
 		{
 			LoadInstalledFonts ();
@@ -200,7 +230,8 @@ namespace Xwt.Drawing
 
 		static string GetDefaultFont (string unknownFont)
 		{
-			Console.WriteLine ("Font '" + unknownFont + "' not available in the system. Using '" + Font.SystemFont.Family + "' instead");
+			if (unknownFont != Font.SystemFont.Family) // ignore rare case when the default system font is not registered
+				Console.WriteLine ("Font '" + unknownFont + "' not available in the system. Using '" + Font.SystemFont.Family + "' instead");
 			return Font.SystemFont.Family;
 		}
 
@@ -307,7 +338,7 @@ namespace Xwt.Drawing
 
 		public Font WithSize (double size)
 		{
-			return new Font (handler.SetSize (Backend, size));
+			return new Font (handler.SetSize (Backend, size), ToolkitEngine);
 		}
 		
 		public Font WithScaledSize (double scale)
@@ -346,6 +377,20 @@ namespace Xwt.Drawing
 		public Font WithStretch (FontStretch stretch)
 		{
 			return new Font (handler.SetStretch (Backend, stretch), ToolkitEngine);
+		}
+
+		public Font WithSettings (Font fromFont)
+		{
+			return WithSettings (fromFont.Size, fromFont.Style, fromFont.Weight, fromFont.Stretch);
+		}
+
+		public Font WithSettings (double size, FontStyle style, FontWeight weight, FontStretch stretch)
+		{
+			var backend = handler.SetSize (Backend, size);
+			backend = handler.SetStyle (backend, style);
+			backend = handler.SetWeight (backend, weight);
+			backend = handler.SetStretch (backend, stretch);
+			return new Font (backend, ToolkitEngine);
 		}
 
 		public override string ToString ()

@@ -29,7 +29,7 @@ using Xwt.Backends;
 namespace Xwt
 {
 	[BackendType (typeof(ISaveFileDialogBackend))]
-	public class SaveFileDialog: XwtComponent
+	public class SaveFileDialog: FileDialog
 	{
 		bool running;
 		FileDialogFilterCollection filters;

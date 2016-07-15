@@ -23,7 +23,7 @@ namespace Xwt.Mac
 		{
 			base.Initialize ();
 			var view = new CustomSecureTextField (EventSink, ApplicationContext);
-			ViewObject = new CustomAlignedContainer (EventSink, ApplicationContext, (NSView)view);
+			ViewObject = new CustomAlignedContainer (EventSink, ApplicationContext, (NSView)view) { DrawsBackground = false };
 			((NSTextFieldCell)Widget.Cell).BezelStyle = NSTextFieldBezelStyle.Square;
 			((NSTextFieldCell)Widget.Cell).Bezeled = true;
 		}
@@ -71,11 +71,21 @@ namespace Xwt.Mac
 			}
 		}
 
-
 		public override void SetFocus ()
 		{
 			if(Widget.Window != null && CanGetFocus) {
 				Widget.Window.MakeFirstResponder(Widget);
+			}
+		}
+
+		public override Drawing.Color BackgroundColor {
+			get {
+				return Widget.BackgroundColor.ToXwtColor ();
+			}
+			set {
+				Widget.BackgroundColor = value.ToNSColor ();
+				Widget.Cell.DrawsBackground = true;
+				Widget.Cell.BackgroundColor = value.ToNSColor ();
 			}
 		}
 	}
