@@ -106,10 +106,12 @@ namespace Xwt.Mac
 				var backend = (ViewBackend)Toolkit.GetBackend (child);
 				view = ((ViewBackend)backend).NativeWidget as NSView;
 
-				if (view.Layer == null)
-					view.WantsLayer = true;
-				if (BackgroundColor != null)
-					view.Layer.BackgroundColor = BackgroundColor;
+				if(ViewBackend.UseLayers) {
+					if (view.Layer == null)
+						view.WantsLayer = true;
+					if (BackgroundColor != null)
+						view.Layer.BackgroundColor = BackgroundColor;
+				}
 				backend.SetAutosizeMode (true);
 				ForceChildLayout ();
 				// FIXME: unset when the popover is closed

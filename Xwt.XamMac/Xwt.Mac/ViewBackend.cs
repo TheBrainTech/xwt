@@ -81,6 +81,12 @@ namespace Xwt.Mac
 		Xwt.Drawing.Color backgroundColor;
 		Xwt.Drawing.Color textColor;
 
+		/// <summary>
+		/// Set to false to prevent NSView.WantsLayer from getting set to true. This drastically lowers
+		/// memory usage with a small performance penalty.
+		/// </summary>
+		public static bool UseLayers = true;
+
 		void IBackend.InitializeBackend (object frontend, ApplicationContext context)
 		{
 			ApplicationContext = context;
@@ -422,9 +428,11 @@ namespace Xwt.Mac
 			}
 			set {
 				this.backgroundColor = value;
-				if (Widget.Layer == null)
-					Widget.WantsLayer = true;
-				Widget.Layer.BackgroundColor = value.ToCGColor ();
+				if(UseLayers) {
+					if(Widget.Layer == null)
+						Widget.WantsLayer = true;
+					Widget.Layer.BackgroundColor = value.ToCGColor();
+				}
 				Widget.NeedsDisplay = true;
 			}
 		}
