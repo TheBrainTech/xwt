@@ -636,8 +636,19 @@ namespace Xwt.Mac
 			if (ob == null)
 				return NSDragOperation.None;
 			var backend = ob.Backend;
-			
-			NSDraggingInfo di = (NSDraggingInfo) Runtime.GetNSObject (dragInfo);
+
+			// this old code SHOULD work but Xam.Mac 2.8 introduced a regression
+			//NSDraggingInfo di = (NSDraggingInfo) Runtime.GetNSObject (dragInfo);
+			// Xam.Mac lead Chris Hamons says a fix should arrive around Jan-Mar 2017 or so...?
+			// if/when that occurs, we can go back to the above code, which is simpler
+
+			// this new code works on Xam.Mac 2.4 and Xam.Mac 2.8: no crashing, and drag-and-drop
+			// work as expected, as far as Jared can tell. Begin bandaid code:
+			NSDraggingInfo di = (NSDraggingInfo)typeof (NSDraggingInfo).GetConstructor (
+				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
+				null, new Type[] { typeof (IntPtr)}, null).Invoke (new object[] { dragInfo });
+			// end bandaid code
+
 			var types = di.DraggingPasteboard.Types.Select (t => ToXwtDragType (t)).ToArray ();
 			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
 
