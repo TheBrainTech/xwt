@@ -637,20 +637,10 @@ namespace Xwt.Mac
 				return NSDragOperation.None;
 			var backend = ob.Backend;
 
-			// this old code SHOULD work but Xam.Mac 2.8 introduced a regression
-			//NSDraggingInfo di = (NSDraggingInfo) Runtime.GetNSObject (dragInfo);
-			// Xam.Mac lead Chris Hamons says a fix should arrive around Jan-Mar 2017 or so...?
-			// if/when that occurs, we can go back to the above code, which is simpler
+			INSDraggingInfo di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, false);
 
-			// this new code works on Xam.Mac 2.4 and Xam.Mac 2.8: no crashing, and drag-and-drop
-			// work as expected, as far as Jared can tell. Begin bandaid code:
-			NSDraggingInfo di = (NSDraggingInfo)typeof (NSDraggingInfo).GetConstructor (
-				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
-				null, new Type[] { typeof (IntPtr)}, null).Invoke (new object[] { dragInfo });
-			// end bandaid code
-
-			var types = di.DraggingPasteboard.Types.Select (t => ToXwtDragType (t)).ToArray ();
-			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
+			var types = di.GetDraggingPasteboard().Types.Select (t => ToXwtDragType (t)).ToArray ();
+			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
 
 			var widget = backend.Frontend;
 			if (widget.ShouldPreventDragByLocation != null) {
@@ -660,7 +650,7 @@ namespace Xwt.Mac
 			}
 
 			if ((backend.currentEvents & WidgetEvent.DragOverCheck) != 0) {
-				var args = new DragOverCheckEventArgs (pos, types, ConvertAction (di.DraggingSourceOperationMask));
+				var args = new DragOverCheckEventArgs (pos, types, ConvertAction (di.GetDraggingSourceOperationMask()));
 				backend.OnDragOverCheck (di, args);
 				if (args.AllowedAction == DragDropAction.None)
 					return NSDragOperation.None;
@@ -670,8 +660,8 @@ namespace Xwt.Mac
 			
 			if ((backend.currentEvents & WidgetEvent.DragOver) != 0) {
 				TransferDataStore store = new TransferDataStore ();
-				FillDataStore (store, di.DraggingPasteboard, ob.View.RegisteredDragTypes ());
-				var args = new DragOverEventArgs (pos, store, ConvertAction (di.DraggingSourceOperationMask));
+				FillDataStore (store, di.GetDraggingPasteboard(), ob.View.RegisteredDragTypes ());
+				var args = new DragOverEventArgs (pos, store, ConvertAction (di.GetDraggingSourceOperationMask()));
 				backend.OnDragOver (di, args);
 				if (args.AllowedAction == DragDropAction.None)
 					return NSDragOperation.None;
@@ -679,7 +669,7 @@ namespace Xwt.Mac
 					return ConvertAction (args.AllowedAction);
 			}
 			
-			return di.DraggingSourceOperationMask;
+			return di.GetDraggingSourceOperationMask();
 		}
 		
 		static void DraggingExited (IntPtr sender, IntPtr sel, IntPtr dragInfo)
@@ -744,14 +734,14 @@ namespace Xwt.Mac
 			Console.WriteLine ("ConcludeDragOperation");
 		}
 		
-		protected virtual void OnDragOverCheck (NSDraggingInfo di, DragOverCheckEventArgs args)
+		protected virtual void OnDragOverCheck (INSDraggingInfo di, DragOverCheckEventArgs args)
 		{
 			ApplicationContext.InvokeUserCode (delegate {
 				eventSink.OnDragOverCheck (args);
 			});
 		}
 		
-		protected virtual void OnDragOver (NSDraggingInfo di, DragOverEventArgs args)
+		protected virtual void OnDragOver (INSDraggingInfo di, DragOverEventArgs args)
 		{
 			ApplicationContext.InvokeUserCode (delegate {
 				eventSink.OnDragOver (args);
