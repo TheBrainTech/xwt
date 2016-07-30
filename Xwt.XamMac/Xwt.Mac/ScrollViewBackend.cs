@@ -46,7 +46,9 @@ namespace Xwt.Mac
 		IWidgetBackend child;
 		ScrollPolicy verticalScrollPolicy;
 		ScrollPolicy horizontalScrollPolicy;
-		NormalClipView clipView;
+		NSClipView contentView;
+		Foundation.NSObject documentView;
+
 
 		public override Xwt.Drawing.Color BackgroundColor {
 			get {
@@ -64,6 +66,23 @@ namespace Xwt.Mac
 			Widget.HasHorizontalScroller = true;
 			Widget.HasVerticalScroller = true;
 			Widget.AutoresizesSubviews = true;
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if(Widget != null) {
+				if(documentView != null) {
+					documentView.Dispose();
+				}
+				if(contentView != null) {
+					contentView.Dispose();
+				}
+				if(child != null) {
+					child.Dispose();
+				}
+				Widget.Dispose();
+				base.Dispose (disposing);
+			}
 		}
 
 		public void ScrollToPoint(Point point) {
@@ -84,19 +103,28 @@ namespace Xwt.Mac
 				var hs = new ScrollAdjustmentBackend (Widget, false);
 				CustomClipView clipView = new CustomClipView (hs, vs);
 				Widget.ContentView = clipView;
+				contentView = clipView;
 				var dummy = new DummyClipView ();
 				dummy.AddSubview (backend.Widget);
 				backend.Widget.Frame = new CGRect (0, 0, clipView.Frame.Width, clipView.Frame.Height);
 				clipView.DocumentView = dummy;
+				documentView = dummy;
 				backend.EventSink.SetScrollAdjustments (hs, vs);
 				vertScroll = vs;
 				horScroll = hs;
 			}
 			else {
-				clipView = new NormalClipView ();
+				NormalClipView clipView = new NormalClipView ();
 				clipView.Scrolled += OnScrolled;
+
+				// the following Wiget._____View = statemetns cause this object never to be garbage collected since the Widget gets a reference to this
+				// it is because of these that Dispose() must be called on ScrollView objects in order for the memory to be released
 				Widget.ContentView = clipView;
 				Widget.DocumentView = backend.Widget;
+
+				contentView = clipView;
+				documentView = backend.Widget;
+
 				UpdateChildSize ();
 			}
 		}
