@@ -47,7 +47,7 @@ namespace Xwt.Mac
 		ScrollPolicy verticalScrollPolicy;
 		ScrollPolicy horizontalScrollPolicy;
 		NSClipView contentView;
-		Foundation.NSObject documentView;
+		IDisposable documentView;
 
 
 		public override Xwt.Drawing.Color BackgroundColor {

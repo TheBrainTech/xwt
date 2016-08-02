@@ -632,6 +632,9 @@ namespace Xwt.Mac
 		
 		static NSDragOperation DraggingUpdated (IntPtr sender, IntPtr sel, IntPtr dragInfo)
 		{
+		#if MONOMAC
+			return NSDragOperation.None;
+		#else
 			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
 			if (ob == null)
 				return NSDragOperation.None;
@@ -670,6 +673,7 @@ namespace Xwt.Mac
 			}
 			
 			return di.GetDraggingSourceOperationMask();
+		#endif
 		}
 		
 		static void DraggingExited (IntPtr sender, IntPtr sel, IntPtr dragInfo)
@@ -733,7 +737,8 @@ namespace Xwt.Mac
 		{
 			Console.WriteLine ("ConcludeDragOperation");
 		}
-		
+
+#if !MONOMAC
 		protected virtual void OnDragOverCheck (INSDraggingInfo di, DragOverCheckEventArgs args)
 		{
 			ApplicationContext.InvokeUserCode (delegate {
@@ -747,6 +752,7 @@ namespace Xwt.Mac
 				eventSink.OnDragOver (args);
 			});
 		}
+#endif
 		
 		void InitPasteboard (NSPasteboard pb, TransferDataSource data)
 		{
@@ -843,7 +849,7 @@ namespace Xwt.Mac
 			return true;
 		}
 
-		#endregion
+#endregion
 	}
 
 	sealed class WidgetPlacementWrapper: NSControl, IViewObject
