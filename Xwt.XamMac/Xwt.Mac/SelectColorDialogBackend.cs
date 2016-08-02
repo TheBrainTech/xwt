@@ -29,9 +29,15 @@ using System.IO;
 using Xwt.Backends;
 using Xwt.Drawing;
 using System.Runtime.InteropServices;
+#if MONOMAC
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using CGRect = System.Drawing.RectangleF;
+#else
 using AppKit;
 using Foundation;
 using CoreGraphics;
+#endif
 
 namespace Xwt.Mac
 {
@@ -56,7 +62,9 @@ namespace Xwt.Mac
 			colorPanel.WillClose += (object sender, EventArgs e) => {
 				HandleClosing();
 			};
+#if !MONOMAC // NSColorPanel.ColorChangedNotification is not defined for MonoMac
 			observer = NSNotificationCenter.DefaultCenter.AddObserver(NSColorPanel.ColorChangedNotification, OnColorChanged);
+#endif
 			return true;
 		}
 
@@ -72,7 +80,9 @@ namespace Xwt.Mac
 		}
 
 		public void HandleClosing() {
+#if !MONOMAC
 			NSNotificationCenter.DefaultCenter.RemoveObserver(observer);
+#endif
 		}
 
 		public Color Color { 
@@ -95,7 +105,7 @@ namespace Xwt.Mac
 
 		public Point ScreenPosition {
 			set {
-				Rectangle r = MacDesktopBackend.ToDesktopRect(new CGRect(value.X, value.Y, colorPanel.Frame.Width, colorPanel.Frame.Height));
+				Rectangle r = MacDesktopBackend.ToDesktopRect(new CGRect((float)value.X, (float)value.Y, colorPanel.Frame.Width, colorPanel.Frame.Height));
 				colorPanel.SetFrame(r.ToCGRect(), true);
 			}
 		}

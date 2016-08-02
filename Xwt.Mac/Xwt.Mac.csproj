@@ -298,6 +298,9 @@
     <Compile Include="..\Xwt.XamMac\Xwt.Mac\NSApplicationInitializer.cs">
       <Link>Xwt.Mac\NSApplicationInitializer.cs</Link>
     </Compile>
+    <Compile Include="..\Xwt.XamMac\Xwt.Mac\SelectColorDialogBackend.cs">
+      <Link>Xwt.Mac\SelectColorDialogBackend.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

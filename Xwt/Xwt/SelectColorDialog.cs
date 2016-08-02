@@ -47,7 +47,7 @@ namespace Xwt
 		/// <param name='title'>
 		/// Title of the dialog
 		/// </param>
-		public SelectColorDialog (string title)
+		public SelectColorDialog (string title) : this ()
 		{
 			this.title = title;
 		}

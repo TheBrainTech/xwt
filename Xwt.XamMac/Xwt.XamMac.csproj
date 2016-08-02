@@ -123,10 +123,10 @@
     <Compile Include="Xwt.Mac\SaveFileDialogBackend.cs" />
     <Compile Include="Xwt.Mac\ColorPickerBackend.cs" />
     <Compile Include="Xwt.Mac\OutlineViewBackend.cs" />
-    <Compile Include="Xwt.Mac\SelectColorDialogBackend.cs" />
     <Compile Include="Xwt.Mac\CalendarBackend.cs" />
     <Compile Include="Xwt.Mac\SelectFontDialogBackend.cs" />
     <Compile Include="Xwt.Mac\NSApplicationInitializer.cs" />
+    <Compile Include="Xwt.Mac\SelectColorDialogBackend.cs" />
   </ItemGroup>
   <Import Project="..\BuildHelpers.targets" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
