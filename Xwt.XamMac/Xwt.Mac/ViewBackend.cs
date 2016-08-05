@@ -689,18 +689,21 @@ namespace Xwt.Mac
 		
 		static bool PrepareForDragOperation (IntPtr sender, IntPtr sel, IntPtr dragInfo)
 		{
+		#if MONOMAC
+			return false;
+		#else
 			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
 			if (ob == null)
 				return false;
 			
 			var backend = ob.Backend;
 			
-			NSDraggingInfo di = (NSDraggingInfo) Runtime.GetNSObject (dragInfo);
-			var types = di.DraggingPasteboard.Types.Select (t => ToXwtDragType (t)).ToArray ();
-			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
+			INSDraggingInfo di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, false);
+			var types = di.GetDraggingPasteboard().Types.Select (t => ToXwtDragType (t)).ToArray ();
+			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
 			
 			if ((backend.currentEvents & WidgetEvent.DragDropCheck) != 0) {
-				var args = new DragCheckEventArgs (pos, types, ConvertAction (di.DraggingSourceOperationMask));
+				var args = new DragCheckEventArgs (pos, types, ConvertAction (di.GetDraggingSourceOperationMask()));
 				bool res = backend.ApplicationContext.InvokeUserCode (delegate {
 					backend.eventSink.OnDragDropCheck (args);
 				});
@@ -708,29 +711,34 @@ namespace Xwt.Mac
 					return false;
 			}
 			return true;
+		#endif
 		}
 		
 		static bool PerformDragOperation (IntPtr sender, IntPtr sel, IntPtr dragInfo)
 		{
+		#if MONOMAC
+			return false;
+		#else
 			IViewObject ob = Runtime.GetNSObject (sender) as IViewObject;
 			if (ob == null)
 				return false;
 			
 			var backend = ob.Backend;
 			
-			NSDraggingInfo di = (NSDraggingInfo) Runtime.GetNSObject (dragInfo);
-			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
+			INSDraggingInfo di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, false);
+			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
 			
 			if ((backend.currentEvents & WidgetEvent.DragDrop) != 0) {
 				TransferDataStore store = new TransferDataStore ();
-				FillDataStore (store, di.DraggingPasteboard, ob.View.RegisteredDragTypes ());
-				var args = new DragEventArgs (pos, store, ConvertAction (di.DraggingSourceOperationMask));
+				FillDataStore (store, di.GetDraggingPasteboard(), ob.View.RegisteredDragTypes ());
+				var args = new DragEventArgs (pos, store, ConvertAction (di.GetDraggingSourceOperationMask()));
 				backend.ApplicationContext.InvokeUserCode (delegate {
 					backend.eventSink.OnDragDrop (args);
 				});
 				return args.Success;
-			} else
-				return false;
+			}
+			return false;
+		#endif
 		}
 		
 		static void ConcludeDragOperation (IntPtr sender, IntPtr sel, IntPtr dragInfo)
