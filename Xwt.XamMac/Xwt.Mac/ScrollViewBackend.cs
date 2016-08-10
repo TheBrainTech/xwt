@@ -81,8 +81,8 @@ namespace Xwt.Mac
 					child.Dispose();
 				}
 				Widget.Dispose();
-				base.Dispose (disposing);
 			}
+			base.Dispose(disposing);
 		}
 
 		public void ScrollToPoint(Point point) {
