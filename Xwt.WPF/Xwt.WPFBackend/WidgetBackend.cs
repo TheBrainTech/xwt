@@ -922,11 +922,6 @@ namespace Xwt.WPFBackend
 
 			e.Handled = true; // Prevent default handlers from being used.
 
-			if (e.Data.GetDataPresent(DataFormats.Text)) {
-				e.Effects = DragDropEffects.Link;
-				return;
-			}
-
 			if ((enabledEvents & WidgetEvent.DragOverCheck) > 0) {
 				var checkArgs = new DragOverCheckEventArgs (pos, types, proposedAction);
 				Context.InvokeUserCode (delegate {
@@ -959,6 +954,16 @@ namespace Xwt.WPFBackend
 			}
 
 			e.Effects = currentDragEffect = proposedAction.ToWpfDropEffect ();
+
+			// allow drag and drop of URLs as text, use Copy effect so it works and looks good,
+			// if possible, else Link effect if Copy not allow by source
+			if (e.Data.GetDataPresent(DataFormats.Text)) {
+				if ((e.AllowedEffects & DragDropEffects.Copy) > 0) {
+					e.Effects = currentDragEffect = DragDropEffects.Copy;
+				} else if ((e.AllowedEffects & DragDropEffects.Link) > 0) {
+					e.Effects = currentDragEffect = DragDropEffects.Link;
+				}
+			}
 		}
 
 		void WidgetDropHandler (object sender, System.Windows.DragEventArgs e)
