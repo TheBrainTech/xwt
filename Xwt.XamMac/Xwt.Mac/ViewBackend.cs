@@ -761,12 +761,31 @@ namespace Xwt.Mac
 			});
 		}
 #endif
-		
+
+		static bool IsWebURL(string url) {
+			string cmp = url.ToLower();
+			return cmp.StartsWith("http://") || cmp.StartsWith("https://");
+		}
+
 		void InitPasteboard (NSPasteboard pb, TransferDataSource data)
 		{
 			pb.ClearContents ();
 			foreach (var t in data.DataTypes) {
-				if (t == TransferDataType.Text) {
+				if (t == TransferDataType.Uri) {
+					Uri url = (Uri)data.GetValue(t);
+					if (url.IsFile) {
+						string path = url.ToString().Replace("file://", "");
+						NSArray arr = NSArray.FromStrings(new string[] { path });
+						pb.DeclareTypes(new string[] { NSPasteboard.NSFilenamesType }, null);
+						pb.SetPropertyListForType(arr, NSPasteboard.NSFilenamesType);
+					} else if (IsWebURL(url.ToString())) {
+						pb.AddTypes (new string[] { NSPasteboard.NSStringType }, null);
+						pb.SetStringForType (url.ToString(), NSPasteboard.NSStringType);
+					} else {
+						Console.WriteLine("Check your inputs to your DragOperation and make sure your URL or file looks like what expect");
+					}
+				}
+				else if (t == TransferDataType.Text) {
 					pb.AddTypes (new string[] { NSPasteboard.NSStringType }, null);
 					pb.SetStringForType ((string)data.GetValue (t), NSPasteboard.NSStringType);
 				}

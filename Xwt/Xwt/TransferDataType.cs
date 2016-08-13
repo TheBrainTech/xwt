@@ -115,6 +115,8 @@ namespace Xwt
 				return TransferDataType.Text;
 			else if (type == typeof(Xwt.Drawing.Image))
 				return TransferDataType.Image;
+			else if (type == typeof(System.Uri))
+				return TransferDataType.Uri;
 			else
 				return FromId (type.AssemblyQualifiedName);
 		}
