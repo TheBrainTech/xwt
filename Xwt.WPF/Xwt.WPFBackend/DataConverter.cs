@@ -363,8 +363,9 @@ namespace Xwt.WPFBackend
 			foreach (var type in data.DataTypes) {
 				var value = data.GetValue (type);
 
-				if (type == TransferDataType.Text)
+				if (type == TransferDataType.Text) {
 					retval.SetText ((string)value);
+				}
 				else if (type == TransferDataType.Uri) {
 					Uri uri = (Uri)value;
 					if (uri.IsFile) {
@@ -381,6 +382,17 @@ namespace Xwt.WPFBackend
 					}
 				} else
 					retval.SetData (type.Id, TransferDataSource.SerializeValue (value));
+			}
+
+			string anyUri = data.LinkUri != null ? data.LinkUri.ToString() : null;
+			string anyPath = data.LinkTmpPath;
+			if (anyUri != null && anyPath != null) {
+				// write tmp file to disk with /path/to/tmp/Page-Title.url
+				string urlContents = "[InternetShortcut]\nURL=" + anyUri;
+				File.WriteAllText(anyPath, urlContents);
+				StringCollection strCollect = new StringCollection();
+				strCollect.Add(anyPath);
+				retval.SetFileDropList(strCollect);
 			}
 
 			return retval;
