@@ -81,7 +81,11 @@ namespace Xwt
 			 	OnPreferredSizeChanged();
 			};
 		}
-		
+
+		protected override void Dispose(bool disposing) {
+			base.Dispose(disposing);
+			Clear();
+		}
 		public double Spacing {
 			get { return spacing; }
 			set {

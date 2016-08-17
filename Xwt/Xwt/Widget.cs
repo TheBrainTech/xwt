@@ -58,6 +58,7 @@ namespace Xwt
 		double minWidth = -1, minHeight = -1;
 		double widthRequest = -1, heightRequest = -1;
 		CursorType cursor;
+		private bool isDisposed = false;
 
 		WidgetPlacement alignVertical = WidgetPlacement.Fill;
 		WidgetPlacement alignHorizontal = WidgetPlacement.Fill;
@@ -297,6 +298,8 @@ namespace Xwt
 						c.Dispose ();
 				}
 			}
+			isDisposed = true;
+			ResourceManager.FreeResource(Backend);
 		}
 		
 		/// <summary>
@@ -1363,7 +1366,9 @@ namespace Xwt
 		
 		void IWidgetSurface.Reallocate ()
 		{
-			Reallocate ();
+			if(!isDisposed) {
+				Reallocate();
+			}
 		}
 
 		Size IWidgetSurface.GetPreferredSize (bool includeMargin)
