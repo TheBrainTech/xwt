@@ -883,6 +883,9 @@ namespace Xwt.WPFBackend
 		{
 			if (Adorner != null) {
 				var w = GetParentWindow ();
+				if (w == null) {
+					return;
+				}
 				var v = (UIElement)w.Content;
 
 				if (w != AdornedWindow) {
@@ -957,7 +960,7 @@ namespace Xwt.WPFBackend
 
 			// allow drag and drop of URLs as text, use Copy effect so it works and looks good,
 			// if possible, else Link effect if Copy not allow by source
-			if (e.Data.GetDataPresent(DataFormats.Text)) {
+			if (e.Data.GetDataPresent(DataFormats.Text) || e.Data.GetDataPresent(DataFormats.UnicodeText)) {
 				if ((e.AllowedEffects & DragDropEffects.Copy) > 0) {
 					e.Effects = currentDragEffect = DragDropEffects.Copy;
 				} else if ((e.AllowedEffects & DragDropEffects.Link) > 0) {
