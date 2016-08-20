@@ -84,7 +84,9 @@ namespace Xwt
 
 		protected override void Dispose(bool disposing) {
 			base.Dispose(disposing);
-			Clear();
+			Xwt.Application.Invoke(() => {
+				Clear();
+			});
 		}
 		public double Spacing {
 			get { return spacing; }

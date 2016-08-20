@@ -76,8 +76,10 @@ namespace Xwt
 
 		protected override void Dispose(bool disposing) {
 			base.Dispose(disposing);
-			Clear();
-			ResourceManager.FreeResource(Backend);
+			Xwt.Application.Invoke(() => {
+				Clear();
+				ResourceManager.FreeResource(Backend);
+			});
 		}
 
 		/// <summary>

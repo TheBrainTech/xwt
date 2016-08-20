@@ -299,7 +299,9 @@ namespace Xwt
 				}
 			}
 			isDisposed = true;
-			ResourceManager.FreeResource(Backend);
+			Xwt.Application.Invoke(() => {
+				ResourceManager.FreeResource(Backend);
+			});
 		}
 		
 		/// <summary>
