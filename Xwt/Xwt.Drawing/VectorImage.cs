@@ -666,6 +666,7 @@ namespace Xwt.Drawing
 					var la = new TextLayout (toolkit);
 					lad.InitLayout (la);
 					handler.DrawTextLayout (ctx, la, cm.Doubles [di++], cm.Doubles [di++]);
+					la.Dispose();
 					break;
 				case DrawingCommand.Fill:
 					handler.Fill (ctx);
