@@ -53,18 +53,24 @@ namespace Xwt.Mac
 			colorPanel = NSColorPanel.SharedColorPanel;
 		}
 
+		// Important note: The dialog was originally modaless. It was switched to be modal.
+		//				   You can see the file history in GIT to see the changes. (Eugene) 
+
+
 		public bool Run(IWindowFrameBackend parent, string title, bool supportsAlpha, Action<Color> colorChangedCallback)
 		{
+			colorPanel.Delegate = new SelectColorDialogDelegate();
 			colorPanel.ShowsAlpha = supportsAlpha;
-			colorPanel.OrderFront(null);
+
 			this.callback = colorChangedCallback;
 			colorPanel.AnimationBehavior = NSWindowAnimationBehavior.None;
-			colorPanel.WillClose += (object sender, EventArgs e) => {
-				HandleClosing();
-			};
+
 #if !MONOMAC // NSColorPanel.ColorChangedNotification is not defined for MonoMac
 			observer = NSNotificationCenter.DefaultCenter.AddObserver(NSColorPanel.ColorChangedNotification, OnColorChanged);
 #endif
+
+			NSApplication.SharedApplication.RunModalForWindow(colorPanel);
+
 			return true;
 		}
 
@@ -75,14 +81,10 @@ namespace Xwt.Mac
 		}
 
 		public void Close() {
-			HandleClosing();
-			this.colorPanel.Close();
-		}
-
-		public void HandleClosing() {
 #if !MONOMAC
 			NSNotificationCenter.DefaultCenter.RemoveObserver(observer);
 #endif
+			this.colorPanel.Close();
 		}
 
 		public Color Color { 
@@ -105,9 +107,16 @@ namespace Xwt.Mac
 
 		public Point ScreenPosition {
 			set {
+				// As long as the dilog is modal, we can not set its position with "SetFrame".
 				Rectangle r = MacDesktopBackend.ToDesktopRect(new CGRect((float)value.X, (float)value.Y, colorPanel.Frame.Width, colorPanel.Frame.Height));
 				colorPanel.SetFrame(r.ToCGRect(), true);
 			}
+		}
+	}
+
+	class SelectColorDialogDelegate : NSWindowDelegate {
+		public override void WillClose(NSNotification notification) {
+			NSApplication.SharedApplication.StopModal();
 		}
 	}
 }
