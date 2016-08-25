@@ -62,6 +62,12 @@ namespace Xwt
 			private set;
 		}
 
+		public static bool InvokeRequired {
+			get {
+				return UIThread != Thread.CurrentThread;
+			}
+		}
+
 		/// <summary>
 		/// Initialize Xwt with the best matching toolkit for the current platform.
 		/// </summary>
