@@ -137,25 +137,21 @@ namespace Xwt.Mac
 			return NSPasteboard.GeneralPasteboard.Types.Contains (type.ToUTI ());
 		}
 
-
 		public override object GetData (TransferDataType type)
 		{
+			
 			if (type == TransferDataType.Uri) {
-				NSUrl url = null;
-				try {
-					// could be null, could be malformed URI
-					// Uri.Parse and NSUrl really like to throw exceptions for parse errors :-( instead of just returning null
-					url = NSUrl.FromPasteboard(NSPasteboard.GeneralPasteboard);
-				} catch (Exception ex) {
-					Console.Error.WriteLine("Xwt/TheBrainMac/MacClipboardBackend.GetData: error creating URL from clipboard:\n", ex.Message);
-					return null;
+				NSPasteboard pasteBoard = NSPasteboard.GeneralPasteboard;
+				NSArray nsArray = (NSArray)pasteBoard.GetPropertyListForType(NSPasteboard.NSFilenamesType);
+				NSString[] pathArray = NSArray.FromArray<NSString>(nsArray);
+				string[] uriArray = new string[pathArray.Length];
+				for(int i = 0; i < pathArray.Length; i++) {
+					Uri fileUrl = new Uri(pathArray[i].ToString());
+					if(fileUrl != null && fileUrl.IsFile) {
+						uriArray[i] = pathArray[i].ToString();
+					}
 				}
-				if(url != null && url.IsFileUrl) {
-					return new Uri(url.Path);
-				} else if (url != null) {
-					return (Uri)url;
-				}
-				return null;
+				return uriArray;
 			}
 
 			if(type == TransferDataType.Image) {
