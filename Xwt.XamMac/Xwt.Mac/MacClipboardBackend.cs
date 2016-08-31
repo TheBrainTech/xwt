@@ -144,14 +144,16 @@ namespace Xwt.Mac
 				NSPasteboard pasteBoard = NSPasteboard.GeneralPasteboard;
 				NSArray nsArray = (NSArray)pasteBoard.GetPropertyListForType(NSPasteboard.NSFilenamesType);
 				NSString[] pathArray = NSArray.FromArray<NSString>(nsArray);
-				string[] uriArray = new string[pathArray.Length];
-				for(int i = 0; i < pathArray.Length; i++) {
-					Uri fileUrl = new Uri(pathArray[i].ToString());
-					if(fileUrl != null && fileUrl.IsFile) {
-						uriArray[i] = pathArray[i].ToString();
+				if(pathArray != null) {
+					string[] uriArray = new string[pathArray.Length];
+					for(int i = 0; i < pathArray.Length; i++) {
+						Uri fileUrl = new Uri(pathArray[i].ToString());
+						if(fileUrl != null && fileUrl.IsFile) {
+							uriArray[i] = pathArray[i].ToString();
+						}
 					}
+					return uriArray;
 				}
-				return uriArray;
 			}
 
 			if(type == TransferDataType.Image) {
