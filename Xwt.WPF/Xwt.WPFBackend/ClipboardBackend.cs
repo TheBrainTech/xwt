@@ -25,8 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using System.Threading;
+using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using Xwt.Backends;
 using WindowsClipboard = System.Windows.Clipboard;
 
@@ -96,6 +97,87 @@ namespace Xwt.WPFBackend
 			return WindowsClipboard.ContainsData (type.ToWpfDataFormat ());
 		}
 
+
+		public static BitmapSource TryFixAlphaChannel (BitmapSource bitmapImage) {
+			double dpi = 96;
+			int width = bitmapImage.PixelWidth;
+			int height = bitmapImage.PixelHeight;
+
+			int stride = width * (bitmapImage.Format.BitsPerPixel + 7) / 8;
+			byte[] pixelData = new byte[stride * height];
+			bitmapImage.CopyPixels (pixelData, stride, 0);
+
+			if (bitmapImage.Format == System.Windows.Media.PixelFormats.Bgra32) {
+				bool anyNonZeroAlpha = false;
+				for (int y = 0; y < height; y++) {
+					for (int o = 3; o < stride; o += 4) {
+						// Bgra32, so set the Alpha
+						if (pixelData[y*stride + o] > 0) {
+							anyNonZeroAlpha = true;
+							break;
+						}
+					}
+					if (anyNonZeroAlpha) {
+						break;
+					}
+				}
+				if (!anyNonZeroAlpha) {
+					for (int y = 0; y < height; y++) {
+						for (int o = 3; o < stride; o += 4) {
+							// Bgra32, so set the Alpha
+							pixelData[y*stride + o] = 255;
+						}
+					}
+				}
+			}
+
+			return BitmapSource.Create (width, height, dpi, dpi, bitmapImage.Format, bitmapImage.Palette, pixelData, stride);
+		}
+
+		public static BitmapSource GetBestPossibletAlphaBitmapFromDataObject(System.Windows.IDataObject ob) {
+			var formats = ob.GetFormats();
+			BitmapSource bmp = null;
+
+			foreach (string f in formats) {
+				if (f != "PNG" && f != "image/png") { // only PNG (GIMP) and image/png (haven't seen this in the wild but could be useful)
+					continue;
+				}
+				var it = ob.GetData(f);
+				var ms = it as MemoryStream;
+				if (ms != null) {
+					BitmapImage result = new BitmapImage();
+					result.BeginInit();
+					// According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
+					// Force the bitmap to load right now so we can dispose the stream.
+					result.CacheOption = BitmapCacheOption.OnLoad;
+					result.StreamSource = ms;
+					result.EndInit();
+					result.Freeze();
+					bmp = result;
+					break;
+				}
+			}
+
+			if (bmp == null) {
+				foreach (string f in formats) {
+					if (!f.ToLower().Contains("bitmap")) {
+						continue;
+					}
+					var obj = ob.GetData(f) as BitmapSource;
+					if (obj != null) {
+						bmp = obj;
+						break;
+					}
+				}
+			}
+
+			if (bmp == null) {
+				bmp = WindowsClipboard.GetImage();
+			}
+			bmp = TryFixAlphaChannel(bmp);
+			return bmp;
+		}
+
 		public override object GetData (TransferDataType type)
 		{
 			if (type == null)
@@ -113,7 +195,9 @@ namespace Xwt.WPFBackend
 			}
 
 			if(type == TransferDataType.Image) {
-				return ApplicationContext.Toolkit.WrapImage(WindowsClipboard.GetImage());
+				var ob = WindowsClipboard.GetDataObject();
+				var bmp = GetBestPossibletAlphaBitmapFromDataObject(ob);
+				return ApplicationContext.Toolkit.WrapImage(bmp);
 			}
 
 			return WindowsClipboard.GetData (type.ToWpfDataFormat ());
