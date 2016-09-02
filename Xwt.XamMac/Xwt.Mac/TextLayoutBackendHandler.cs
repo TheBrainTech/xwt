@@ -106,7 +106,7 @@ namespace Xwt.Mac
 				nfloat lineHeight = li.Font.Ascender - li.Font.Descender + li.Font.Leading;
 
 				CTLine ellipsis = null;
-				bool ellipsize = li.Width.HasValue && li.TextTrimming == TextTrimming.WordElipsis;
+				bool ellipsize = li.Width.HasValue && (li.TextTrimming == TextTrimming.WordElipsis || li.TextTrimming == TextTrimming.CharacterEllipsis);
 				if (ellipsize)
 					ellipsis = new CTLine (CreateAttributedString (li, "..."));
 
@@ -159,7 +159,7 @@ namespace Xwt.Mac
 
 			using (CTFramesetter framesetter = new CTFramesetter (CreateAttributedString (li))) {
 				CGPath path = new CGPath ();
-				bool ellipsize = li.Width.HasValue && li.TextTrimming == TextTrimming.WordElipsis;
+				bool ellipsize = li.Width.HasValue && (li.TextTrimming == TextTrimming.WordElipsis || li.TextTrimming == TextTrimming.CharacterEllipsis);
 				path.AddRect (new CGRect (0, 0, li.Width.HasValue && !ellipsize ? li.Width.Value : float.MaxValue, li.Height ?? float.MaxValue));
 
 				return framesetter.GetFrame (new NSRange (0, li.Text.Length), path, null);
@@ -191,7 +191,7 @@ namespace Xwt.Mac
 					return;
 
 				CTLine ellipsis = null;
-				bool ellipsize = li.Width.HasValue && li.TextTrimming == TextTrimming.WordElipsis;
+				bool ellipsize = li.Width.HasValue && (li.TextTrimming == TextTrimming.WordElipsis || li.TextTrimming == TextTrimming.CharacterEllipsis);
 				if (ellipsize)
 					ellipsis = new CTLine (CreateAttributedString (li, "..."));
 

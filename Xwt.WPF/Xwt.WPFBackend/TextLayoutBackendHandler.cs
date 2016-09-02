@@ -221,7 +221,7 @@ namespace Xwt.WPFBackend
 		{
 			switch (textTrimming)
 			{
-				case Xwt.Drawing.TextTrimming.WordEllipsis:
+				case Xwt.Drawing.TextTrimming.WordElipsis:
 					FormattedText.Trimming = System.Windows.TextTrimming.WordEllipsis;
 					break;
 				case Xwt.Drawing.TextTrimming.CharacterEllipsis:
