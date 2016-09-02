@@ -221,8 +221,11 @@ namespace Xwt.WPFBackend
 		{
 			switch (textTrimming)
 			{
-				case Xwt.Drawing.TextTrimming.WordElipsis:
+				case Xwt.Drawing.TextTrimming.WordEllipsis:
 					FormattedText.Trimming = System.Windows.TextTrimming.WordEllipsis;
+					break;
+				case Xwt.Drawing.TextTrimming.CharacterEllipsis:
+					FormattedText.Trimming = System.Windows.TextTrimming.CharacterEllipsis;
 					break;
 				default:
 					FormattedText.Trimming = System.Windows.TextTrimming.None;
