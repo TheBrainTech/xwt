@@ -57,10 +57,24 @@ namespace Xwt.WPFBackend
 					layer.Add (Adorner);
 				if (!String.IsNullOrEmpty(placeholderText))
 					Adorner.PlaceholderText = placeholderText;
+				if(!TextBox.IsVisible) {
+					Adorner.Visibility = Visibility.Hidden;
+				}
 			};
+			TextBox.IsVisibleChanged += TextBox_IsVisibleChanged;
 			TextBox.VerticalContentAlignment = VerticalAlignment.Center;
 
 			CommandManager.AddPreviewCanExecuteHandler(this.Widget as TextBox, new CanExecuteRoutedEventHandler(OnPreviewCanExecuteHandler));
+		}
+
+		private void TextBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
+			if(Adorner != null) {
+				if(TextBox.IsVisible) {
+					Adorner.Visibility = Visibility.Visible;
+				} else {
+					Adorner.Visibility = Visibility.Hidden;
+				}
+			}
 		}
 
 		private void OnPreviewCanExecuteHandler(object sender, CanExecuteRoutedEventArgs e) {
