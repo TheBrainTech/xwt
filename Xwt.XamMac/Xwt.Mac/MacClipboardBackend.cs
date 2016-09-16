@@ -44,13 +44,6 @@ namespace Xwt.Mac
 {
 	public class MacClipboardBackend: ClipboardBackend
 	{
-		PasteboardOwner owner;
-
-		public MacClipboardBackend ()
-		{
-			owner = new PasteboardOwner ();
-		}
-
 		#region implemented abstract members of ClipboardBackend
 
 		public override void Clear ()
@@ -58,11 +51,14 @@ namespace Xwt.Mac
 			NSPasteboard.GeneralPasteboard.ClearContents ();
 		}
 
-		public override void SetData (TransferDataType type, Func<object> dataSource)
+		public override void SetData (TransferDataType type, Func<object> dataSource, bool cleanClipboardFirst = true)
 		{
 			var pboard = NSPasteboard.GeneralPasteboard;
-			pboard.ClearContents ();
+			if (cleanClipboardFirst)
+				pboard.ClearContents ();
+			var owner = new PasteboardOwner();
 			owner.DataSource = dataSource;
+
 			pboard.AddTypes (new[] { type.ToUTI () }, owner);
 		}
 

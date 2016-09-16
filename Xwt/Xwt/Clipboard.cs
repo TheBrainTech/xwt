@@ -153,11 +153,11 @@ namespace Xwt
 			SetData (TransferDataType.FromType (data.GetType ()), data);
 		}
 		
-		public static void SetData (TransferDataType type, object data)
+		public static void SetData (TransferDataType type, object data, bool cleanClipboardFirst = true)
 		{
 			Backend.SetData (type, delegate {
 				return data;
-			});
+			}, cleanClipboardFirst);
 		}
 		
 		public static void SetData (TransferDataType type, Func<object> dataSource)
