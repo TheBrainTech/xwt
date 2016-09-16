@@ -30,7 +30,7 @@ namespace Xwt.Backends
 	public abstract class ClipboardBackend: BackendHandler
 	{
 		public abstract void Clear ();
-		public abstract void SetData (TransferDataType type, Func<object> dataSource);
+		public abstract void SetData (TransferDataType type, Func<object> dataSource, bool cleanClipboardFirst = true);
 		
 		public abstract bool IsTypeAvailable (TransferDataType type);
 		public abstract object GetData (TransferDataType type);
