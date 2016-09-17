@@ -54,8 +54,9 @@ namespace Xwt.Mac
 		public override void SetData (TransferDataType type, Func<object> dataSource, bool cleanClipboardFirst = true)
 		{
 			var pboard = NSPasteboard.GeneralPasteboard;
-			if (cleanClipboardFirst)
-				pboard.ClearContents ();
+			if(cleanClipboardFirst) {
+				pboard.ClearContents();
+			}
 			var owner = new PasteboardOwner();
 			owner.DataSource = dataSource;
 
