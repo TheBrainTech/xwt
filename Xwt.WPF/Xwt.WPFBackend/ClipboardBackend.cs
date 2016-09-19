@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using Xwt.Backends;
 using WindowsClipboard = System.Windows.Clipboard;
@@ -34,24 +36,35 @@ using WindowsClipboard = System.Windows.Clipboard;
 namespace Xwt.WPFBackend
 {
 	public class WpfClipboardBackend
-		: ClipboardBackend
-	{
-		public override void Clear ()
-		{
+		: ClipboardBackend {
+		private DataObject currentDataObject = new DataObject();
+
+		public override void Clear() {
 			WindowsClipboard.Clear();
 		}
 
-		public override void SetData (TransferDataType type, Func<object> dataSource)
-		{
-			if (type == null)
-				throw new ArgumentNullException ("type");
-			if (dataSource == null)
-				throw new ArgumentNullException ("dataSource");
-			if (type == TransferDataType.Html) {
-				WindowsClipboard.SetData (type.ToWpfDataFormat (), GenerateCFHtml (dataSource ().ToString ()));
-			} else {
-				WindowsClipboard.SetData (type.ToWpfDataFormat (), dataSource ());
+		public override void SetData(TransferDataType type, Func<object> dataSource, bool cleanClipboardFirst = true) {
+			if(type == null)
+				throw new ArgumentNullException("type");
+			if(dataSource == null)
+				throw new ArgumentNullException("dataSource");
+
+			if(cleanClipboardFirst) {
+				WindowsClipboard.Clear();
+				currentDataObject = new DataObject();
 			}
+
+			if(type == TransferDataType.Html) {
+				currentDataObject.SetData(type.ToWpfDataFormat(), GenerateCFHtml(dataSource().ToString()));
+			} else {
+				if(type == TransferDataType.Uri) {
+					currentDataObject.SetFileDropList((StringCollection)(dataSource()));
+				} else {
+					currentDataObject.SetData(type.ToWpfDataFormat(), dataSource());
+				}
+			}
+			WindowsClipboard.SetDataObject(currentDataObject);
+
 		}
 
 		static readonly string emptyCFHtmlHeader = GenerateCFHtmlHeader (0, 0, 0, 0);
