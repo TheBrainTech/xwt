@@ -69,7 +69,7 @@ namespace Xwt.WPFBackend
 
 		private void TextBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
 			if(Adorner != null) {
-				if(TextBox.IsVisible) {
+				if(TextBox.IsVisible && string.IsNullOrEmpty(TextBox.Text)) {
 					Adorner.Visibility = Visibility.Visible;
 				} else {
 					Adorner.Visibility = Visibility.Hidden;
