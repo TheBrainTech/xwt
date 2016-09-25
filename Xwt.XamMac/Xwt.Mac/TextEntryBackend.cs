@@ -310,6 +310,7 @@ namespace Xwt.Mac
 				return Widget.BackgroundColor.ToXwtColor ();
 			}
 			set {
+				// macOS does not change the color of the background unless the item does not have focus
 				bool startedWithFocus = false;
 				int cursorPosition = -1;
 				if(this.HasKeyboardFocus) {
