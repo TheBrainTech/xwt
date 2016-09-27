@@ -68,6 +68,14 @@ namespace Xwt
 			}
 		}
 
+		public static void ExecuteOnApplicationThread(Action action) {
+			if(InvokeRequired) {
+				Application.Invoke(action);
+			} else {
+				action();
+			}
+		}
+
 		/// <summary>
 		/// Initialize Xwt with the best matching toolkit for the current platform.
 		/// </summary>
