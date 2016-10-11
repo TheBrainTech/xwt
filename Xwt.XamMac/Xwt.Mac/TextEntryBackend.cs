@@ -187,6 +187,8 @@ namespace Xwt.Mac
 				return (int)Widget.CurrentEditor.SelectedRange.Location;
 			}
 			set {
+				if(Widget.CurrentEditor == null)
+					return;
 				Widget.CurrentEditor.SelectedRange = new NSRange (value, SelectionLength);
 				HandleSelectionChanged ();
 			}
@@ -199,6 +201,8 @@ namespace Xwt.Mac
 				return (int)Widget.CurrentEditor.SelectedRange.Length;
 			}
 			set {
+				if(Widget.CurrentEditor == null)
+					return;
 				Widget.CurrentEditor.SelectedRange = new NSRange (SelectionStart, value);
 				HandleSelectionChanged ();
 			}
