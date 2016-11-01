@@ -47,7 +47,7 @@ namespace Xwt.WPFBackend
 		static SolidColorBrush BACKGROUND_BRUSH;
 
 		static PopoverBackend() {
-			if(SystemColors.AppWorkspaceColor.R == 0 && SystemColors.AppWorkspaceColor.G == 0 && SystemColors.AppWorkspaceColor.B == 0) {
+			if(SystemColors.MenuBarColor.R == 0 && SystemColors.MenuBarColor.G == 0 && SystemColors.MenuBarColor.B == 0) {
 				BACKGROUND_COLOR = Color.FromRgb(0, 0, 0);
 			} else {
 				BACKGROUND_COLOR = Color.FromRgb(235, 235, 235);
