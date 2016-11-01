@@ -42,8 +42,18 @@ namespace Xwt.WPFBackend
 		const int BORDER_RADIUS = 7;
 		const int BORDER_PADDING = 7;
 		const int BORDER_THICKNESS = 1;
-		static readonly SolidColorBrush STROKE_COLOR = Brushes.Gray;
-		static readonly SolidColorBrush BACKGROUND_COLOR = new SolidColorBrush(Color.FromRgb(235, 235, 235));
+		static readonly SolidColorBrush STROKE_BRUSH = Brushes.Gray;
+		static Color BACKGROUND_COLOR;
+		static SolidColorBrush BACKGROUND_BRUSH;
+
+		static PopoverBackend() {
+			if(SystemColors.AppWorkspaceColor.R == 0 && SystemColors.AppWorkspaceColor.G == 0 && SystemColors.AppWorkspaceColor.B == 0) {
+				BACKGROUND_COLOR = Color.FromRgb(0, 0, 0);
+			} else {
+				BACKGROUND_COLOR = Color.FromRgb(235, 235, 235);
+			}
+			BACKGROUND_BRUSH = new SolidColorBrush(BACKGROUND_COLOR);
+		}
 
 		public bool StaysOpen {
 			get {
@@ -95,8 +105,8 @@ namespace Xwt.WPFBackend
 			string xamlCaretPath = string.Format("M 0,{0} C 0,{0} {1},{0} {2},0 C {2},0 {3},{0} {4},{0}", CARET_HEIGHT, CARET_WIDTH / 4, CARET_WIDTH / 2, CARET_WIDTH * 3 / 4, CARET_WIDTH);
 			Geometry caretGeometry = PathGeometry.Parse(xamlCaretPath);
 			Path caretPath = new Path() {
-				Stroke = STROKE_COLOR,
-				Fill = BACKGROUND_COLOR,
+				Stroke = STROKE_BRUSH,
+				Fill = BACKGROUND_BRUSH,
 				Data = caretGeometry,
 				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Center
@@ -105,24 +115,24 @@ namespace Xwt.WPFBackend
 			string xamlBoundaryPath = string.Format("M 0,{0} L {1},{0}", CARET_HEIGHT + 1, CARET_WIDTH);
 			Geometry boundaryGeometry = PathGeometry.Parse(xamlBoundaryPath);
 			Path boundaryPath = new Path() {
-				Stroke = BACKGROUND_COLOR,
+				Stroke = BACKGROUND_BRUSH,
 				Data = boundaryGeometry,
 				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Center
 			};
 			
 			border = new System.Windows.Controls.Border {
-				BorderBrush = STROKE_COLOR,
+				BorderBrush = STROKE_BRUSH,
 				CornerRadius = new CornerRadius(BORDER_RADIUS),
 				Padding = new Thickness(BORDER_PADDING),
 				BorderThickness = new Thickness(BORDER_THICKNESS),
 				Margin = new Thickness(0, CARET_HEIGHT - 1, 0, 0),
 				VerticalAlignment = VerticalAlignment.Top,
-				Background = BACKGROUND_COLOR
+				Background = BACKGROUND_BRUSH
 			};
 
 			//Set background color of popover
-			BackgroundColor = BACKGROUND_COLOR.ToXwtColor();
+			BackgroundColor = BACKGROUND_BRUSH.ToXwtColor();
 
 			NativeWidget = new System.Windows.Controls.Primitives.Popup {
 				AllowsTransparency = true,
