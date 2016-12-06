@@ -83,11 +83,14 @@ namespace Xwt.WPFBackend
 			if (i == -1) {
 				children.Add (widget);
 				childrenBounds.Add (bounds);
+				i = children.Count - 1;
 			}
 			else {
 				childrenBounds[i] = bounds;
 			}
-			Canvas.SetAllocation (children.ToArray (), childrenBounds.ToArray ());
+			// calling this normally causes the every existing child to be remeasured again
+			// instead tell it which child specifically needs to be placed
+			Canvas.SetAllocation (children.ToArray (), childrenBounds.ToArray (), i);
 		}
 
 		public void RemoveChild (IWidgetBackend widget)

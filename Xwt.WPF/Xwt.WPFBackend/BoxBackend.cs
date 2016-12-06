@@ -94,12 +94,23 @@ namespace Xwt.WPFBackend
 			return Backend.MeasureOverride (constraint, s);
 		}
 
-		public void SetAllocation (IWidgetBackend[] widgets, Rectangle[] rects)
+		public void SetAllocation (IWidgetBackend[] widgets, Rectangle[] rects, int singleWidget = -1)
 		{
 			this.widgets = widgets;
 			this.rects = rects;
 
-			ArrangeChildren (true);
+			if (singleWidget == -1) {
+				// arrange all children
+				ArrangeChildren (true);
+			} else {
+				// arrange only the one that has been changed
+				// this is the same code that is called on every child by ArrangeChildren (true)
+				var element = WidgetBackend.GetFrameworkElement (widgets [singleWidget]);
+				var r = rects[singleWidget].WithPositiveSize ();
+				element.InvalidateMeasure ();
+				element.Measure (new SW.Size (r.Width, r.Height));
+				element.Arrange (r.ToWpfRect ());
+			}
 		}
 
 		// Whenever a control gets a change affecting its size/appearance,
