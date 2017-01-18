@@ -49,16 +49,6 @@ namespace Xwt.Mac
 		NSClipView contentView;
 		IDisposable documentView;
 
-
-		public override Xwt.Drawing.Color BackgroundColor {
-			get {
-				return Widget.BackgroundColor.ToXwtColor();
-			}
-			set {
-				Widget.BackgroundColor = value.ToNSColor();
-			}
-		}
-
 		public override void Initialize ()
 		{
 			ViewObject = new CustomScrollView ();
@@ -217,6 +207,17 @@ namespace Xwt.Mac
 		{
 			UpdateChildSize ();
 		}
+
+		public override Drawing.Color BackgroundColor {
+			get {
+				return Widget.BackgroundColor.ToXwtColor ();
+			}
+			set {
+				base.BackgroundColor = value;
+				Widget.BackgroundColor = value.ToNSColor ();
+			}
+		}
+
 	}
 	
 	class CustomScrollView: NSScrollView, IViewObject

@@ -1,10 +1,10 @@
 ﻿// 
-// ExRichTextBox.cs
+// ImageToImageSourceConveter.cs
 //  
 // Author:
-//       Alan McGovern <alan@xamarin.com>
+//		 Jérémie Laval <jeremie.laval@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin, Inc.
+// Copyright (c) 2016 Microsoft, Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,50 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
+using System;
+using System.Globalization;
+using System.Windows.Data;
+using Xwt.Drawing;
+using Xwt.Backends;
+
 
 namespace Xwt.WPFBackend.Utilities
 {
-	public class ExRichTextBox : RichTextBox, IWpfWidget
+	class MarkupToPlainTextConverter : IValueConverter
 	{
-		Style paragraphStyle;
-		int lineSpacing;
-
-		public WidgetBackend Backend {
-			get; set;
-		}
-
-		protected override System.Windows.Size MeasureOverride (System.Windows.Size constraint)
+		public object Convert (object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			var s = base.MeasureOverride (constraint);
-			return Backend.MeasureOverride (constraint, s);
+			return Xwt.FormattedText.FromMarkup ((string)value).Text;
 		}
 
-		public int LineSpacing {
-			get {
-				return lineSpacing;
-			}
-
-			set {
-				lineSpacing = value;
-				UpdateParagraphStyle ();
-			}
-		}
-
-		void UpdateParagraphStyle ()
+		public object ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (paragraphStyle != null) {
-				Resources.Remove (typeof (Paragraph));
-				paragraphStyle = null;
-			}
-
-			paragraphStyle = new Style (typeof (Paragraph));
-			var lineHeightSetter = new Setter (Block.LineHeightProperty, FontSize + lineSpacing);
-			paragraphStyle.Setters.Add (lineHeightSetter);
-
-			Resources.Add (typeof (Paragraph), paragraphStyle);
+			throw new NotImplementedException ();
 		}
 	}
 }

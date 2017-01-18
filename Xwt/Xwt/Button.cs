@@ -182,6 +182,11 @@ namespace Xwt
 				OnPreferredSizeChanged ();
 			}
 		}
+
+		public Color LabelColor {
+			get { return Backend.LabelColor; }
+			set { Backend.LabelColor = value; }
+		}
 		
 		[MappedEvent(ButtonEvent.Clicked)]
 		protected virtual void OnClicked (EventArgs e)

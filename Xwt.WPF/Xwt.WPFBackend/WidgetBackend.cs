@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -909,7 +910,7 @@ namespace Xwt.WPFBackend
 
 		void CheckDrop (object sender, System.Windows.DragEventArgs e)
 		{
-			var types = e.Data.GetFormats ().Select (t => t.ToXwtTransferType ()).ToArray ();
+			var types = e.Data.GetFormats ().Select (DataConverter.ToXwtTransferType).ToArray ();
 			var pos = e.GetPosition (Widget).ToXwtPoint ();
 
 			if(Frontend.ShouldPreventDragByLocation != null) {
@@ -979,7 +980,7 @@ namespace Xwt.WPFBackend
 
 			WidgetDragLeaveHandler (sender, e);
 
-			var types = e.Data.GetFormats ().Select (t => t.ToXwtTransferType ()).ToArray ();
+			var types = e.Data.GetFormats ().Select (DataConverter.ToXwtTransferType).ToArray ();
 			var pos = e.GetPosition (Widget).ToXwtPoint ();
 			var actualEffect = currentDragEffect;
 
@@ -1068,10 +1069,47 @@ namespace Xwt.WPFBackend
 				Context.InvokeUserCode (this.eventSink.OnBoundsChanged);
 		}
 
+<<<<<<< HEAD
 		public virtual Color TextColor { get; set; }
+=======
+		Task IDispatcherBackend.InvokeAsync(Action action)
+		{
+			var ts = new TaskCompletionSource<int>();
+			var result = Widget.Dispatcher.BeginInvoke((Action)delegate
+			{
+				try
+				{
+					action();
+					ts.SetResult(0);
+				}
+				catch (Exception ex)
+				{
+					ts.SetException(ex);
+				}
+			}, null);
+			return ts.Task;
+		}
+
+		Task<T> IDispatcherBackend.InvokeAsync<T>(Func<T> func)
+		{
+			var ts = new TaskCompletionSource<T>();
+			var result = Widget.Dispatcher.BeginInvoke((Action)delegate
+			{
+				try
+				{
+					ts.SetResult(func());
+				}
+				catch (Exception ex)
+				{
+					ts.SetException(ex);
+				}
+			}, null);
+			return ts.Task;
+		}
+>>>>>>> f981e414c3bfee29f5dc508cd099be9b67e0bc9e
 	}
 
-	public interface IWpfWidgetBackend
+	public interface IWpfWidgetBackend : IDispatcherBackend
 	{
 		FrameworkElement Widget { get; }
 	}

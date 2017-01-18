@@ -855,7 +855,7 @@ namespace Xwt
 		/// <param name='types'>Types of data that can be dropped on this widget.</param>
 		public void SetDragDropTarget (params Type[] types)
 		{
-			Backend.SetDragTarget (types.Select (t => TransferDataType.FromType (t)).ToArray (), DragDropAction.All);
+			Backend.SetDragTarget (types.Select (TransferDataType.FromType).ToArray (), DragDropAction.All);
 		}
 		
 		/// <summary>
@@ -875,7 +875,7 @@ namespace Xwt
 		/// <param name='dragAction'>Bitmask of possible actions for a drop on this widget</param>
 		public void SetDragDropTarget (DragDropAction dragAction, params Type[] types)
 		{
-			Backend.SetDragTarget (types.Select (t => TransferDataType.FromType (t)).ToArray(), dragAction);
+			Backend.SetDragTarget (types.Select (TransferDataType.FromType).ToArray(), dragAction);
 		}
 
 		public void UnregisterDragDropTarget() {
@@ -897,7 +897,7 @@ namespace Xwt
 		/// <param name='types'>Types of data that can be dragged from this widget</param>
 		public void SetDragSource (params Type[] types)
 		{
-			Backend.SetDragSource (types.Select (t => TransferDataType.FromType (t)).ToArray(), DragDropAction.All);
+			Backend.SetDragSource (types.Select (TransferDataType.FromType).ToArray(), DragDropAction.All);
 		}
 		
 		/// <summary>
@@ -917,7 +917,7 @@ namespace Xwt
 		/// <param name='dragAction'>Bitmask of possible actions for a drag from this widget</param>
 		public void SetDragSource (DragDropAction dragAction, params Type[] types)
 		{
-			Backend.SetDragSource (types.Select (t => TransferDataType.FromType (t)).ToArray(), dragAction);
+			Backend.SetDragSource (types.Select (TransferDataType.FromType).ToArray(), dragAction);
 		}
 		
 		/// <summary>

@@ -80,6 +80,11 @@ namespace Xwt
 			}
 		}
 
+		public bool Selectable {
+			get { return Backend.Selectable; }
+			set { Backend.Selectable = value; }
+		}
+
 		public Color TextColor {
 			get { return Backend.TextColor; }
 			set { Backend.TextColor = value; }

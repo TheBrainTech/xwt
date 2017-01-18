@@ -1,11 +1,10 @@
-//
-// IWebViewBackend.cs
+﻿//
+// IComboBoxCellViewFrontend.cs
 //
 // Author:
-//       Cody Russell <cody@xamarin.com>
-//       Vsevolod Kukol <sevo@sevo.org>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc.
+// Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,38 +27,23 @@ using System;
 
 namespace Xwt.Backends
 {
-	public interface IWebViewBackend : IWidgetBackend
+	public interface IComboBoxCellViewFrontend: ICellViewFrontend
 	{
-		string Url { get; set; }
-		string Title { get; }
-		double LoadProgress { get; }
-		bool CanGoBack { get; }
-		void GoBack ();
-		bool CanGoForward { get; }
-		void GoForward ();
-		void Reload ();
-		void StopLoading ();
-		void LoadHtml (string content, string base_uri);
-		void Unload ();
-		bool ContextMenuEnabled { get; set; }
-		bool DrawsBackground { get; set; }
-		bool ScrollBarsEnabled { get; set; }
-		string CustomCss { get; set; }
-	}
+		IDataField<string> SelectedTextField { get; }
+		IDataField<int> SelectedIndexField { get; }
+		IDataField<object> SelectedItemField { get; }
+		IDataField<bool> EditableField { get; }
+		IDataField<ItemCollection> ItemsField { get; }
+		IDataField<IListDataSource> ItemsSourceField { get; }
 
-	public interface IWebViewEventSink : IWidgetEventSink
-	{
-		void OnLoaded ();
-		void OnLoading ();
-		bool OnNavigateToUrl (string url);
-		void OnTitleChanged ();
-	}
+		string SelectedText { get; }
 
-	public enum WebViewEvent
-	{
-		Loaded = 1,
-		Loading = 2,
-		NavigateToUrl = 3,
-		TitleChanged = 4,
+		bool Editable { get; }
+
+		ItemCollection Items { get; }
+
+		IListDataSource ItemsSource { get; }
+
+		bool RaiseSelectionChanged ();
 	}
 }

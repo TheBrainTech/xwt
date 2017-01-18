@@ -3,8 +3,10 @@
 //  
 // Author:
 //       Lluis Sanchez <lluis@xamarin.com>
+//       Konrad M. Kruczynski <kkruczynski@antmicro.com>
 // 
 // Copyright (c) 2011 Xamarin Inc
+// Copyright (c) 2016 Antmicro Ltd
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -65,6 +67,7 @@ namespace Xwt.Backends
 		void SetTransientFor (IWindowFrameBackend window);
 		bool Resizable { get; set; }
 		double Opacity { get; set; }
+		bool HasFocus { get; }
 
 		void SetIcon (ImageDescription image);
 		
@@ -85,6 +88,12 @@ namespace Xwt.Backends
 		/// This method doesn't dispose the window. The Dispose method has to be called.
 		/// </remarks>
 		bool Close ();
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this window is in full screen mode
+		/// </summary>
+		/// <value><c>true</c> if the window is in full screen mode; otherwise, <c>false</c>.</value>
+		bool FullScreen { get; set; }
 
 		WindowState WindowState { get; set; }
 

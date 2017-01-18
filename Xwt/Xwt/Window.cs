@@ -143,7 +143,8 @@ namespace Xwt
 
 		protected override void Dispose (bool disposing)
 		{
-			Content.Dispose ();
+			if (Content != null)
+				Content.Dispose ();
 			base.Dispose (disposing);
 		}
 		

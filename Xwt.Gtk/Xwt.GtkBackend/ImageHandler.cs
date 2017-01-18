@@ -189,43 +189,45 @@ namespace Xwt.GtkBackend
 			if (result == null && Gtk.IconTheme.Default.HasIcon (stockId))
 				result = Gtk.IconTheme.Default.LoadIcon (stockId, (int)width, (Gtk.IconLookupFlags)0);
 
-			if (result == null) {
+			if (result == null)
+			{
 				// render a custom gtk-missing-image icon 
 				// if Gtk.Stock.MissingImage is not found 
-				int w = (int) width;
-				int h = (int) height;
+				int w = (int)width;
+				int h = (int)height;
 				#if XWT_GTK3
 				Cairo.ImageSurface s = new Cairo.ImageSurface(Cairo.Format.ARGB32, w, h);
-				Cairo.Context cr = new Cairo.Context (s);
-				cr.SetSourceRGB (255, 255, 255);
-				cr.Rectangle (0, 0, w, h);
-				cr.Fill ();
-				cr.SetSourceRGB (0, 0, 0);
+				Cairo.Context cr = new Cairo.Context(s);
+				cr.SetSourceRGB(255, 255, 255);
+				cr.Rectangle(0, 0, w, h);
+				cr.Fill();
+				cr.SetSourceRGB(0, 0, 0);
 				cr.LineWidth = 1;
-				cr.Rectangle (0.5, 0.5, w-1, h-1);
-				cr.Stroke ();
-				cr.SetSourceRGB (255, 0, 0);
+				cr.Rectangle(0.5, 0.5, w - 1, h - 1);
+				cr.Stroke();
+				cr.SetSourceRGB(255, 0, 0);
 				cr.LineWidth = 3;
 				cr.LineCap = Cairo.LineCap.Round;
 				cr.LineJoin = Cairo.LineJoin.Round;
-				cr.MoveTo (w / 4, h / 4);
-				cr.LineTo ((w - 1) - w / 4, (h - 1) - h / 4);
-				cr.MoveTo (w / 4, (h - 1) - h / 4);
-				cr.LineTo ((w - 1) - w / 4, h / 4);
-				cr.Stroke ();
-				result = Gtk3Extensions.GetFromSurface (s, 0, 0, w, h);
+				cr.MoveTo(w / 4, h / 4);
+				cr.LineTo((w - 1) - w / 4, (h - 1) - h / 4);
+				cr.MoveTo(w / 4, (h - 1) - h / 4);
+				cr.LineTo((w - 1) - w / 4, h / 4);
+				cr.Stroke();
+				result = Gtk3Extensions.GetFromSurface(s, 0, 0, w, h);
 				#else
-				Gdk.Pixmap pmap = new Gdk.Pixmap (Gdk.Screen.Default.RootWindow, w, h);
-				Gdk.GC gc = new Gdk.GC (pmap);
-				gc.RgbFgColor = new Gdk.Color (255, 255, 255);
-				pmap.DrawRectangle (gc, true, 0, 0, w, h);
-				gc.RgbFgColor = new Gdk.Color (0, 0, 0);
-				pmap.DrawRectangle (gc, false, 0, 0, (w - 1), (h - 1));
-				gc.SetLineAttributes (3, Gdk.LineStyle.Solid, Gdk.CapStyle.Round, Gdk.JoinStyle.Round);
-				gc.RgbFgColor = new Gdk.Color (255, 0, 0);
-				pmap.DrawLine (gc, (w / 4), (h / 4), ((w - 1) - (w / 4)), ((h - 1) - (h / 4)));
-				pmap.DrawLine (gc, ((w - 1) - (w / 4)), (h / 4), (w / 4), ((h - 1) - (h / 4)));
-				result = Gdk.Pixbuf.FromDrawable (pmap, pmap.Colormap, 0, 0, 0, 0, w, h);
+				using (Gdk.Pixmap pmap = new Gdk.Pixmap (Gdk.Screen.Default.RootWindow, w, h))
+				using (Gdk.GC gc = new Gdk.GC (pmap)) {
+					gc.RgbFgColor = new Gdk.Color (255, 255, 255);
+					pmap.DrawRectangle (gc, true, 0, 0, w, h);
+					gc.RgbFgColor = new Gdk.Color (0, 0, 0);
+					pmap.DrawRectangle (gc, false, 0, 0, (w - 1), (h - 1));
+					gc.SetLineAttributes (3, Gdk.LineStyle.Solid, Gdk.CapStyle.Round, Gdk.JoinStyle.Round);
+					gc.RgbFgColor = new Gdk.Color (255, 0, 0);
+					pmap.DrawLine (gc, (w / 4), (h / 4), ((w - 1) - (w / 4)), ((h - 1) - (h / 4)));
+					pmap.DrawLine (gc, ((w - 1) - (w / 4)), (h / 4), (w / 4), ((h - 1) - (h / 4)));
+					result = Gdk.Pixbuf.FromDrawable (pmap, pmap.Colormap, 0, 0, 0, 0, w, h);
+				}
 				#endif
 			}
 			return result;
@@ -519,9 +521,17 @@ namespace Xwt.GtkBackend
 		{
 			if (image.IsNull)
 				return true;
+			var a = Allocation;
 
-			int x = (int)(((float)Allocation.Width - (float)image.Size.Width) * xalign);
-			int y = (int)(((float)Allocation.Height - (float)image.Size.Height) * yalign);
+			// HACK: Gtk sends sometimes an expose/draw event while the widget reallocates.
+			//       In that case we would draw in the wrong area, which may lead to artifacts
+			//       if no other widget updates it. Alternative: we could clip the
+			//       allocation bounds, but this may have other issues.
+			if (a.Width == 1 && a.Height == 1 && a.X == -1 && a.Y == -1) // the allocation coordinates on reallocation
+				return base.OnDrawn (cr);
+
+			int x = (int)(((float)a.Width - (float)image.Size.Width) * xalign);
+			int y = (int)(((float)a.Height - (float)image.Size.Height) * yalign);
 			if (x < 0) x = 0;
 			if (y < 0) y = 0;
 			((GtkImage)image.Backend).Draw (actx, cr, Util.GetScaleFactor (this), x, y, image);

@@ -43,6 +43,7 @@ namespace Xwt.WPFBackend
 			WindowsClipboard.Clear();
 		}
 
+<<<<<<< HEAD
 		public override void SetData(TransferDataType type, Func<object> dataSource, bool cleanClipboardFirst = true) {
 			if(type == null)
 				throw new ArgumentNullException("type");
@@ -56,6 +57,23 @@ namespace Xwt.WPFBackend
 
 			if(type == TransferDataType.Html) {
 				currentDataObject.SetData(type.ToWpfDataFormat(), GenerateCFHtml(dataSource().ToString()));
+=======
+		public override void SetData (TransferDataType type, Func<object> dataSource)
+		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			if (dataSource == null)
+				throw new ArgumentNullException ("dataSource");
+			if (type == TransferDataType.Html) {
+				WindowsClipboard.SetData (type.ToWpfDataFormat (), GenerateCFHtml (dataSource ().ToString ()));
+			} else if (type == TransferDataType.Image) {
+				var img = dataSource() as Xwt.Drawing.Image;
+				if (img != null)
+				{
+					var src = img.ToBitmap().GetBackend() as WpfImage;
+					WindowsClipboard.SetData (type.ToWpfDataFormat (), src.MainFrame);
+				}
+>>>>>>> f981e414c3bfee29f5dc508cd099be9b67e0bc9e
 			} else {
 				if(type == TransferDataType.Uri) {
 					currentDataObject.SetFileDropList((StringCollection)(dataSource()));
@@ -199,6 +217,7 @@ namespace Xwt.WPFBackend
 			if (!IsTypeAvailable (type))
 				return null;
 
+<<<<<<< HEAD
 			if (type == TransferDataType.Text) {
 				if (WindowsClipboard.ContainsFileDropList()) {
 					foreach (string s in WindowsClipboard.GetFileDropList()) {
@@ -214,6 +233,13 @@ namespace Xwt.WPFBackend
 			}
 
 			return WindowsClipboard.GetData (type.ToWpfDataFormat ());
+=======
+			var data = WindowsClipboard.GetData (type.ToWpfDataFormat ());
+
+			if (type == TransferDataType.Image)
+				return ApplicationContext.Toolkit.WrapImage(ImageHandler.LoadFromImageSource((System.Windows.Media.ImageSource)data));
+			return data;
+>>>>>>> f981e414c3bfee29f5dc508cd099be9b67e0bc9e
 		}
 
 		public override IAsyncResult BeginGetData (TransferDataType type, AsyncCallback callback, object state)
