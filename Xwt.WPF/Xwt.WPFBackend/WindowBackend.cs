@@ -101,6 +101,11 @@ namespace Xwt.WPFBackend
 			get { return mainMenu != null; }
 		}
 
+		public bool FullScreen {
+			get { return false; } // always false on windows
+			set { }
+		}
+
 		public override Rectangle Bounds
 		{
 			get

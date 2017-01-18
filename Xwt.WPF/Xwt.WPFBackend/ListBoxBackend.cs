@@ -190,14 +190,9 @@ namespace Xwt.WPFBackend
 					break;
 				}
 			}
-<<<<<<< HEAD
-			else if(eventId is ListViewEvent) {
-				switch((ListViewEvent)eventId) {
-=======
 
 			if (eventId is ListViewEvent) {
 				switch ((ListViewEvent)eventId) {
->>>>>>> f981e414c3bfee29f5dc508cd099be9b67e0bc9e
 				case ListViewEvent.RowActivated:
 					ListBox.MouseDoubleClick += OnMouseDoubleClick;
 					break;
@@ -215,28 +210,14 @@ namespace Xwt.WPFBackend
 					break;
 				}
 			}
-<<<<<<< HEAD
-			else if(eventId is ListViewEvent) {
-				switch((ListViewEvent)eventId) {
-=======
 
 			if (eventId is ListViewEvent) {
 				switch ((ListViewEvent)eventId) {
->>>>>>> f981e414c3bfee29f5dc508cd099be9b67e0bc9e
 				case ListViewEvent.RowActivated:
 					ListBox.MouseDoubleClick -= OnMouseDoubleClick;
 					break;
 				}
 			}
-<<<<<<< HEAD
-		}
-
-		private void OnMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			if(this.SelectedRows.Count() == 1) {
-				ListBoxEventSink.OnRowActivated(this.SelectedRows[0]);
-			}
-=======
->>>>>>> f981e414c3bfee29f5dc508cd099be9b67e0bc9e
 		}
 
 		private void OnSelectionChanged (object sender, SelectionChangedEventArgs e)
