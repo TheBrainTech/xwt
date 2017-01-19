@@ -160,10 +160,6 @@ namespace Xwt.Mac
 			Widget.MainFrame.StopLoading ();
 		}
 
-		public void Unload () {
-			//Not necessary on Mac
-		}
-
 		public void LoadHtml (string content, string base_uri)
 		{
 			Widget.MainFrame.LoadHtmlString (content, new NSUrl(base_uri));
