@@ -40,6 +40,7 @@ namespace Xwt.Backends
 		void Reload ();
 		void StopLoading ();
 		void LoadHtml (string content, string base_uri);
+		void Unload ();
 		bool ContextMenuEnabled { get; set; }
 		bool DrawsBackground { get; set; }
 		bool ScrollBarsEnabled { get; set; }

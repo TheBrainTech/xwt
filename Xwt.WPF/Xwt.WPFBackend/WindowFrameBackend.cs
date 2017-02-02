@@ -107,10 +107,6 @@ namespace Xwt.WPFBackend
 		public virtual bool HasMenu {
 			get { return false;  }
 		}
-		public bool FullScreen {
-			get { return false; } // always false on windows
-			set { }
-		}
 
 		protected WindowFrame Frontend {
 			get { return frontend; }

@@ -172,6 +172,11 @@ namespace Xwt
 			Backend.StopLoading ();
 		}
 
+		public void Unload()
+		{
+			Backend.Unload();
+		}
+
 		public void LoadHtml (string content, string base_uri)
 		{
 			Backend.LoadHtml (content, base_uri);

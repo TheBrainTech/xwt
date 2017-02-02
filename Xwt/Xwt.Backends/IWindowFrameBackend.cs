@@ -95,7 +95,6 @@ namespace Xwt.Backends
 		/// <value><c>true</c> if the window is in full screen mode; otherwise, <c>false</c>.</value>
 		bool FullScreen { get; set; }
 
-
 		WindowState WindowState { get; set; }
 
 		Rectangle RestoreBounds { get; }

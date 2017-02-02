@@ -1069,8 +1069,9 @@ namespace Xwt.WPFBackend
 				Context.InvokeUserCode (this.eventSink.OnBoundsChanged);
 		}
 
+<<<<<<< HEAD
 		public virtual Color TextColor { get; set; }
-
+=======
 		Task IDispatcherBackend.InvokeAsync(Action action)
 		{
 			var ts = new TaskCompletionSource<int>();
@@ -1105,6 +1106,7 @@ namespace Xwt.WPFBackend
 			}, null);
 			return ts.Task;
 		}
+>>>>>>> f981e414c3bfee29f5dc508cd099be9b67e0bc9e
 	}
 
 	public interface IWpfWidgetBackend : IDispatcherBackend
