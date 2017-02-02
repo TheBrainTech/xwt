@@ -91,7 +91,6 @@ namespace Samples
 			AddSample (listView, "Editable Checkboxes", typeof(ListView2));
 			AddSample (listView, "Cell Bounds", typeof(ListViewCellBounds));
 			AddSample (listView, "Editable Entries", typeof (ListViewEntries));
-			AddSample (listView, "ComboBox", typeof (ListViewCombos));
 			AddSample (w, "Markdown", typeof (MarkDownSample));
 			AddSample (w, "Menu", typeof(MenuSamples));
 			AddSample (w, "Mnemonics", typeof (Mnemonics));

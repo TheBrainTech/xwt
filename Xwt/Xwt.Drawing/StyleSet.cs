@@ -31,7 +31,7 @@ using System.CodeDom;
 
 namespace Xwt.Drawing
 {
-	public struct StyleSet: IEnumerable<string>, IEquatable<StyleSet>
+	public struct StyleSet: IEnumerable<string>
 	{
 		string [] styles;
 

@@ -45,7 +45,7 @@ namespace Xwt
 			public string Label;
 		}
 		
-		public ItemCollection ()
+		internal ItemCollection ()
 		{
 			store = new ListStore (labelField, dataField);
 		}

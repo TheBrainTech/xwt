@@ -322,8 +322,6 @@ namespace Xwt.WPFBackend
 			return true;
 		}
 
-		internal bool RowActivatedEventEnabled { get; private set; }
-
 		public override void EnableEvent (object eventId)
 		{
 			base.EnableEvent (eventId);
@@ -332,16 +330,6 @@ namespace Xwt.WPFBackend
 				case TableViewEvent.SelectionChanged:
 					Tree.SelectedItemsChanged += OnSelectedItemsChanged;
 					break;
-				}
-			}
-
-			if (eventId is TreeViewEvent)
-			{
-				switch ((TreeViewEvent)eventId)
-				{
-					case TreeViewEvent.RowActivated:
-						RowActivatedEventEnabled = true;
-						break;
 				}
 			}
 		}
@@ -354,16 +342,6 @@ namespace Xwt.WPFBackend
 				case TableViewEvent.SelectionChanged:
 					Tree.SelectedItemsChanged -= OnSelectedItemsChanged;
 					break;
-				}
-			}
-
-			if (eventId is TreeViewEvent)
-			{
-				switch ((TreeViewEvent)eventId)
-				{
-					case TreeViewEvent.RowActivated:
-						RowActivatedEventEnabled = false;
-						break;
 				}
 			}
 		}

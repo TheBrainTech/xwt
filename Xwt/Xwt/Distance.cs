@@ -30,7 +30,7 @@ using System.Globalization;
 
 namespace Xwt
 {
-	public struct Distance : IEquatable<Distance>
+	public struct Distance
 	{
 		double dx, dy;
 		
@@ -101,11 +101,6 @@ namespace Xwt
 		public override bool Equals (object ob)
 		{
 			return (ob is Distance) && this == (Distance)ob;
-		}
-
-		public bool Equals(Distance other)
-		{
-			return this == other;
 		}
 		
 		public override int GetHashCode ()

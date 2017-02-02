@@ -108,24 +108,6 @@ namespace Xwt
 			}
 		}
 
-		public bool Selectable {
-			get {
-				return Backend.Selectable;
-			}
-			set {
-				Backend.Selectable = value;
-			}
-		}
-
-		public int LineSpacing {
-			get {
-				return Backend.LineSpacing;
-			}
-			set {
-				Backend.LineSpacing = value;
-			}
-		}
-
 		protected override BackendHost CreateBackendHost ()
 		{
 			return new WidgetBackendHost ();
@@ -162,25 +144,6 @@ namespace Xwt
 		public MarkdownView ()
 		{
 			Markdown = string.Empty;
-		}
-	}
-
-	public class MarkupView : RichTextView
-	{
-		string markup;
-		public string Markup {
-			get {
-				return markup;
-			}
-			set {
-				markup = value;
-				LoadText (value, TextFormat.Markup);
-			}
-		}
-
-		public MarkupView ()
-		{
-			Markup = string.Empty;
 		}
 	}
 }

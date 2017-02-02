@@ -55,7 +55,6 @@
     <Compile Include="Xwt.WPFBackend.Interop\NativeStockIcon.cs" />
     <Compile Include="Xwt.WPFBackend.Utilities\CellUtil.cs" />
     <Compile Include="Xwt.WPFBackend.Utilities\ImageToImageSourceConverter.cs" />
-    <Compile Include="Xwt.WPFBackend.Utilities\MarkupToPlainTextConverter.cs" />
     <Compile Include="Xwt.WPFBackend.Utilities\TypeToStringConverter.cs" />
     <Compile Include="Xwt.WPFBackend\AlertDialogBackend.cs" />
     <Compile Include="Xwt.WPFBackend\Backend.cs" />
@@ -154,7 +153,6 @@
     <Compile Include="Xwt.WPFBackend\WebViewBackend.cs" />
     <Compile Include="Xwt.WPFBackend\ScrollControlBackend.cs" />
     <Compile Include="Xwt.WPFBackend\CalendarBackend.cs" />
-    <Compile Include="Xwt.WPFBackend.Interop\IDocHostUIHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

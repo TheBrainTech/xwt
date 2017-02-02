@@ -27,10 +27,6 @@ namespace Xwt.Backends
 
 		bool ReadOnly { get; set; }
 
-		bool Selectable { get; set; }
-
-		int LineSpacing { get; set; }
-
 		IRichTextBuffer CurrentBuffer { get; }
 	}
 
@@ -38,7 +34,6 @@ namespace Xwt.Backends
 	{
 		// Emit text using specified style mask
 		void EmitText (string text, RichTextInlineStyle style);
-		void EmitText (FormattedText text);
 
 		// Emit a header (h1, h2, ...)
 		void EmitStartHeader (int level);

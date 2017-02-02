@@ -23,18 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System.Windows;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Windows.Controls;
-using System.Windows.Documents;
 
 namespace Xwt.WPFBackend.Utilities
 {
 	public class ExRichTextBox : RichTextBox, IWpfWidget
 	{
-		Style paragraphStyle;
-		int lineSpacing;
-
 		public WidgetBackend Backend {
 			get; set;
 		}
@@ -43,31 +41,6 @@ namespace Xwt.WPFBackend.Utilities
 		{
 			var s = base.MeasureOverride (constraint);
 			return Backend.MeasureOverride (constraint, s);
-		}
-
-		public int LineSpacing {
-			get {
-				return lineSpacing;
-			}
-
-			set {
-				lineSpacing = value;
-				UpdateParagraphStyle ();
-			}
-		}
-
-		void UpdateParagraphStyle ()
-		{
-			if (paragraphStyle != null) {
-				Resources.Remove (typeof (Paragraph));
-				paragraphStyle = null;
-			}
-
-			paragraphStyle = new Style (typeof (Paragraph));
-			var lineHeightSetter = new Setter (Block.LineHeightProperty, FontSize + lineSpacing);
-			paragraphStyle.Setters.Add (lineHeightSetter);
-
-			Resources.Add (typeof (Paragraph), paragraphStyle);
 		}
 	}
 }

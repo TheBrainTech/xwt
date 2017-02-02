@@ -421,16 +421,9 @@ namespace Xwt
 		}
 
 		/// <summary>
-		/// Invokes the specified action using this toolkit.
+		/// Invokes the specified action on the GUI Thread.
 		/// </summary>
-		/// <param name="a">The action to invoke in the context of this toolkit.</param>
-		/// <remarks>
-		/// Invoke allows dynamic toolkit switching. It will set <see cref="CurrentEngine"/> to this toolkit and reset
-		/// it back to its original value after the action has been executed.
-		/// 
-		/// Invoke must be executed on the UI thread. The action will not be synchronized with the main UI thread automatically.
-		/// </remarks>
-		/// <returns><c>true</c> if the action has been executed sucessfully; otherwise, <c>false</c>.</returns>
+		/// <param name="a">The action to invoke on the main GUI thread.</param>
 		public bool Invoke (Action a)
 		{
 			var oldEngine = currentEngine;
@@ -444,19 +437,6 @@ namespace Xwt
 				ExitUserCode (ex);
 				return false;
 			} finally {
-				currentEngine = oldEngine;
-			}
-		}
-
-		internal void InvokeAndThrow (Action a)
-		{
-			var oldEngine = currentEngine;
-			try {
-				currentEngine = this;
-				EnterUserCode();
-				a();
-			} finally {
-				ExitUserCode(null);
 				currentEngine = oldEngine;
 			}
 		}

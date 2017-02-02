@@ -316,7 +316,7 @@ namespace Xwt.Drawing
 				}
 				return new ThemedImage (newImages);
 			} else {
-				var img = new Image (Toolkit.CurrentEngine.ImageBackendHandler.CreateMultiSizeIcon (allImages.Select (ExtensionMethods.GetBackend)));
+				var img = new Image (Toolkit.CurrentEngine.ImageBackendHandler.CreateMultiSizeIcon (allImages.Select (i => i.GetBackend ())));
 
 				if (allImages.All (i => i.NativeRef.HasNativeSource)) {
 					var sources = allImages.Select (i => i.NativeRef.NativeSource).ToArray ();
@@ -330,7 +330,7 @@ namespace Xwt.Drawing
 		{
 			if (Toolkit.CurrentEngine == null)
 				throw new ToolkitNotInitializedException ();
-			return new Image (Toolkit.CurrentEngine.ImageBackendHandler.CreateMultiResolutionImage (images.Select (ExtensionMethods.GetBackend)));
+			return new Image (Toolkit.CurrentEngine.ImageBackendHandler.CreateMultiResolutionImage (images.Select (i => i.GetBackend ())));
 		}
 
 		public static Image FromFile (string file)
@@ -1061,7 +1061,9 @@ namespace Xwt.Drawing
 						yield return fn;
 				}
 			} else {
-				var files = Directory.GetFiles (Path.GetDirectoryName (fileName), Path.GetFileName (baseName) + "*" + ext);
+				if (Path.DirectorySeparatorChar == '\\') // windows)
+					baseName = Path.GetFileName (baseName);
+				var files = Directory.GetFiles (Path.GetDirectoryName (fileName), baseName + "*" + ext);
 				foreach (var f in files)
 					yield return f;
 			}

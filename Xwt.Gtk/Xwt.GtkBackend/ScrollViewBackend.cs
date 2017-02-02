@@ -74,16 +74,8 @@ namespace Xwt.GtkBackend
 					vp.Add (w);
 					Widget.Child = vp;
 				}
-				#if XWT_GTK3
-				else if (w is Gtk.IScrollable)
+				else if (w is Gtk.Viewport)
 					Widget.Child = w;
-				#else
-				// Gtk2 has no interface for natively scrollable widgets, therefore we manually check
-				// for types that should not be packed into a Viewport.
-				// see: https://developer.gnome.org/gtk2/stable/GtkScrolledWindow.html#gtk-scrolled-window-add-with-viewport
-				else if (w is Gtk.Viewport || w is Gtk.TreeView || w is Gtk.TextView || w is Gtk.Layout || w is WebKit.WebView)
-					Widget.Child = w;
-				#endif
 				else {
 					Gtk.Viewport vp = new Gtk.Viewport ();
 					vp.Show ();

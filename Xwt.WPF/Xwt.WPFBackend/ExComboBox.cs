@@ -28,18 +28,13 @@ using System;
 using System.Windows;
 using SW = System.Windows;
 using SWC = System.Windows.Controls;
-using System.Windows.Controls;
-using System.Runtime.Remoting.Channels;
 
 namespace Xwt.WPFBackend
 {
 	public class ExComboBox
 		: System.Windows.Controls.ComboBox, IWpfWidget
 	{
-		const string TextBoxTemplateName = "PART_EditableTextBox";
-
 		public event EventHandler TextChanged;
-		public event EventHandler TextSelectionChanged;
 
 		public WidgetBackend Backend
 		{
@@ -47,39 +42,10 @@ namespace Xwt.WPFBackend
 			set;
 		}
 
-		public TextBox TextBox { get; private set; }
-
 		protected override SW.Size MeasureOverride (SW.Size constraint)
 		{
 			var s = base.MeasureOverride (constraint);
 			return Backend.MeasureOverride (constraint, s);
-		}
-
-		void UpdateTextBox ()
-		{
-			var newTextBox = GetTemplateChild(TextBoxTemplateName) as TextBox;
-			if (TextBox == newTextBox) // no change
-				return;
-			if (TextBox != null)
-			{
-				TextBox.TextChanged -= HandleTextBoxTextChanged;
-				TextBox.SelectionChanged -= HandleTextBoxSelectionChanged;
-			}
-			TextBox = newTextBox;
-			TextBox.TextChanged += HandleTextBoxTextChanged;
-			TextBox.SelectionChanged += HandleTextBoxSelectionChanged;
-		}
-
-		public override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-			UpdateTextBox();
-		}
-
-		protected override void OnTemplateChanged(SWC.ControlTemplate oldTemplate, SWC.ControlTemplate newTemplate)
-		{
-			base.OnTemplateChanged(oldTemplate, newTemplate);
-			UpdateTextBox();
 		}
 
 		protected override void OnTextInput (SW.Input.TextCompositionEventArgs e)
@@ -88,9 +54,10 @@ namespace Xwt.WPFBackend
 			OnTextChanged (EventArgs.Empty);
 		}
 
-		void HandleTextBoxTextChanged (object sender, EventArgs e)
+		protected override void OnSelectionChanged (SWC.SelectionChangedEventArgs e)
 		{
-			OnTextChanged(e);
+			base.OnSelectionChanged (e);
+			OnTextChanged (EventArgs.Empty);
 		}
 
 		protected virtual void OnTextChanged (EventArgs e)
@@ -98,17 +65,6 @@ namespace Xwt.WPFBackend
 			var changed = TextChanged;
 			if (changed != null)
 				changed (this, e);
-		}
-
-		void HandleTextBoxSelectionChanged(object sender, EventArgs e)
-		{
-			OnTextSelectionChanged(e);
-		}
-
-		protected virtual void OnTextSelectionChanged(EventArgs e)
-		{
-			if (TextSelectionChanged != null)
-				TextSelectionChanged(this, e);
 		}
 	}
 }

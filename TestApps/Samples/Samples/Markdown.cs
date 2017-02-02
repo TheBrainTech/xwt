@@ -146,8 +146,7 @@ Features:
 		{
 			var openFileDialog = new OpenFileDialog ("Select File");
 			var markdown = new MarkdownView() {
-				Markdown = MarkDownText,
-				LineSpacing = 3,
+				Markdown = MarkDownText
 			};
 			var scrolled = new ScrollView (markdown) {
 				MinHeight = 400

@@ -342,7 +342,7 @@ namespace Xwt.GtkBackend
 
 			TreePosition toggledItem = null;
 
-			var pathParts = path.Split (':').Select (int.Parse);
+			var pathParts = path.Split (':').Select (part => int.Parse (part));
 
 			foreach (int pathPart in pathParts) {
 				toggledItem = treeFrontend.DataSource.GetChild (toggledItem, pathPart);

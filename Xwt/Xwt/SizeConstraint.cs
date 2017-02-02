@@ -27,7 +27,7 @@ using System;
 
 namespace Xwt
 {
-	public struct SizeConstraint : IEquatable<SizeConstraint>
+	public struct SizeConstraint
 	{
 		// The value '0' is used for Unconstrained, since that's the default value of SizeContraint
 		// Since a constraint of '0' is valid, we use NegativeInfinity as a marker for constraint=0.
@@ -93,11 +93,6 @@ namespace Xwt
 		public override bool Equals (object ob)
 		{
 			return (ob is SizeConstraint) && this == (SizeConstraint)ob;
-		}
-
-		public bool Equals(SizeConstraint other)
-		{
-			return this == other;
 		}
 
 		public override int GetHashCode ()

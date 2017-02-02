@@ -23,8 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using Xwt.Drawing;
-
 namespace Xwt
 {
 	public class ToolkitDefaults
@@ -35,21 +33,9 @@ namespace Xwt
 		/// <value>The message dialog defaults.</value>
 		public MessageDialogDefaults MessageDialog { get; private set; }
 
-		/// <summary>
-		/// Gets or sets the link text fallback color.
-		/// </summary>
-		/// <value>The link text fallback color.</value>
-		/// <remarks>
-		/// This color is used to highlight links, if the current toolkit
-		/// does not have a default link color or does not handle links
-		/// at all.
-		/// </remarks>
-		public Color FallbackLinkColor { get; set; }
-
 		public ToolkitDefaults ()
 		{
 			MessageDialog = new MessageDialogDefaults ();
-			FallbackLinkColor = Colors.Blue;
 		}
 	}
 }

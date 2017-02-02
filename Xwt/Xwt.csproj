@@ -265,7 +265,6 @@
     <Compile Include="Xwt.Drawing\DrawingImage.cs" />
     <Compile Include="Xwt.Drawing\BitmapImage.cs" />
     <Compile Include="Xwt.Formats\PlainTextFormat.cs" />
-    <Compile Include="Xwt.Formats\MarkupTextFormat.cs" />
     <Compile Include="Xwt.Drawing\ImageFileType.cs" />
     <Compile Include="Xwt\Slider.cs" />
     <Compile Include="Xwt.Backends\ISliderBackend.cs" />
@@ -346,8 +345,6 @@
     <Compile Include="Xwt\FolderSelector.cs" />
     <Compile Include="Xwt.Backends\IFolderSelectorBackend.cs" />
     <Compile Include="Xwt\ToolkitDefaults.cs" />
-    <Compile Include="Xwt.Backends\IComboBoxCellViewFrontend.cs" />
-    <Compile Include="Xwt.Backends\IDispatcherBackend.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

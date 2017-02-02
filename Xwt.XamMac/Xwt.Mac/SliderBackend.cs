@@ -52,13 +52,16 @@ namespace Xwt.Mac
 
 		public void Initialize (Orientation dir)
 		{
-			ViewObject = new MacSlider ();
-			//((NSSliderCell)Widget.Cell).SetValueForKey (NSObject.FromObject (false), (NSString)"NSVertical");
 			orientation = dir;
-			if (dir == Orientation.Horizontal)
-				Widget.SetFrameSize (new CGSize (80, 30));
-			else
-				Widget.SetFrameSize (new CGSize (30, 80));
+
+			// starting with macOS Sierra, for NSSlider, the orientation (.IsVertical readonly property)
+			// is set in the constructor based on the frame size (if width > height or not).
+			// (Cannot set frame size AFTER constructor.)
+			CGRect rect = new CGRect(0, 0, 80, 30);
+			if (dir == Orientation.Vertical) {
+				rect = new CGRect(0, 0, 30, 80);
+			}
+			ViewObject = new MacSlider (rect);
 		}
 
 		MacSlider Slider {
@@ -183,7 +186,7 @@ namespace Xwt.Mac
 
 	public class MacSlider: NSSlider, IViewObject
 	{
-		public MacSlider ()
+		public MacSlider(CGRect rect) : base(rect)
 		{
 			Cell = new MacSliderCell ();
 		}

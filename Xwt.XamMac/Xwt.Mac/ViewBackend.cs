@@ -450,8 +450,8 @@ namespace Xwt.Mac
 		
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
 		{
-			var lo = Widget.ConvertPointToView (new CGPoint ((nfloat)widgetCoordinates.X, (nfloat)widgetCoordinates.Y), null);
-			lo = Widget.Window.ConvertRectToScreen (new CGRect (lo, CGSize.Empty)).Location;
+			var lo = Widget.ConvertPointToBase (new CGPoint ((nfloat)widgetCoordinates.X, (nfloat)widgetCoordinates.Y));
+			lo = Widget.Window.ConvertBaseToScreen (lo);
 			return MacDesktopBackend.ToDesktopRect (new CGRect (lo.X, lo.Y, 0, Widget.IsFlipped ? 0 : Widget.Frame.Height)).Location;
 		}
 		
@@ -617,7 +617,7 @@ namespace Xwt.Mac
 		public void SetDragTarget (TransferDataType[] types, DragDropAction dragAction)
 		{
 			SetupForDragDrop (Widget.GetType ());
-			var dtypes = types.Select (ToNSDragType).ToArray ();
+			var dtypes = types.Select (t => ToNSDragType (t)).ToArray ();
 			Widget.RegisterForDraggedTypes (dtypes);
 		}
 
@@ -641,6 +641,7 @@ namespace Xwt.Mac
 			var backend = ob.Backend;
 
 			INSDraggingInfo di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, false);
+
 			var types = di.GetDraggingPasteboard().Types.Select (t => ToXwtDragType (t)).ToArray ();
 			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
 
@@ -700,7 +701,7 @@ namespace Xwt.Mac
 			INSDraggingInfo di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, false);
 			var types = di.GetDraggingPasteboard().Types.Select (t => ToXwtDragType (t)).ToArray ();
 			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
-
+			
 			if ((backend.currentEvents & WidgetEvent.DragDropCheck) != 0) {
 				var args = new DragCheckEventArgs (pos, types, ConvertAction (di.GetDraggingSourceOperationMask()));
 				bool res = backend.ApplicationContext.InvokeUserCode (delegate {

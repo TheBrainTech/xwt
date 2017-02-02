@@ -49,10 +49,6 @@ namespace Xwt.GtkBackend
 			this.target = target;
 		}
 
-		protected ICellRendererTarget CellRendererTarget {
-			get { return rendererTarget; }
-		}
-
 		public ApplicationContext ApplicationContext { get; private set; }
 
 		public ICellViewFrontend Frontend { get; private set; }

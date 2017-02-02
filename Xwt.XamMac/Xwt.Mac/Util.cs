@@ -348,7 +348,7 @@ namespace Xwt.Mac
 				else if (att is LinkTextAttribute) {
 					var xa = (LinkTextAttribute)att;
 					ns.AddAttribute (NSStringAttributeKey.Link, new NSUrl (xa.Target.ToString ()), r);
-					ns.AddAttribute (NSStringAttributeKey.ForegroundColor, Toolkit.CurrentEngine.Defaults.FallbackLinkColor.ToNSColor (), r);
+					ns.AddAttribute (NSStringAttributeKey.ForegroundColor, NSColor.Blue, r);
 					ns.AddAttribute (NSStringAttributeKey.UnderlineStyle, NSNumber.FromInt32 ((int)NSUnderlineStyle.Single), r);
 				}
 				else if (att is StrikethroughTextAttribute) {
@@ -605,31 +605,21 @@ namespace Xwt.Mac
 			}
 		}
 
-		static readonly Selector selConvertSizeToBacking = new Selector ("convertSizeToBacking:");
-
 		public static void DrawWithColorTransform (this NSView view, Color? color, Action drawDelegate)
 		{
 			if (color.HasValue) {
-				var size = view.Frame.Size;
-				if (size.Width <= 0 || size.Height <= 0)
+				if (view.Frame.Size.Width <= 0 || view.Frame.Size.Height <= 0)
 					return;
 
 				// render view to image
-				var image = new NSImage(size);
+				var image = new NSImage(view.Frame.Size);
 				image.LockFocusFlipped(!view.IsFlipped);
 				drawDelegate ();
 				image.UnlockFocus();
 
 				// create Core image for transformation
-				var ciImage = CIImage.FromCGImage(image.CGImage);
-
-				CGSize displaySize;
-				#pragma warning disable iOSAndMacApiUsageIssue
-				if (view.RespondsToSelector (selConvertSizeToBacking))
-					displaySize = view.ConvertSizeToBacking (size);
-				else
-					displaySize = view.ConvertSizeToBase (size);
-				#pragma warning restore iOSAndMacApiUsageIssue
+				var rr = new CGRect(0, 0, view.Frame.Size.Width, view.Frame.Size.Height);
+				var ciImage = CIImage.FromCGImage(image.AsCGImage (ref rr, NSGraphicsContext.CurrentContext, null));
 
 				// apply color matrix
 				var transformColor = new CIColorMatrix();
@@ -641,7 +631,7 @@ namespace Xwt.Mac
 				ciImage = (CIImage)transformColor.ValueForKey(new NSString("outputImage"));
 
 				var ciCtx = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, null);
-				ciCtx.DrawImage (ciImage, new CGRect (CGPoint.Empty, size), new CGRect (CGPoint.Empty, displaySize));
+				ciCtx.DrawImage (ciImage, rr, rr);
 			} else
 				drawDelegate();
 		}

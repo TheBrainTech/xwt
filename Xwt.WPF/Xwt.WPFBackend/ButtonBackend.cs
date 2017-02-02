@@ -167,12 +167,6 @@ namespace Xwt.WPFBackend
 			Button.InvalidateMeasure ();
 		}
 
-		public Xwt.Drawing.Color LabelColor
-		{
-			get { return Button.Foreground.ToXwtColor(); }
-			set { Button.Foreground = ResPool.GetSolidBrush (value.ToWpfColor()); }
-		}
-
 		public override void EnableEvent (object eventId)
 		{
 			base.EnableEvent (eventId);

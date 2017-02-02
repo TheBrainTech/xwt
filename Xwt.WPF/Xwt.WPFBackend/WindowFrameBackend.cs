@@ -3,10 +3,8 @@
 //  
 // Author:
 //       Carlos Alberto Cortez <calberto.cortez@gmail.com>
-//       Konrad M. Kruczynski <kkruczynski@antmicro.com>
 // 
 // Copyright (c) 2011 Carlos Alberto Cortez
-// Copyright (c) 2016 Antmicro Ltd
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -40,7 +37,7 @@ using Xwt.Backends;
 
 namespace Xwt.WPFBackend
 {
-	public class WindowFrameBackend : IWindowFrameBackend, IDispatcherBackend
+	public class WindowFrameBackend : IWindowFrameBackend
 	{
 		System.Windows.Window window;
 		WindowInteropHelper interopHelper;
@@ -213,11 +210,6 @@ namespace Xwt.WPFBackend
 		{
 			get { return window.Opacity; }
 			set { window.Opacity = value; }
-		}
-
-		public bool HasFocus
-		{
-			get { return window.IsActive; }
 		}
 
 		void IWindowFrameBackend.Present ()
@@ -472,41 +464,6 @@ namespace Xwt.WPFBackend
 			size.Height = Math.Max (0, size.Height);
 
 			return new Rectangle (loc, size);
-		}
-
-		Task IDispatcherBackend.InvokeAsync(Action action)
-		{
-			var ts = new TaskCompletionSource<int>();
-			var result = Window.Dispatcher.BeginInvoke((Action)delegate
-			{
-				try
-				{
-					action();
-					ts.SetResult(0);
-				}
-				catch (Exception ex)
-				{
-					ts.SetException(ex);
-				}
-			}, null);
-			return ts.Task;
-		}
-
-		Task<T> IDispatcherBackend.InvokeAsync<T>(Func<T> func)
-		{
-			var ts = new TaskCompletionSource<T>();
-			var result = Window.Dispatcher.BeginInvoke((Action)delegate
-			{
-				try
-				{
-					ts.SetResult(func());
-				}
-				catch (Exception ex)
-				{
-					ts.SetException(ex);
-				}
-			}, null);
-			return ts.Task;
 		}
 	}
 }

@@ -36,9 +36,7 @@ namespace Xwt.GtkBackend
 
 		public override void Initialize ()
 		{
-			var w = new Gtk.EventBox ();
-			w.VisibleWindow = false;
-			Widget = w;
+			Widget = new Gtk.EventBox ();
 			Widget.Show ();
 		}
 

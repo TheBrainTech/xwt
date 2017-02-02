@@ -32,13 +32,11 @@ using Xwt.Drawing;
 using nint = System.Int32;
 using nfloat = System.Single;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using CGRect = System.Drawing.RectangleF;
 #else
 using AppKit;
 using CoreGraphics;
-using Foundation;
 #endif
 
 namespace Xwt.Mac
@@ -78,17 +76,7 @@ namespace Xwt.Mac
 			}
 			if (useMnemonic)
 				label = label.RemoveMnemonic ();
-			if (customLabelColor.HasValue) {
-				Widget.Title = label;
-				var ns = new NSMutableAttributedString (Widget.AttributedTitle);
-				ns.BeginEditing ();
-				var r = new NSRange (0, label.Length);
-				ns.RemoveAttribute (NSStringAttributeKey.ForegroundColor, r);
-				ns.AddAttribute (NSStringAttributeKey.ForegroundColor, customLabelColor.Value.ToNSColor (), r);
-				ns.EndEditing ();
-				Widget.AttributedTitle = ns;
-			} else
-				Widget.Title = label ?? "";
+			Widget.Title = label ?? "";
 			if (string.IsNullOrEmpty (label))
 				imagePosition = ContentPosition.Center;
 			if (!image.IsNull) {
@@ -102,9 +90,6 @@ namespace Xwt.Mac
 				case ContentPosition.Top: Widget.ImagePosition = NSCellImagePosition.ImageAbove; break;
 				case ContentPosition.Center: Widget.ImagePosition = string.IsNullOrEmpty (label) ? NSCellImagePosition.ImageOnly : NSCellImagePosition.ImageOverlaps; break;
 				}
-			} else {
-				Widget.ImagePosition = NSCellImagePosition.NoImage;
-				Widget.Image = null;
 			}
 			SetButtonStyle (currentStyle);
 			ResetFittingSize ();
@@ -226,21 +211,6 @@ namespace Xwt.Mac
 				} else {
 					base.BackgroundColor = value;
 				}
-			}
-		}
-
-		Color? customLabelColor;
-		public Color LabelColor {
-			get { return customLabelColor.HasValue ? customLabelColor.Value : NSColor.ControlText.ToXwtColor (); }
-			set {
-				customLabelColor = value;
-				var ns = new NSMutableAttributedString (Widget.AttributedTitle);
-				ns.BeginEditing ();
-				var r = new NSRange (0, Widget.Title.Length);
-				ns.RemoveAttribute (NSStringAttributeKey.ForegroundColor, r);
-				ns.AddAttribute (NSStringAttributeKey.ForegroundColor, customLabelColor.Value.ToNSColor (), r);
-				ns.EndEditing ();
-				Widget.AttributedTitle = ns;
 			}
 		}
 	}

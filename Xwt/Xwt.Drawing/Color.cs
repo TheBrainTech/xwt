@@ -33,7 +33,7 @@ namespace Xwt.Drawing
 	[TypeConverter (typeof(ColorValueConverter))]
 	[ValueSerializer (typeof(ColorValueSerializer))]
 	[Serializable]
-	public struct Color : IEquatable<Color>
+	public struct Color
 	{
 		double r, g, b, a;
 
@@ -284,11 +284,6 @@ namespace Xwt.Drawing
 				return false;
 		
 			return (this == (Color) o);
-		}
-
-		public bool Equals(Color other)
-		{
-			return this == other;
 		}
 		
 		public override int GetHashCode ()

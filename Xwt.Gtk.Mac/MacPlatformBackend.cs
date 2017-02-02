@@ -46,10 +46,7 @@ namespace Xwt.Gtk.Mac
 
 		public override Type GetBackendImplementationType (Type backendType)
 		{
-			if (backendType == typeof (IOpenFileDialogBackend) ||
-			    backendType == typeof (ISaveFileDialogBackend) ||
-			    backendType == typeof (ISelectFolderDialogBackend) ||
-			    backendType == typeof (IWebViewBackend))
+			if (backendType == typeof (IOpenFileDialogBackend) || backendType == typeof (ISaveFileDialogBackend) || backendType == typeof (ISelectFolderDialogBackend))
 				Xwt.Mac.NSApplicationInitializer.Initialize ();
 			return base.GetBackendImplementationType (backendType);
 		}

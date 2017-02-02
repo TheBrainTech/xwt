@@ -54,21 +54,9 @@ namespace Xwt.Mac
 		Widget dialogChild;
 		Size minSize;
 		Dictionary<DialogButton,Button> buttons = new Dictionary<DialogButton, Button> ();
-		DialogButton defaultButton;
 		WidgetSpacing buttonBoxPadding = new WidgetSpacing (12, 6, 12, 12);
 
 		bool modalSessionRunning;
-
-		public DialogButton DefaultButton {
-			get {
-				return defaultButton;
-			}
-
-			set {
-				defaultButton = value;
-				SetButtons (buttons.Keys.ToArray ());
-			}
-		}
 
 		public DialogBackend ()
 		{
@@ -84,14 +72,6 @@ namespace Xwt.Mac
 			};
 			buttonBoxView = ((ViewBackend)buttonBox.GetBackend ()).Widget;
 			ContentView.AddSubview (buttonBoxView);
-		}
-
-		[Export ("cancelOperation:")]
-		void HandleCancelOperation (NSObject semder)
-		{
-			PerformClose (this);
-			//FIXME: should we check whether there is a Command.Cancel button and
-			//       respond with the command instead of a simple close (null response)?
 		}
 
 		protected override void OnClosed ()
@@ -132,18 +112,13 @@ namespace Xwt.Mac
 		{
 			buttonBox.Clear ();
 
-			foreach (var b in buttonList.OrderBy (b => b == DefaultButton).Reverse ()) {
+			foreach (var b in buttonList) {
 				var button = new Button { Font = Font.SystemFont };
 				var tb = b;
 				button.Clicked += delegate {
 					OnClicked (tb);
 				};
-				button.MinWidth = 77; // Dialog buttons have a minimal width of 77px on Mac
-
-				if (b.PackOrigin == PackOrigin.End)
-					buttonBox.PackEnd (button);
-				else
-					buttonBox.PackStart (button);
+				buttonBox.PackEnd (button);
 				buttons [b] = button;
 				UpdateButton (b, button);
 			}
@@ -173,52 +148,20 @@ namespace Xwt.Mac
 			realButton.Image = b.Image;
 			realButton.Sensitive = b.Sensitive;
 			realButton.Visible = b.Visible;
-
-			// Dialog buttons on Mac have a 8px horizontal padding
-			realButton.WidthRequest = -1;
-			var s = realButton.Surface.GetPreferredSize ();
-			realButton.WidthRequest = s.Width + 16;
-			if (b == defaultButton) {
-				var nativeButton = realButton.Surface.NativeWidget as NSButton;
-				nativeButton.Window.DefaultButtonCell = nativeButton.Cell;
-			}
 		}
 
 		public void RunLoop (IWindowFrameBackend parent)
 		{
-			if (parent != null)
-				StyleMask &= ~NSWindowStyle.Miniaturizable;
-			else
-				StyleMask |= NSWindowStyle.Miniaturizable;
 			Visible = true;
 			modalSessionRunning = true;
-			var win = parent as NSWindow ?? Toolkit.CurrentEngine.GetNativeWindow (parent) as NSWindow;
-			if (win != null) {
-				win.AddChildWindow (this, NSWindowOrderingMode.Above);
-				// always use NSWindow for alignment when running in guest mode and
-				// don't rely on AddChildWindow to position the window correctly
-				if (!(parent is WindowBackend)) {
-					var parentBounds = MacDesktopBackend.ToDesktopRect (win.ContentRectFor (win.Frame));
-					var bounds = ((IWindowFrameBackend)this).Bounds;
-					bounds.X = parentBounds.Center.X - (Frame.Width / 2);
-					bounds.Y = parentBounds.Center.Y - (Frame.Height / 2);
-					((IWindowFrameBackend)this).Bounds = bounds;
-				}
-			}
 			NSApplication.SharedApplication.RunModalForWindow (this);
 		}
 
 		public void EndLoop ()
 		{
 			modalSessionRunning = false;
-			var parent = ParentWindow;
-			if (parent != null)
-				parent.RemoveChildWindow (this);
-			OrderOut (this);
-			Close();
 			NSApplication.SharedApplication.StopModal ();
-			if (parent != null)
-				parent.MakeKeyAndOrderFront (parent);
+			this.Close();
 		}
 
 		#endregion
