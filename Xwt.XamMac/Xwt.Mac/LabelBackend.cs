@@ -183,7 +183,7 @@ namespace Xwt.Mac
 		}
 	}
 
-	sealed class CustomAlignedContainer: WidgetView
+	public class CustomAlignedContainer: WidgetView
 	{
 		public NSView Child;
 
