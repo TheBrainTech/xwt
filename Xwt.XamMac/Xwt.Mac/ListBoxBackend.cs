@@ -75,9 +75,12 @@ namespace Xwt.Mac
 		{
 			base.SetSource (source, sourceBackend);
 
-			source.RowInserted += HandleColumnSizeChanged;
-			source.RowDeleted += HandleColumnSizeChanged;
-			source.RowChanged += HandleColumnSizeChanged;
+			// HMH, February 2, 2017
+			// Calling HandleColumnSizeChanged on all of these events results in the ListBox being so slow that it is unusable for any list over 20 or so items.
+			// Removing these event handlers does not appear to have any negative effects in our usage.
+			//source.RowInserted += HandleColumnSizeChanged;
+			//source.RowDeleted += HandleColumnSizeChanged;
+			//source.RowChanged += HandleColumnSizeChanged;
 			ResetColumnSize (source);
 		}
 
