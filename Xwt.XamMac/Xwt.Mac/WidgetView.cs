@@ -161,6 +161,50 @@ namespace Xwt.Mac
 			});
 		}
 
+		public override void OtherMouseDown(NSEvent theEvent) {
+			var p = ConvertPointFromView(theEvent.LocationInWindow, null);
+			ButtonEventArgs args = new ButtonEventArgs();
+			args.X = p.X;
+			args.Y = p.Y;
+			switch(theEvent.ButtonNumber) {
+			case 2:
+				args.Button = PointerButton.Middle;
+				break;
+			case 3:
+				args.Button = PointerButton.ExtendedButton1;
+				break;
+			case 4:
+				args.Button = PointerButton.ExtendedButton2;
+				break;
+			}
+			args.MultiplePress = (int)theEvent.ClickCount;
+			context.InvokeUserCode(delegate {
+				eventSink.OnButtonPressed(args);
+			});
+		}
+
+		public override void OtherMouseUp(NSEvent theEvent) {
+			var p = ConvertPointFromView(theEvent.LocationInWindow, null);
+			ButtonEventArgs args = new ButtonEventArgs();
+			args.X = p.X;
+			args.Y = p.Y;
+			switch(theEvent.ButtonNumber) {
+			case 2:
+				args.Button = PointerButton.Middle;
+				break;
+			case 3:
+				args.Button = PointerButton.ExtendedButton1;
+				break;
+			case 4:
+				args.Button = PointerButton.ExtendedButton2;
+				break;
+			}
+			args.MultiplePress = (int)theEvent.ClickCount;
+			context.InvokeUserCode(delegate {
+				eventSink.OnButtonReleased(args);
+			});
+		}
+
 		public override void MouseEntered (NSEvent theEvent)
 		{
 			context.InvokeUserCode (delegate {
