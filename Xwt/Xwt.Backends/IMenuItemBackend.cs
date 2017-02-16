@@ -66,6 +66,8 @@ namespace Xwt.Backends
 		/// </summary>
 		bool Visible { get; set; }
 
+		bool IsSubMenuOpen{ get; set; }
+
 		/// <summary>
 		/// Gets or sets the keyboard accelerator (menu shortcut) for the menu item.
 		/// </summary>

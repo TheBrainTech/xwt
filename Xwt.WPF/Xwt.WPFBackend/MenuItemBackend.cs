@@ -156,6 +156,11 @@ namespace Xwt.WPFBackend
 			set { this.item.Visibility = (value) ? Visibility.Visible : Visibility.Collapsed; }
 		}
 
+		public bool IsSubMenuOpen {
+			get { return this.menuItem.IsSubmenuOpen; }
+			set { this.menuItem.IsSubmenuOpen = value; }
+		}
+
 		public void SetImage (ImageDescription imageBackend)
 		{
 			if (imageBackend.IsNull)
