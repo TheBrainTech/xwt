@@ -90,7 +90,7 @@ namespace Xwt
 		bool IsSeparator {
 			get { return this is SeparatorMenuItem; }
 		}
-		
+
 		[DefaultValue ("")]
 		public string Label {
 			get { return Backend.Label; }
@@ -130,6 +130,12 @@ namespace Xwt
 			get { return Backend.Visible; }
 			set { Backend.Visible = value; }
 		}
+
+		public bool IsSubMenuOpen {
+			get { return Backend.IsSubMenuOpen; }
+			set { Backend.IsSubMenuOpen = value; }
+		}
+		
 
 		public KeyAccelerator Accelerator {
 			get { return Backend.Accelerator; }
