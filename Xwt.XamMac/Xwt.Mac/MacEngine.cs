@@ -241,7 +241,13 @@ namespace Xwt.Mac
 		public override bool HasNativeParent (Widget w)
 		{
 			var wb = GetNativeBackend (w);
-			return wb.Widget.Superview != null;
+			NSView superView = null;
+			try {
+				superView = wb.Widget.Superview;
+			} catch(Exception) {
+				// sometimes this throws System.Exception: Failed to marshal the Objective-C object
+			}
+			return superView != null;
 		}
 
 		public ViewBackend GetNativeBackend (Widget w)
