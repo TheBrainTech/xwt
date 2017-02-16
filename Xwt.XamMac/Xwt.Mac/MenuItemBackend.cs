@@ -147,6 +147,16 @@ namespace Xwt.Mac
 			}
 		}
 		
+		public bool IsSubMenuOpen {
+			get {
+				// sorry - can't do this on macOS - listen to the opened/closed events instead (they don't work properly on Windows, but this function does, which is why it exists)
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+
 		public bool Sensitive {
 			get {
 				return item.Enabled;
