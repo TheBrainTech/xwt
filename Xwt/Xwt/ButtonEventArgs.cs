@@ -80,6 +80,11 @@ namespace Xwt
 		/// </summary>
 		/// <value>The number of the presses of the same button.</value>
 		public int MultiplePress { get; set; }
+
+		/// <summary>
+		/// True if the event source is the same as the event handler's object (false probably indicates an event from a child object)
+		/// </summary>
+		public bool IsFromSource { get; set; } = true;
 	}
 }
 

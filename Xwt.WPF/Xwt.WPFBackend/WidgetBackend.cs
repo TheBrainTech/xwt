@@ -673,7 +673,8 @@ namespace Xwt.WPFBackend
 				X = pos.X,
 				Y = pos.Y,
 				MultiplePress = e.ClickCount,
-				Button = e.ChangedButton.ToXwtButton ()
+				Button = e.ChangedButton.ToXwtButton (),
+				IsFromSource = e.Source == NativeWidget,
 			};
 		}
 
