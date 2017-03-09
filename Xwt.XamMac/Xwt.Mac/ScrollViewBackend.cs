@@ -49,6 +49,12 @@ namespace Xwt.Mac
 		NSClipView contentView;
 		IDisposable documentView;
 
+		const int maxBounce = 500;
+		NSView bounceViewTop;
+		NSView bounceViewBottom;
+		NSView bounceViewLeft;
+		NSView bounceViewRight;
+
 		public override void Initialize ()
 		{
 			ViewObject = new CustomScrollView ();
@@ -56,6 +62,7 @@ namespace Xwt.Mac
 			Widget.HasHorizontalScroller = true;
 			Widget.HasVerticalScroller = true;
 			Widget.AutoresizesSubviews = true;
+			Widget.DrawsBackground = false;
 		}
 
 		protected override void Dispose (bool disposing)
@@ -122,6 +129,24 @@ namespace Xwt.Mac
 			} else {
 				Widget.ScrollerKnobStyle = NSScrollerKnobStyle.Dark;
 			}
+			// make the "bounce" area of the scroll view the same color as the content
+			CGColor backgroundColor = new CGColor((float)backend.BackgroundColor.Red, (float)backend.BackgroundColor.Green, (float)backend.BackgroundColor.Blue);
+			bounceViewTop = new NSView();
+			bounceViewTop.WantsLayer = true;
+			bounceViewTop.Layer.BackgroundColor = backgroundColor;
+			Widget.ContentView.AddSubview(bounceViewTop);
+			bounceViewBottom = new NSView();
+			bounceViewBottom.WantsLayer = true;
+			bounceViewBottom.Layer.BackgroundColor = backgroundColor;
+			Widget.ContentView.AddSubview(bounceViewBottom);
+			bounceViewLeft = new NSView();
+			bounceViewLeft.WantsLayer = true;
+			bounceViewLeft.Layer.BackgroundColor = backgroundColor;
+			Widget.ContentView.AddSubview(bounceViewLeft);
+			bounceViewRight = new NSView();
+			bounceViewRight.WantsLayer = true;
+			bounceViewRight.Layer.BackgroundColor = backgroundColor;
+			Widget.ContentView.AddSubview(bounceViewRight);
 		}
 		
 		public ScrollPolicy VerticalScrollPolicy {
@@ -205,6 +230,12 @@ namespace Xwt.Mac
 				var w = Math.Max (s.Width, Widget.ContentView.Frame.Width);
 				var h = Math.Max (s.Height, Widget.ContentView.Frame.Height);
 				view.Frame = new CGRect (view.Frame.X, view.Frame.Y, (nfloat)w, (nfloat)h);
+				if(bounceViewTop != null) {
+					bounceViewTop.Frame = new CGRect(-maxBounce, -maxBounce, (nfloat)w + maxBounce * 2, (nfloat)maxBounce);
+					bounceViewBottom.Frame = new CGRect(-maxBounce, h, (nfloat)w + maxBounce * 2, (nfloat)maxBounce);
+					bounceViewLeft.Frame = new CGRect(-maxBounce, 0, (nfloat)maxBounce, h);
+					bounceViewRight.Frame = new CGRect(w, 0, (nfloat)maxBounce, h);
+				}
 			}
 		}
 		
