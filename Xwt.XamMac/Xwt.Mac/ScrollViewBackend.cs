@@ -127,6 +127,11 @@ namespace Xwt.Mac
 
 				UpdateChildSize ();
 			}
+			if(backend.BackgroundColor.Brightness < 0.5) {
+				Widget.ScrollerKnobStyle = NSScrollerKnobStyle.Light;
+			} else {
+				Widget.ScrollerKnobStyle = NSScrollerKnobStyle.Dark;
+			}
 		}
 		
 		public ScrollPolicy VerticalScrollPolicy {
