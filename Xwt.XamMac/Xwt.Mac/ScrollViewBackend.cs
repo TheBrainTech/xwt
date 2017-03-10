@@ -63,6 +63,7 @@ namespace Xwt.Mac
 			Widget.HasVerticalScroller = true;
 			Widget.AutoresizesSubviews = true;
 			Widget.DrawsBackground = false;
+			Widget.ScrollerStyle = NSScrollerStyle.Overlay;
 		}
 
 		protected override void Dispose (bool disposing)
