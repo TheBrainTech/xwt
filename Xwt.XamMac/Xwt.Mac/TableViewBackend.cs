@@ -63,6 +63,7 @@ namespace Xwt.Mac
 			scroll.ContentView = clipView;
 			scroll.DocumentView = Table;
 			scroll.BorderType = NSBorderType.BezelBorder;
+			scroll.ScrollerStyle = NSScrollerStyle.Overlay;
 			ViewObject = scroll;
 			Widget.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			Widget.AutoresizesSubviews = true;
