@@ -536,7 +536,7 @@ namespace Xwt
 		/// </summary>
 		/// <value><c>true</c> if sensitive; otherwise, <c>false</c>.</value>
 		[DefaultValue (true)]
-		public bool Sensitive {
+		public virtual bool Sensitive {
 			get { return Backend.Sensitive; }
 			set { Backend.Sensitive = value; }
 		}
