@@ -131,7 +131,7 @@ namespace Xwt.Mac
 				Widget.ScrollerKnobStyle = NSScrollerKnobStyle.Dark;
 			}
 			// make the "bounce" area of the scroll view the same color as the content
-			CGColor backgroundColor = new CGColor((float)backend.BackgroundColor.Red, (float)backend.BackgroundColor.Green, (float)backend.BackgroundColor.Blue);
+			CGColor backgroundColor = new CGColor((float)backend.BackgroundColor.Red, (float)backend.BackgroundColor.Green, (float)backend.BackgroundColor.Blue, (float)backend.BackgroundColor.Alpha);
 			bounceViewTop = new NSView();
 			bounceViewTop.WantsLayer = true;
 			bounceViewTop.Layer.BackgroundColor = backgroundColor;
