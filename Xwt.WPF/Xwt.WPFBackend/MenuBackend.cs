@@ -129,18 +129,8 @@ namespace Xwt.WPFBackend
 			var menu = CreateContextMenu ();
 			menu.PlacementTarget = (UIElement) widget.NativeWidget;
 			menu.Placement = PlacementMode.Relative;
-
-			double hratio = 1;
-			double vratio = 1;
-			PresentationSource source = PresentationSource.FromVisual ((Visual)widget.NativeWidget);
-			if (source != null) {
-				Matrix m = source.CompositionTarget.TransformToDevice;
-				hratio = m.M11;
-				vratio = m.M22;
-			}
-
-			menu.HorizontalOffset = x * hratio;
-			menu.VerticalOffset = y * vratio;
+			menu.HorizontalOffset = x;
+			menu.VerticalOffset = y;
 			menu.IsOpen = true;
 		}
 
