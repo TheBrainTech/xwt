@@ -73,7 +73,7 @@ namespace Xwt.Mac
 
 		public override void SetFocus ()
 		{
-			if(Widget.Window != null && CanGetFocus) {
+			if(Widget.Window != null) {
 				Widget.Window.MakeFirstResponder(Widget);
 			}
 		}
