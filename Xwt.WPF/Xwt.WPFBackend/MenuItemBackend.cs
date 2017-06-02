@@ -48,36 +48,36 @@ namespace Xwt.WPFBackend
 		string label;
 		bool useMnemonic;
 
-		private KeyAccelerator accelerator;
-		public KeyAccelerator Accelerator {
+		private KeyShortcut shortcut;
+		public KeyShortcut Shortcut {
 			get {
-				return accelerator;
+				return shortcut;
 			}
 			set {
-				accelerator = value;
-				menuItem.InputGestureText = GetInputGestureText(accelerator);
+				shortcut = value;
+				menuItem.InputGestureText = GetInputGestureText(shortcut);
 			}
 		}
 
-		private string GetInputGestureText(KeyAccelerator accelerator) {
+		private string GetInputGestureText(KeyShortcut shortcut) {
 			StringBuilder sb = new StringBuilder();
 
-			if(accelerator.Modifiers.HasFlag(KeyboardKeyModifiers.Control)) {
+			if(shortcut.Modifiers.HasFlag(KeyboardKeyModifiers.Control)) {
 				sb.Append("Ctrl");
 			}
 
-			if(accelerator.Modifiers.HasFlag(KeyboardKeyModifiers.Shift)) {
+			if(shortcut.Modifiers.HasFlag(KeyboardKeyModifiers.Shift)) {
 				if(sb.Length > 0) { sb.Append("+"); }
 				sb.Append("Shift");
 			}
 
-			if(accelerator.Modifiers.HasFlag(KeyboardKeyModifiers.Alt)) {
+			if(shortcut.Modifiers.HasFlag(KeyboardKeyModifiers.Alt)) {
 				if(sb.Length > 0) { sb.Append("+"); }
 				sb.Append("Alt");
 			}
 
 			if(sb.Length > 0) { sb.Append("+"); }
-			sb.Append(accelerator.Key.ConfigurationString);
+			sb.Append(shortcut.Key.ConfigurationString);
 
 			return sb.ToString();
 		}

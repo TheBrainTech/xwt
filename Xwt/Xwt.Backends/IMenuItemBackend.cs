@@ -69,9 +69,9 @@ namespace Xwt.Backends
 		bool IsSubMenuOpen{ get; set; }
 
 		/// <summary>
-		/// Gets or sets the keyboard accelerator (menu shortcut) for the menu item.
+		/// Gets or sets the keyboard shortcut for the menu item.
 		/// </summary>
-		KeyAccelerator Accelerator { get; set; }
+		KeyShortcut Shortcut { get; set; }
 
 		/// <summary>
 		/// Gets or sets the tool tip for the menu item.

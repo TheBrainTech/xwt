@@ -137,9 +137,9 @@ namespace Xwt
 		}
 		
 
-		public KeyAccelerator Accelerator {
-			get { return Backend.Accelerator; }
-			set { Backend.Accelerator = value; }
+		public KeyShortcut Shortcut {
+			get { return Backend.Shortcut; }
+			set { Backend.Shortcut = value; }
 		}
 
 		[DefaultValue("")]
@@ -228,11 +228,11 @@ namespace Xwt
 		RadioButton
 	}
 
-	public class KeyAccelerator {
+	public class KeyShortcut {
 		public KeyboardKey Key { get; set; }
 		public KeyboardKeyModifiers Modifiers { get; set; }
 
-		public KeyAccelerator(KeyboardKey key, KeyboardKeyModifiers modifiers) {
+		public KeyShortcut(KeyboardKey key, KeyboardKeyModifiers modifiers) {
 			this.Key = key;
 			this.Modifiers = modifiers;
 		}
