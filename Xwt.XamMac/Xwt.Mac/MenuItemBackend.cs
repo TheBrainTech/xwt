@@ -49,7 +49,7 @@ namespace Xwt.Mac
 		string label;
 		bool useMnemonic;
 
-		private NSEventModifierMask GetModifierMask(KeyAccelerator accel) {
+		private NSEventModifierMask GetModifierMask(KeyShortcut accel) {
 			NSEventModifierMask mask = default(NSEventModifierMask);
 
 			if(accel.Modifiers.HasFlag(KeyboardKeyModifiers.Command)) {
@@ -71,13 +71,13 @@ namespace Xwt.Mac
 			return mask;
 		}
 
-		private KeyAccelerator accelerator;
-		public KeyAccelerator Accelerator {
+		private KeyShortcut shortcut;
+		public KeyShortcut Shortcut {
 			get {
-				return accelerator;
+				return shortcut;
 			}
 			set {
-				accelerator = value;
+				shortcut = value;
 				if(value.Modifiers.HasFlag(KeyboardKeyModifiers.Shift)) {
 					item.KeyEquivalent = value.Key.MacMenuCharacter.ToString();
 				} else {
