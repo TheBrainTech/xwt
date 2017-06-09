@@ -80,11 +80,15 @@ namespace Xwt.Mac
 			}
 		}
 
-		//comment this to fix: using TAB key navigate among textfield needs to TAB twice. 
-//		public override bool AcceptsFirstResponder ()
-//		{
-//			return Backend.CanGetFocus;
-//		}
+		public override bool AcceptsFirstResponder ()
+		{
+			if(Backend is TextEntryBackend) {
+				// new fix for Tab key navigation of TextEntry requiring two presses of Tab key
+				// changed because removing this function makes it impossible to add focus to canvas based buttons
+				return false;
+			}
+			return Backend.CanGetFocus;
+		}
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
