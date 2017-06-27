@@ -57,6 +57,7 @@ namespace Xwt.Mac
 			set {
 				base.Text = value;
 				Widget.Cell.AttributedStringValue = GetAttributedString (value);
+				Widget.TextColor = NSColor.Blue;
 			}
 		}
 
