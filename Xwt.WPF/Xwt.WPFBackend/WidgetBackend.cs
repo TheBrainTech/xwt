@@ -807,16 +807,29 @@ namespace Xwt.WPFBackend
 			DragDropInfo.DragRect = Rect.Empty;
 		}
 
-		static DragDropAction DetectDragAction (DragDropKeyStates keys)
+		static DragDropAction DetectDragAction(System.Windows.DragEventArgs e)
 		{
-			if ((keys & DragDropKeyStates.ControlKey) == DragDropKeyStates.ControlKey) {
-				if ((keys & DragDropKeyStates.ShiftKey) == DragDropKeyStates.ShiftKey)
-					return DragDropAction.Link;
-				else
-					return DragDropAction.Copy;
+			// Translate the DragDropEffects (Windows) to DragDropAction (XWT).
+			// Do not check for keyboard modifiers as this should be handled by the application
+			// instead of the XWT framework in order to provide more flexibility when implementing.
+			DragDropAction action = DragDropAction.None;
+			if((e.AllowedEffects ^ DragDropEffects.All) == 0) {
+				action = DragDropAction.All;
+			} else {
+				if((e.AllowedEffects & DragDropEffects.Copy) != 0) {
+					action |= DragDropAction.Copy;
+				}
+
+				if((e.AllowedEffects & DragDropEffects.Move) != 0) {
+					action |= DragDropAction.Move;
+				}
+
+				if((e.AllowedEffects & DragDropEffects.Link) != 0) {
+					action |= DragDropAction.Link;
+				}
 			}
 
-			return DragDropAction.Move;
+			return action;
 		}
 
 		static void FillDataStore (TransferDataStore store, IDataObject data, TransferDataType [] types)
@@ -923,7 +936,7 @@ namespace Xwt.WPFBackend
 				}
 			}
 
-			var proposedAction = DetectDragAction (e.KeyStates);
+			var proposedAction = DetectDragAction (e);
 
 			e.Handled = true; // Prevent default handlers from being used.
 
