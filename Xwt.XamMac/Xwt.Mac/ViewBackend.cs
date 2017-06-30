@@ -581,7 +581,7 @@ namespace Xwt.Mac
 				}
 			}
 		}
-
+		
 		static void SetupFocusEvents (Type type)
 		{
 			lock (typesConfiguredForFocusEvents) {
@@ -607,9 +607,11 @@ namespace Xwt.Mac
 			InitPasteboard (pb, sdata.Data);
 			var img = (NSImage)sdata.ImageBackend;
 			var pos = new CGPoint (ml.X - lo.X - (float)sdata.HotX, lo.Y - ml.Y - (float)sdata.HotY + img.Size.Height);
-			Widget.DragImage (img, pos, new CGSize (0, 0), NSApplication.SharedApplication.CurrentEvent, pb, Widget, true);
-		}
-		
+			NSDragOperation dragOperation = ConvertAction(sdata.DragAction);
+			DraggingSource draggingSource = new DraggingSource(dragOperation);
+			Widget.DragImage (img, pos, new CGSize (0, 0), NSApplication.SharedApplication.CurrentEvent, pb, draggingSource, true);
+		}		
+			
 		public void SetDragSource (TransferDataType[] types, DragDropAction dragAction)
 		{
 		}
@@ -948,5 +950,17 @@ namespace Xwt.Mac
 			base.SizeToFit ();
 		}
 	}
+	
+	public class DraggingSource : NSDraggingSource {
+		NSDragOperation dragOperation;
+		
+		public DraggingSource(NSDragOperation dragOperation) {
+			this.dragOperation = dragOperation;
+		}
+
+		public override NSDragOperation DraggingSourceOperationMaskForLocal(bool flag) {
+			return dragOperation;
+		}
+	}	
 }
 
