@@ -270,7 +270,13 @@ namespace Xwt.WPFBackend
 		{
 			var p = Widget.PointToScreenDpiAware (new System.Windows.Point (
 				widgetCoordinates.X, widgetCoordinates.Y));
+			Rectangle ret = new Rectangle(widgetCoordinates, new Size(1, 1));
 			double scaleFactor = Xwt.Desktop.PrimaryScreen.ScaleFactor;
+			foreach(Screen sc in Xwt.Desktop.Screens) {
+				if(sc.Bounds.Contains(ret)) {
+					scaleFactor = sc.ScaleFactor;
+				}
+			}
 			return new Point (p.X / scaleFactor, p.Y / scaleFactor);
 		}
 
