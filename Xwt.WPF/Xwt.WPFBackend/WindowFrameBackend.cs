@@ -258,7 +258,9 @@ namespace Xwt.WPFBackend
 		object IWindowFrameBackend.Screen {
 			get {
 				var sb = Bounds;
-				return System.Windows.Forms.Screen.FromRectangle (new System.Drawing.Rectangle ((int)sb.X, (int)sb.Y, (int)sb.Width, (int)sb.Height));
+				double scale = window.GetScaleFactor();
+				System.Drawing.Rectangle rectangle = new System.Drawing.Rectangle((int)(sb.X * scale), (int)(sb.Y * scale), (int)(sb.Width * scale), (int)(sb.Height * scale));
+				return System.Windows.Forms.Screen.FromRectangle (rectangle);
 			}
 		}
 
