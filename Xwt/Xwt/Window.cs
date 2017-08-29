@@ -265,7 +265,7 @@ namespace Xwt
 						Backend.Bounds = new Rectangle (initialBounds.X, initialBounds.Y, size.Width, size.Height);
 					else
 						Backend.SetSize (size.Width, size.Height);
-				} else if (locationSet && !shown)
+				} else if (locationSet)
 					Backend.Move (initialBounds.X, initialBounds.Y);
 	
 			} else {
