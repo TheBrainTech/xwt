@@ -325,7 +325,7 @@ namespace Xwt
 		/// Sets the parent window.
 		/// </summary>
 		/// <param name="win">An Xwt window containing the widget.</param>
-		internal void SetParentWindow (WindowFrame win)
+		public void SetParentWindow (WindowFrame win)
 		{
 			parentWindow = win;
 		}
