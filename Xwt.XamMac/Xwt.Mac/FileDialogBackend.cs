@@ -83,6 +83,10 @@ namespace Xwt.Mac
 
 		public string CurrentFolder {
 			get {
+				if(DirectoryUrl == null) {
+					// if "recents" or other virtual folder was selected this can happen
+					return null;
+				}
 				return DirectoryUrl.AbsoluteString;
 			}
 			set {
