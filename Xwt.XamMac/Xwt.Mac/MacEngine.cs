@@ -329,7 +329,8 @@ namespace Xwt.Mac
 		public event EventHandler Unhidden;
 		public event EventHandler<OpenFilesEventArgs> OpenFilesRequest;
 		public event EventHandler<OpenUrlEventArgs> OpenUrl;
-		
+		public event EventHandler<HandleReopenEventArgs> HandleReopen;
+
 		public AppDelegate (bool launched)
 		{
 			this.launched = launched;
@@ -408,6 +409,14 @@ namespace Xwt.Mac
 				openFilesEvent (NSApplication.SharedApplication, args);
 			}
 		}
+
+		public override bool ApplicationShouldHandleReopen(NSApplication sender, bool hasVisibleWindows) {
+			if(HandleReopen != null) {
+				var args = new HandleReopenEventArgs(hasVisibleWindows);
+				HandleReopen(NSApplication.SharedApplication, args);
+			}
+			return true;
+		}
 	}
 
 	public class TerminationEventArgs : EventArgs
@@ -435,6 +444,13 @@ namespace Xwt.Mac
 		public OpenUrlEventArgs (string url)
 		{
 			Url = url;
+		}
+	}
+
+	public class HandleReopenEventArgs : EventArgs {
+		public bool HasVisibleWindows { get; set; }
+		public HandleReopenEventArgs(bool hasVisibleWindows) {
+			HasVisibleWindows = hasVisibleWindows;
 		}
 	}
 }
