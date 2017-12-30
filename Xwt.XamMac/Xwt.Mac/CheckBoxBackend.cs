@@ -53,7 +53,26 @@ namespace Xwt.Mac
 			button.Title = "";
 			button.ActivatedInternal += OnActivated;
 		}
-		
+
+		Drawing.Color textColor = Drawing.Colors.Black;
+		public override Xwt.Drawing.Color TextColor {
+			get {
+				//Foundation.NSRange range;
+				//var attributes = Widget.AttributedTitle.GetCoreTextAttributes(0, out range);
+				//CoreGraphics.CGColor color = attributes.ForegroundColor;
+				// HACK: return internally tracked color because retrieving the color from the attributed title using the above code causes a crash
+				return textColor;
+			}
+			set {
+				var title = new Foundation.NSAttributedString(
+					Widget.Title,
+					foregroundColor: value.ToNSColor()
+				);
+				Widget.AttributedTitle = title;
+				textColor = value;
+			}
+		}
+
 		#region ICheckBoxBackend implementation
 		public void SetContent (IWidgetBackend widget)
 		{
@@ -62,6 +81,7 @@ namespace Xwt.Mac
 		public void SetContent (string label)
 		{
 			Widget.Title = label;
+			TextColor = textColor; // color must be reapplied when title is changed
 			ResetFittingSize ();
 		}
 
