@@ -382,7 +382,7 @@ namespace Xwt.Mac
 			for (int i = 0; i < str.Length; i++) {
 				if (str [i] != '_')
 					newText.Append (str [i]);
-				else if (i < str.Length && str [i + 1] == '_') {
+				else if (i + 1 < str.Length && str [i + 1] == '_') {
 					newText.Append ('_');
 					i++;
 				}
