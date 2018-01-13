@@ -152,22 +152,22 @@ namespace Xwt.WPFBackend
 
 		public void MouseWheelDown()
 		{
-			SetVerticalOffset (VerticalOffset + 12);
+			SetVerticalOffset (VerticalOffset + 60);
 		}
 
 		public void MouseWheelLeft()
 		{
-			SetHorizontalOffset (HorizontalOffset - 12);
+			SetHorizontalOffset (HorizontalOffset - 60);
 		}
 
 		public void MouseWheelRight()
 		{
-			SetHorizontalOffset (HorizontalOffset + 12);
+			SetHorizontalOffset (HorizontalOffset + 60);
 		}
 
 		public void MouseWheelUp()
 		{
-			SetVerticalOffset (VerticalOffset - 12);
+			SetVerticalOffset (VerticalOffset - 60);
 		}
 
 		public void PageDown()
