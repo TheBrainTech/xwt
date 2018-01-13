@@ -28,6 +28,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using Xwt.Backends;
+using SWM = System.Windows.Media;
 
 using WindowsCheckBox = System.Windows.Controls.CheckBox;
 
@@ -131,5 +132,20 @@ namespace Xwt.WPFBackend
 		{
 			get { return (WindowsCheckBox) Widget; }
 		}
+
+		public Xwt.Drawing.Color TextColor {
+			get {
+				SWM.Color color = SystemColors.ControlColor;
+
+				if(CheckBox.Foreground != null)
+					color = ((SWM.SolidColorBrush)CheckBox.Foreground).Color;
+
+				return DataConverter.ToXwtColor(color);
+			}
+			set {
+				CheckBox.Foreground = ResPool.GetSolidBrush(value);
+			}
+		}
+
 	}
 }
