@@ -30,6 +30,7 @@ using Xwt.Backends;
 
 using WindowsRadioButton = System.Windows.Controls.RadioButton;
 using System.Collections.Generic;
+using SWM = System.Windows.Media;
 
 namespace Xwt.WPFBackend
 {
@@ -190,5 +191,20 @@ namespace Xwt.WPFBackend
 					radioGroup.Add(RadioButton);
 			}
 		}
+
+		public Xwt.Drawing.Color TextColor {
+			get {
+				SWM.Color color = SystemColors.ControlTextColor;
+
+				if(RadioButton.Foreground != null)
+					color = ((SWM.SolidColorBrush)RadioButton.Foreground).Color;
+
+				return DataConverter.ToXwtColor(color);
+			}
+			set {
+				RadioButton.Foreground = ResPool.GetSolidBrush(value);
+			}
+		}
+
 	}
 }

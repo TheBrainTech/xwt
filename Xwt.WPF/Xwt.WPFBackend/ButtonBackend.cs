@@ -36,6 +36,7 @@ using SWC = System.Windows.Controls;
 using Xwt.Backends;
 using System.Reflection;
 using System.Windows.Data;
+using SWM = System.Windows.Media;
 
 
 namespace Xwt.WPFBackend
@@ -230,6 +231,35 @@ namespace Xwt.WPFBackend
 
 			return preSize;
 		}
+
+		public Xwt.Drawing.Color TextColor {
+			get {
+				SWM.Color color = SystemColors.ControlTextColor;
+
+				if(Button.Foreground != null)
+					color = ((SWM.SolidColorBrush)Button.Foreground).Color;
+
+				return DataConverter.ToXwtColor(color);
+			}
+			set {
+				Button.Foreground = ResPool.GetSolidBrush(value);
+			}
+		}
+
+		public Xwt.Drawing.Color BackgroundColor {
+			get {
+				SWM.Color color = SystemColors.ControlColor;
+
+				if(Button.Foreground != null)
+					color = ((SWM.SolidColorBrush)Button.Background).Color;
+
+				return DataConverter.ToXwtColor(color);
+			}
+			set {
+				Button.Background = ResPool.GetSolidBrush(value);
+			}
+		}
+
 	}
 
 	class WpfButton : SWC.Button, IWpfWidget

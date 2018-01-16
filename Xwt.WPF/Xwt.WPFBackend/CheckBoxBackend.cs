@@ -135,7 +135,7 @@ namespace Xwt.WPFBackend
 
 		public Xwt.Drawing.Color TextColor {
 			get {
-				SWM.Color color = SystemColors.ControlColor;
+				SWM.Color color = SystemColors.ControlTextColor;
 
 				if(CheckBox.Foreground != null)
 					color = ((SWM.SolidColorBrush)CheckBox.Foreground).Color;
