@@ -324,17 +324,25 @@ namespace Xwt.WPFBackend
 
 			var c = (FrameworkElement)Content;
 
-			if(this.WindowStyle != SW.WindowStyle.None) {
-				var p = c.PointToScreenDpiAware (new SW.Point (0, 0));
-				left = p.X - Left;
-				top = p.Y - Top;
-				right = windowWidth - c.ActualWidth - left;
-				bottom = windowHeight - c.ActualHeight - top;
+			if(PresentationSource.FromVisual(c) == null) {
+				// HACK to avoid WIN-4661
+				// This never happens in my testing, but seems to happen in the wild.
+				// This change should avoid the outright failure to start and only has minimal functional
+				// impact (Ex: Windows load a titlebar height lower than they should)
+				Console.WriteLine("WARNING: PresentationSource.FromVisual returned null - border size calculations may be incorrect");
+			} else {
+				if(this.WindowStyle != SW.WindowStyle.None) {
+					var p = c.PointToScreenDpiAware(new SW.Point(0, 0));
+					left = p.X - Left;
+					top = p.Y - Top;
+					right = windowWidth - c.ActualWidth - left;
+					bottom = windowHeight - c.ActualHeight - top;
+				}
+				borderCalculated = true;
 			}
 
 			frameBorder = new WidgetSpacing(left, top, right, bottom);
 
-			borderCalculated = true;
 			Left = initialX - left;
 			Top = initialY - top;
 			SetMinSize (minSizeRequested);
