@@ -61,6 +61,11 @@ namespace Xwt.Mac
 
 		static Dictionary<string, NSImage> stockIcons = new Dictionary<string, NSImage> ();
 		
+		public override object LoadFromStream(Stream stream, string name)
+		{
+			return LoadFromStream(stream);
+		}
+
 		public override object LoadFromStream (Stream stream)
 		{
 			using (NSData data = NSData.FromStream (stream)) {
