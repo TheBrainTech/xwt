@@ -42,6 +42,55 @@ namespace Xwt.WPFBackend
 {
 	public class ImageHandler: ImageBackendHandler
 	{
+		public override object LoadFromStream(Stream stream, string name)
+		{
+			if(name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase)) {
+				return LoadJpgFromStream(stream);
+			} else {
+				return LoadFromStream(stream);
+			}
+		}
+
+		private object LoadJpgFromStream(Stream stream)
+		{
+			// There is no Microsoft documentation on how to get non-standard metadata and the info on their forums is incorrect.
+			// The only useful information was here and this solution is based on it.
+			// https://stackoverflow.com/questions/27835064/get-image-orientation-and-rotate-as-per-orientation
+
+			BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
+			BitmapMetadata importedMetaData = new BitmapMetadata("jpg");
+			Stream sourceStream = stream;
+			BitmapDecoder sourceDecoder = BitmapDecoder.Create(sourceStream, createOptions, BitmapCacheOption.Default);
+			BitmapSource imageSource = sourceDecoder.Frames[0];
+			if(imageSource.Metadata != null) {
+				imageSource.Metadata.Freeze();
+				importedMetaData = imageSource.Metadata.Clone() as BitmapMetadata;
+			}
+
+			UInt16? orientation = importedMetaData.GetQuery("/app1/ifd/exif:{uint=274}") as UInt16?;
+
+			if(orientation.HasValue && orientation != 1) {
+				int angle = 0;
+				switch(orientation) {
+					case 8:
+						angle = 270;
+						break;
+					case 3:
+						angle = 180;
+						break;
+					case 6:
+						angle = 90;
+						break;
+				}
+				TransformedBitmap tbm = new TransformedBitmap(imageSource, new RotateTransform(angle));
+				imageSource = tbm;
+			}
+
+			WpfImage wpfImage = LoadFromImageSource(imageSource) as WpfImage;
+
+			return wpfImage;
+		}
+
 		public override object LoadFromStream (Stream stream)
 		{
 			var img = new SWMI.BitmapImage ();
