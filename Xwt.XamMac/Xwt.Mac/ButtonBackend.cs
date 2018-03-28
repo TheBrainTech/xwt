@@ -57,6 +57,7 @@ namespace Xwt.Mac
 			Widget.SetButtonType (NSButtonType.MomentaryPushIn);
 		}
 
+		bool textColorChanged = false;
 		Drawing.Color textColor = Drawing.Colors.Black;
 		public override Xwt.Drawing.Color TextColor {
 			get {
@@ -77,6 +78,7 @@ namespace Xwt.Mac
 				);
 				Widget.AttributedTitle = title;
 				textColor = value;
+				textColorChanged = true;
 			}
 		}
 
@@ -100,7 +102,8 @@ namespace Xwt.Mac
 			if (useMnemonic)
 				label = label.RemoveMnemonic ();
 			Widget.Title = label ?? "";
-			TextColor = textColor; // color must be reapplied when title is changed
+			if(textColorChanged)
+				TextColor = textColor; // color must be reapplied when title is changed
 			if (string.IsNullOrEmpty (label))
 				imagePosition = ContentPosition.Center;
 			if (!image.IsNull) {
