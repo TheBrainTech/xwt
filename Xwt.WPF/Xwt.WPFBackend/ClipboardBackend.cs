@@ -37,7 +37,6 @@ namespace Xwt.WPFBackend
 {
 	public class WpfClipboardBackend
 		: ClipboardBackend {
-		private DataObject currentDataObject = new DataObject();
 
 		public override void Clear() {
 			WindowsClipboard.Clear();
@@ -51,7 +50,6 @@ namespace Xwt.WPFBackend
 
 			if(cleanClipboardFirst) {
 				WindowsClipboard.Clear();
-				currentDataObject = new DataObject();
 			}
 
 			if (type == TransferDataType.Html) {
@@ -63,15 +61,11 @@ namespace Xwt.WPFBackend
 					var src = img.ToBitmap().GetBackend() as WpfImage;
 					WindowsClipboard.SetData (type.ToWpfDataFormat (), src.MainFrame);
 				}
+			} else if(type == TransferDataType.Uri) {
+				WindowsClipboard.SetFileDropList((StringCollection)(dataSource()));
 			} else {
-				if(type == TransferDataType.Uri) {
-					currentDataObject.SetFileDropList((StringCollection)(dataSource()));
-				} else {
-					currentDataObject.SetData(type.ToWpfDataFormat(), dataSource());
-				}
+				WindowsClipboard.SetData(type.ToWpfDataFormat(), dataSource());
 			}
-			WindowsClipboard.SetDataObject(currentDataObject);
-
 		}
 
 		static readonly string emptyCFHtmlHeader = GenerateCFHtmlHeader (0, 0, 0, 0);
