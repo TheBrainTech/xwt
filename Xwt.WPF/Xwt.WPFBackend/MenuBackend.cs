@@ -154,6 +154,12 @@ namespace Xwt.WPFBackend
 			return menu;
 		}
 
+		public ContextMenu ContextMenu {
+			get {
+				return menu;
+			}
+		}
+
 		public override void EnableEvent(object eventId) {
 			if(eventId is MenuEvent) {
 				switch((MenuEvent)eventId) {
