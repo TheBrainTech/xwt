@@ -81,7 +81,7 @@ namespace Xwt
 			items = new MenuItemCollection (this);
 		}
 		
-		internal IMenuBackend Backend {
+		public IMenuBackend Backend {
 			get { return (IMenuBackend) BackendHost.Backend; }
 		}
 		
@@ -102,7 +102,7 @@ namespace Xwt
 		/// <summary>
 		/// Shows the menu at the current position of the cursor
 		/// </summary>
-		public void Popup ()
+		public virtual void Popup ()
 		{
 			Backend.Popup ();
 		}
@@ -113,7 +113,7 @@ namespace Xwt
 		/// <param name="parentWidget">Widget upon which to show the menu</param>
 		/// <param name="x">The x coordinate, relative to the widget origin</param>
 		/// <param name="y">The y coordinate, relative to the widget origin</param>
-		public void Popup (Widget parentWidget, double x, double y)
+		public virtual void Popup (Widget parentWidget, double x, double y)
 		{
 			Backend.Popup ((IWidgetBackend)BackendHost.ToolkitEngine.GetSafeBackend (parentWidget), x, y);
 		}
