@@ -42,6 +42,7 @@ namespace Xwt.Mac
 	public class LinkLabelBackend : LabelBackend, ILinkLabelBackend
 	{
 		Uri uri;
+		NSColor color = NSColor.FromRgb(0, 102, 204);
 
 		new ILinkLabelEventSink EventSink {
 			get { return (ILinkLabelEventSink)base.EventSink; }
@@ -56,8 +57,8 @@ namespace Xwt.Mac
 			get { return base.Text; }
 			set {
 				base.Text = value;
-				Widget.Cell.AttributedStringValue = GetAttributedString (value);
-				Widget.TextColor = NSColor.Blue;
+				Widget.Cell.AttributedStringValue = GetAttributedString (value, color);
+				Widget.TextColor = color;
 			}
 		}
 
@@ -102,13 +103,13 @@ namespace Xwt.Mac
 			});
 		}
 
-		static NSAttributedString GetAttributedString (string text)
+		static NSAttributedString GetAttributedString (string text, NSColor color)
 		{
 			var attrStr = new NSMutableAttributedString (text);
 			var range = new NSRange (0, attrStr.Length);
 
 			var singleUnderlineStyle = NSNumber.FromInt32 ((int)NSUnderlineStyle.Single);
-			attrStr.AddAttribute (NSStringAttributeKey.ForegroundColor, NSColor.Blue, range);
+			attrStr.AddAttribute (NSStringAttributeKey.ForegroundColor, color, range);
 			attrStr.AddAttribute (NSStringAttributeKey.UnderlineStyle, singleUnderlineStyle, range);
 
 			return attrStr;
