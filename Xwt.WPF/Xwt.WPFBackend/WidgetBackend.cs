@@ -728,7 +728,7 @@ namespace Xwt.WPFBackend
 				Adorner = new ImageAdorner (e, data.ImageBackend);
 
 				AdornedLayer = AdornerLayer.GetAdornerLayer (e);
-				AdornedLayer.Add (Adorner);
+				AdornedLayer?.Add (Adorner);
 
 				AdornedWindow.DragOver += AdornedWindowOnDragOver;
 			}
@@ -739,7 +739,7 @@ namespace Xwt.WPFBackend
 				OnDragFinished (this, new DragFinishedEventArgs (effect == DragDropEffects.Move));
 
 				if (Adorner != null) {
-					AdornedLayer.Remove (Adorner);
+					AdornedLayer?.Remove (Adorner);
 					AdornedLayer = null;
 					Adorner = null;
 
@@ -910,7 +910,7 @@ namespace Xwt.WPFBackend
 				var v = (UIElement)w.Content;
 
 				if (w != AdornedWindow) {
-					AdornedLayer.Remove (Adorner);
+					AdornedLayer?.Remove (Adorner);
 
 					AdornedWindow.AllowDrop = false;
 					AdornedWindow.DragOver -= AdornedWindowOnDragOver;
@@ -920,7 +920,7 @@ namespace Xwt.WPFBackend
 					AdornedWindow.DragOver += AdornedWindowOnDragOver;
 
 					AdornedLayer = AdornerLayer.GetAdornerLayer (v);
-					AdornedLayer.Add (Adorner);
+					AdornedLayer?.Add (Adorner);
 				}
 
 				Adorner.Offset = e.GetPosition (v);
