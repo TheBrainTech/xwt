@@ -23,27 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.IO;
 using System.Linq;
+using AppKit;
+using Foundation;
 using Xwt.Backends;
 
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using Class = MonoMac.ObjCRuntime.Class;
-#else
-using Foundation;
-using AppKit;
 using Class = ObjCRuntime.Class;
-#endif
 
 namespace Xwt.Mac
 {
 	public class MacClipboardBackend: ClipboardBackend
 	{
+		PasteboardOwner owner;
+
+		public MacClipboardBackend ()
+		{
+			owner = new PasteboardOwner ();
+		}
+
 		#region implemented abstract members of ClipboardBackend
 
 		public override void Clear ()
@@ -57,7 +57,6 @@ namespace Xwt.Mac
 			if(cleanClipboardFirst) {
 				pboard.ClearContents();
 			}
-			var owner = new PasteboardOwner();
 			owner.DataSource = dataSource;
 
 			pboard.AddTypes (new[] { type.ToUTI () }, owner);
@@ -66,11 +65,7 @@ namespace Xwt.Mac
 		public override bool IsTypeAvailable (TransferDataType type)
 		{ 
 			NSPasteboard pb = NSPasteboard.GeneralPasteboard;
-#if MONOMAC
-			NSObject[] classes;
-#else
 			Class[] classes;
-#endif
 			NSDictionary options;
 			bool isType;
 
@@ -104,29 +99,17 @@ namespace Xwt.Mac
 					}
 				}
 
-#if MONOMAC
-				classes = new NSObject[] {
-					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSAttributedString))),
-					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSString))),
-					NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl))),
-				};
-#else
 				classes = new Class[] {
 					new Class(typeof(NSAttributedString)),
 					new Class(typeof(NSString)),
 					new Class(typeof(NSUrl)),
 				};
-#endif
 				options = new NSDictionary();
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;
 			} else if (type == TransferDataType.Uri) {
 				//files
-#if MONOMAC
-				classes = new NSObject[]{ NSObject.FromObject(new MonoMac.ObjCRuntime.Class(typeof(NSUrl))) };
-#else
 				classes = new Class[]{ new Class(typeof(NSUrl)) };
-#endif
 				options = NSDictionary.FromObjectAndKey(NSObject.FromObject(NSNumber.FromBoolean(true)), new NSString(type.ToUTI()));
 				isType = pb.CanReadObjectForClasses(classes, options);
 				return isType;

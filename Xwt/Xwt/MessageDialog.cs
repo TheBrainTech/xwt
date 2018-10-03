@@ -143,7 +143,12 @@ namespace Xwt
 		
 		public static bool Confirm (ConfirmationMessage message)
 		{
-			return GenericAlert (RootWindow, message) == message.ConfirmButton;
+			return Confirm (RootWindow, message);
+		}
+
+		public static bool Confirm (WindowFrame window, ConfirmationMessage message)
+		{
+			return GenericAlert (window, message) == message.ConfirmButton;
 		}
 		#endregion
 		
@@ -180,7 +185,12 @@ namespace Xwt
 		
 		public static Command AskQuestion (QuestionMessage message)
 		{
-			return GenericAlert (RootWindow, message);
+			return AskQuestion (RootWindow, message);
+		}
+
+		public static Command AskQuestion (WindowFrame window, QuestionMessage message)
+		{
+			return GenericAlert (window, message);
 		}
 		#endregion
 		
@@ -214,7 +224,10 @@ namespace Xwt
 				message.Icon.InitForToolkit (Toolkit.CurrentEngine);
 
 			using (backend) {
-				var res = backend.Run (parent ?? RootWindow, message);
+				Command res = null;
+				Toolkit.CurrentEngine.InvokePlatformCode (delegate {
+					res = backend.Run (parent ?? RootWindow, message);
+				});
 				
 				if (backend.ApplyToAll)
 					message.ApplyToAllButton = res;

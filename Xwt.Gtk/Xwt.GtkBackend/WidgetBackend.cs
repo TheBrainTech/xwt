@@ -43,8 +43,6 @@ namespace Xwt.GtkBackend
 		IWidgetEventSink eventSink;
 		WidgetEvent enabledEvents;
 		bool destroyed;
-		SizeConstraint currentWidthConstraint = SizeConstraint.Unconstrained;
-		SizeConstraint currentHeightConstraint = SizeConstraint.Unconstrained;
 
 		bool minSizeSet;
 		
@@ -194,6 +192,8 @@ namespace Xwt.GtkBackend
 					ctype = Gdk.CursorType.Crosshair;
 				else if (cursor == CursorType.Hand)
 					ctype = Gdk.CursorType.Hand1;
+				else if (cursor == CursorType.Hand2 || cursor == CursorType.DragCopy)
+					ctype = Gdk.CursorType.Hand2;
 				else if (cursor == CursorType.IBeam)
 					ctype = Gdk.CursorType.Xterm;
 				else if (cursor == CursorType.ResizeDown)
@@ -208,6 +208,16 @@ namespace Xwt.GtkBackend
 					ctype = Gdk.CursorType.SbHDoubleArrow;
 				else if (cursor == CursorType.ResizeUpDown)
 					ctype = Gdk.CursorType.SbVDoubleArrow;
+				else if (cursor == CursorType.ResizeNE)
+					ctype = Gdk.CursorType.TopRightCorner;
+				else if (cursor == CursorType.ResizeNW)
+					ctype = Gdk.CursorType.TopLeftCorner;
+				else if (cursor == CursorType.ResizeSE)
+					ctype = Gdk.CursorType.BottomRightCorner;
+				else if (cursor == CursorType.ResizeSW)
+					ctype = Gdk.CursorType.BottomLeftCorner;
+				else if (cursor == CursorType.NotAllowed)
+					ctype = Gdk.CursorType.XCursor;
 				else if (cursor == CursorType.Move)
 					ctype = Gdk.CursorType.Fleur;
 				else if (cursor == CursorType.Wait)
@@ -295,8 +305,6 @@ namespace Xwt.GtkBackend
 
 		public void SetSizeConstraints (SizeConstraint widthConstraint, SizeConstraint heightConstraint)
 		{
-			currentWidthConstraint = widthConstraint;
-			currentHeightConstraint = heightConstraint;
 		}
 		
 		DragDropData DragDropInfo {
@@ -305,6 +313,22 @@ namespace Xwt.GtkBackend
 					dragDropInfo = new DragDropData ();
 				return dragDropInfo;
 			}
+		}
+
+		public Point ConvertToParentCoordinates (Point widgetCoordinates)
+		{
+			int x = 0, y = 0;
+			if (RootWidget?.Parent != null)
+				Widget.TranslateCoordinates (RootWidget.Parent, x, y, out x, out y);
+			return new Point (x, y);
+		}
+
+		public Point ConvertToWindowCoordinates (Point widgetCoordinates)
+		{
+			int x = 0, y = 0;
+			if (RootWidget?.Toplevel != null)
+				Widget.TranslateCoordinates (RootWidget.Toplevel, x, y, out x, out y);
+			return new Point (x, y);
 		}
 		
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
@@ -649,9 +673,7 @@ namespace Xwt.GtkBackend
 		{
 			if (Widget.Allocation != lastAllocation) {
 				lastAllocation = Widget.Allocation;
-				ApplicationContext.InvokeUserCode (delegate {
-					EventSink.OnBoundsChanged ();
-				});
+				ApplicationContext.InvokeUserCode (EventSink.OnBoundsChanged);
 			}
 		}
 
@@ -783,9 +805,7 @@ namespace Xwt.GtkBackend
 		[GLib.ConnectBefore]
 		void HandleWidgetFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
 		{
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnLostFocus ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnLostFocus);
 		}
 
 		[GLib.ConnectBefore]
@@ -793,9 +813,7 @@ namespace Xwt.GtkBackend
 		{
 			if (!CanGetFocus)
 				return;
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnGotFocus ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnGotFocus);
 		}
 
 		[GLib.ConnectBefore]
@@ -803,9 +821,7 @@ namespace Xwt.GtkBackend
 		{
 			if (args.Event.Detail == Gdk.NotifyType.Inferior)
 				return;
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnMouseExited ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnMouseExited);
 		}
 
 		[GLib.ConnectBefore]
@@ -813,9 +829,7 @@ namespace Xwt.GtkBackend
 		{
 			if (args.Event.Detail == Gdk.NotifyType.Inferior)
 				return;
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnMouseEntered ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnMouseEntered);
 		}
 
 		protected virtual void OnEnterNotifyEvent (Gtk.EnterNotifyEventArgs args) {}
@@ -892,6 +906,8 @@ namespace Xwt.GtkBackend
 				a.MultiplePress = 3;
 			else
 				a.MultiplePress = 1;
+
+			a.IsContextMenuTrigger = args.Event.TriggersContextMenu ();
 			return a;
 		}
 		

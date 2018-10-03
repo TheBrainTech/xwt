@@ -20,8 +20,14 @@ namespace Samples
 			list.GridLinesVisible = GridLines.Both;
 			ListStore store = new ListStore (name, icon, text, icon2, progress);
 			list.DataSource = store;
+
+			var col = new ListViewColumn ("Item");
+			col.Views.Add (new TextCellView (text), true); // expand the first CellView
+			col.Views.Add (new ImageCellView (icon2));
+			col.CanResize = true;
+
 			list.Columns.Add ("Name", icon, name);
-			list.Columns.Add ("Text", icon2, text);
+			list.Columns.Add (col);
 			list.Columns.Add ("Progress", new TextCellView () { TextField = text }, new CustomCell () { ValueField = progress });
 
 			var png = Image.FromResource (typeof(App), "class.png");
@@ -166,10 +172,12 @@ namespace Samples
 
 		protected override void OnMouseMoved (MouseMovedEventArgs args)
 		{
-			var data = GetValue (ValueField);
-			data.Value = (int) (100 * ((args.X - Bounds.X) / Bounds.Width));
-			data.YPos = args.Y - Bounds.Y;
-			QueueDraw ();
+			if (Bounds.Contains (args.Position)) {
+				var data = GetValue (ValueField);
+				data.Value = Math.Min (100, (int)(100 * ((args.X - Bounds.X) / Bounds.Width)));
+				data.YPos = args.Y - Bounds.Y;
+				QueueDraw ();
+			}
 			base.OnMouseMoved (args);
 		}
 

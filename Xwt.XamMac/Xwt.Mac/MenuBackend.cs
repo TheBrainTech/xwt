@@ -24,18 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using AppKit;
 using Xwt.Backends;
 using System.Collections.Generic;
 
-#if MONOMAC
-using MonoMac.Foundation;
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.AppKit;
-#else
-using AppKit;
-#endif
 
 namespace Xwt.Mac
 {

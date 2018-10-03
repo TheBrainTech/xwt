@@ -314,6 +314,8 @@ namespace Xwt
 		/// </summary>
 		public void Present ()
 		{
+			if (!Visible)
+				AdjustSize ();
 			Backend.Present ();
 		}
 

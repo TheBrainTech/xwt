@@ -29,23 +29,13 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using Xwt.Backends;
-using System.Drawing;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-using CGRect = System.Drawing.RectangleF;
-#else
-using Foundation;
+using System.Linq;
 using AppKit;
-using ObjCRuntime;
 using CoreGraphics;
-#endif
+using Foundation;
+using ObjCRuntime;
+using Xwt.Backends;
+using Xwt.Drawing;
 
 namespace Xwt.Mac
 {
@@ -135,11 +125,27 @@ namespace Xwt.Mac
 		internal void InternalShow ()
 		{
 			MakeKeyAndOrderFront (MacEngine.App);
+			if (ParentWindow != null)
+			{
+				if (!ParentWindow.ChildWindows.Contains(this))
+					ParentWindow.AddChildWindow(this, NSWindowOrderingMode.Above);
+
+				// always use NSWindow for alignment when running in guest mode and
+				// don't rely on AddChildWindow to position the window correctly
+				if (frontend.InitialLocation == WindowLocation.CenterParent && !(ParentWindow is WindowBackend))
+				{
+					var parentBounds = MacDesktopBackend.ToDesktopRect(ParentWindow.ContentRectFor(ParentWindow.Frame));
+					var bounds = ((IWindowFrameBackend)this).Bounds;
+					bounds.X = parentBounds.Center.X - (Frame.Width / 2);
+					bounds.Y = parentBounds.Center.Y - (Frame.Height / 2);
+					((IWindowFrameBackend)this).Bounds = bounds;
+				}
+			}
 		}
 		
 		public void Present ()
 		{
-			MakeKeyAndOrderFront (MacEngine.App);
+			InternalShow();
 		}
 
 		public bool Visible {
@@ -157,6 +163,15 @@ namespace Xwt.Mac
 		public double Opacity {
 			get { return AlphaValue; }
 			set { AlphaValue = (float)value; }
+		}
+
+		Color IWindowBackend.BackgroundColor {
+			get {
+				return BackgroundColor.ToXwtColor ();
+			}
+			set {
+				BackgroundColor = value.ToNSColor ();
+			}
 		}
 
 		public bool Sensitive {
@@ -282,11 +297,7 @@ namespace Xwt.Mac
 				switch (@event) {
 				case WindowFrameEvent.BoundsChanged:
 					DidResize += HandleDidResize;
-#if MONOMAC
-					DidMoved += HandleDidResize;
-#else
 					DidMove += HandleDidResize;
-#endif
 					break;
 				case WindowFrameEvent.Hidden:
 					EnableVisibilityEvent (@event);
@@ -333,6 +344,8 @@ namespace Xwt.Mac
 				PerformClose(this);
 			else
 				Close ();
+			if (ParentWindow != null)
+				ParentWindow.RemoveChildWindow(this);
 			return closePerformed;
 		}
 		
@@ -402,11 +415,7 @@ namespace Xwt.Mac
 				switch (@event) {
 					case WindowFrameEvent.BoundsChanged:
 						DidResize -= HandleDidResize;
-#if MONOMAC
-					DidMoved -= HandleDidResize;
-#else
-					DidMove -= HandleDidResize;
-#endif
+						DidMove -= HandleDidResize;
 						break;
 					case WindowFrameEvent.Hidden:
 						this.WillClose -= OnWillClose;
@@ -489,8 +498,21 @@ namespace Xwt.Mac
 
 		void IWindowFrameBackend.SetTransientFor (IWindowFrameBackend window)
 		{
-			// Generally, TransientFor is used to implement dialog, we reproduce the assumption here
-			Level = window == null ? NSWindowLevel.Normal : NSWindowLevel.ModalPanel;
+			if (!((IWindowFrameBackend)this).ShowInTaskbar)
+				StyleMask &= ~NSWindowStyle.Miniaturizable;
+
+			var win = window as NSWindow ?? ApplicationContext.Toolkit.GetNativeWindow(window) as NSWindow;
+
+			if (ParentWindow != win) {
+				// remove from the previous parent
+				if (ParentWindow != null)
+					ParentWindow.RemoveChildWindow(this);
+
+				ParentWindow = win;
+				// A window must be visible to be added to a parent. See InternalShow().
+				if (Visible)
+					ParentWindow.AddChildWindow(this, NSWindowOrderingMode.Above);
+			}
 		}
 
 		bool IWindowFrameBackend.Resizable {
@@ -554,9 +576,6 @@ namespace Xwt.Mac
 		#endregion
 
 		static Selector closeSel = new Selector ("close");
-		#if MONOMAC
-		static Selector retainSel = new Selector("retain");
-		#endif
 
 		bool disposing, disposed;
 
@@ -579,11 +598,7 @@ namespace Xwt.Mac
 					// WORKAROUND:
 					// bump native reference count by calling DangerousRetain()
 					// base.Dispose will now unref the window correctly without crashing
-					#if MONOMAC
-					Messaging.void_objc_msgSend(this.Handle, retainSel.Handle);
-					#else
 					DangerousRetain();
-					#endif
 					// tell Cocoa to release the window on Close
 					ReleasedWhenClosed = true;
 					// Close the window (Cocoa will do its job even if the window is already closed)
@@ -647,7 +662,7 @@ namespace Xwt.Mac
 			if (child != null) {
 				frame.X += (nfloat) frontend.Padding.Left;
 				frame.Width -= (nfloat) (frontend.Padding.HorizontalSpacing);
-				frame.Y += (nfloat) frontend.Padding.Top;
+				frame.Y += (nfloat) (childView.IsFlipped ? frontend.Padding.Bottom : frontend.Padding.Top);
 				frame.Height -= (nfloat) (frontend.Padding.VerticalSpacing);
 				childView.Frame = frame;
 			}

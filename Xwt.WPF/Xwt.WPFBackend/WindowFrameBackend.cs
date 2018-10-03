@@ -121,7 +121,7 @@ namespace Xwt.WPFBackend
 			get { return eventSink; }
 		}
 
-		bool IWindowFrameBackend.Decorated {
+		public virtual bool Decorated {
 			get { return window.WindowStyle != WindowStyle.None; }
 			set {
 				window.WindowStyle = value ? WindowStyle.SingleBorderWindow : WindowStyle.None;
@@ -145,7 +145,7 @@ namespace Xwt.WPFBackend
 				Window.Owner = null;
 		}
 
-		bool IWindowFrameBackend.Resizable {
+		public virtual bool Resizable {
 			get {
 				return resizable;
 			}
@@ -166,9 +166,9 @@ namespace Xwt.WPFBackend
 			}
 		}
 
-		void UpdateResizeMode ()
+		protected void UpdateResizeMode ()
 		{
-			var m = resizable && window.WindowStyle == WindowStyle.SingleBorderWindow ? ResizeMode.CanResize : ResizeMode.NoResize;
+			var m = resizable && window.WindowStyle != WindowStyle.None ? ResizeMode.CanResize : ResizeMode.NoResize;
 			if (m != window.ResizeMode) {
 				window.ResizeMode = m;
 				OnResizeModeChanged ();

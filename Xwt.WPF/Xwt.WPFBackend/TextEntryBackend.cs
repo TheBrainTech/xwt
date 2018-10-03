@@ -115,7 +115,7 @@ namespace Xwt.WPFBackend
 		public bool ReadOnly
 		{
 			get { return TextBox.IsReadOnly; }
-			set { TextBox.IsReadOnly = true; }
+			set { TextBox.IsReadOnly = value; }
 		}
 
 		public bool ShowFrame
@@ -268,7 +268,7 @@ namespace Xwt.WPFBackend
 				Context.InvokeUserCode (EventSink.OnActivated);
 		}
 
-		private void OnTextChanged (object s, TextChangedEventArgs e)
+		private void OnTextChanged (object s, System.Windows.Controls.TextChangedEventArgs e)
 		{
 			Context.InvokeUserCode (EventSink.OnChanged);
 		}

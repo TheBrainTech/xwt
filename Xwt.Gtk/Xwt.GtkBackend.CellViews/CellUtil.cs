@@ -61,7 +61,7 @@ namespace Xwt.GtkBackend
 			if (view is ITextCellViewFrontend) {
 				crd = new CustomCellRendererText ();
 			}
-			else if (view is ICheckBoxCellViewFrontend) {
+			else if (view is ICheckBoxCellViewFrontend || view is IRadioButtonCellViewFrontend) {
 				crd = new CustomCellRendererToggle ();
 			}
 			else if (view is IImageCellViewFrontend) {
@@ -76,7 +76,7 @@ namespace Xwt.GtkBackend
 				throw new NotSupportedException ("Unknown cell view type: " + view.GetType ());
 
 			crd.Initialize (view, col, target);
-			col.PackStart (target, crd.CellRenderer, false);
+			col.PackStart (target, crd.CellRenderer, view.Expands);
 			col.SetCellDataFunc (target, crd.CellRenderer, (cellLayout, cell, treeModel, iter) => crd.LoadData (treeModel, iter));
 			view.AttachBackend (widget, crd);
 			return crd;
@@ -87,7 +87,7 @@ namespace Xwt.GtkBackend
 			if (views.Count == 1) {
 				Gtk.HBox box = new Gtk.HBox ();
 				foreach (var v in views)
-					box.PackStart (CreateCellRenderer (actx, v), false, false, 0);
+					box.PackStart (CreateCellRenderer (actx, v), v.Expands, false, 0);
 				box.ShowAll ();
 				return box;
 			}
@@ -158,6 +158,7 @@ namespace Xwt.GtkBackend
 		Gtk.Widget EventRootWidget { get; }
 		bool GetCellPosition (Gtk.CellRenderer r, int ex, int ey, out int cx, out int cy, out Gtk.TreeIter iter);
 		void QueueDraw (object target, Gtk.TreeIter iter);
+		void QueueResize (object target, Gtk.TreeIter iter);
 		TreeModel Model { get; }
 		Gtk.TreeIter PressedIter { get; set; }
 		CellViewBackend PressedCell { get; set; }

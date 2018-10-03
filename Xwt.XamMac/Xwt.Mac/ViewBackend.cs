@@ -26,31 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Xml;
-using Xwt;
-using Xwt.Backends;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-using CGSize = System.Drawing.SizeF;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreGraphics;
-using MonoMac.CoreAnimation;
-#else
-using Foundation;
 using AppKit;
-using ObjCRuntime;
 using CoreGraphics;
-using CoreAnimation;
-#endif
+using Foundation;
+using ObjCRuntime;
+using Xwt.Backends;
 
 
 namespace Xwt.Mac
@@ -167,20 +149,22 @@ namespace Xwt.Mac
 			get { return sensitive; }
 			set {
 				sensitive = value;
-				UpdateSensitiveStatus (Widget, sensitive && ParentIsSensitive ());
+				UpdateSensitiveStatus (Widget, sensitive && ParentIsSensitive (Widget));
 			}
 		}
 
-		bool ParentIsSensitive ()
+		static bool ParentIsSensitive (NSView view)
 		{
-			IViewObject parent = Widget.Superview as IViewObject;
+			var parent = view.Superview;
+			if ((parent as NSControl)?.Enabled == false)
+				return false;
 			if (parent == null) {
-				var wb = Widget.Window as WindowBackend;
+				var wb = view.Window as WindowBackend;
 				return wb == null || wb.Sensitive;
 			}
-			if (!parent.Backend.Sensitive)
+			if ((parent as IViewObject)?.Backend.Sensitive == false)
 				return false;
-			return parent.Backend.ParentIsSensitive ();
+			return ParentIsSensitive (parent);
 		}
 
 		internal void UpdateSensitiveStatus (NSView view, bool parentIsSensitive)
@@ -231,7 +215,12 @@ namespace Xwt.Mac
 				return Widget.ToolTip;
 			}
 			set {
-				Widget.ToolTip = value;
+				if (value != null)
+					Widget.ToolTip = value;
+				else if (Widget.ToolTip != null) {
+					Widget.ToolTip = string.Empty;
+					Widget.RemoveAllToolTips ();
+				}
 			}
 		}
 		
@@ -248,9 +237,11 @@ namespace Xwt.Mac
 				Cursor = NSCursor.ArrowCursor;
 			else if(cursor == CursorType.Crosshair)
 				Cursor = NSCursor.CrosshairCursor;
-			else if(cursor == CursorType.Hand)
-				Cursor = NSCursor.ClosedHandCursor;
-			else if(cursor == CursorType.IBeam)
+			else if (cursor == CursorType.Hand)
+				Cursor = NSCursor.OpenHandCursor;
+			else if (cursor == CursorType.Hand2)
+				Cursor = NSCursor.PointingHandCursor;
+			else if (cursor == CursorType.IBeam)
 				Cursor = NSCursor.IBeamCursor;
 			else if(cursor == CursorType.ResizeDown)
 				Cursor = NSCursor.ResizeDownCursor;
@@ -269,11 +260,14 @@ namespace Xwt.Mac
 				Cursor = NSCursor.ArrowCursor;
 			else if (cursor == CursorType.Move)
 				Cursor = NSCursor.ClosedHandCursor;
+			else if (cursor == CursorType.DragCopy)
+				Cursor = NSCursor.DragCopyCursor;
+			else if (cursor == CursorType.NotAllowed)
+				Cursor = NSCursor.OperationNotAllowedCursor;
 			else
 				Cursor = NSCursor.ArrowCursor;
-			Widget.DiscardCursorRects();
-			Widget.AddCursorRect(Widget.Bounds, Cursor);
-			Widget.CursorUpdate(new NSEvent());
+			// immediately invalidate cursor rects, if the view is visible
+			ViewObject?.View?.Window?.InvalidateCursorRectsForView(ViewObject.View);
 		}
 		
 		~ViewBackend ()
@@ -447,7 +441,20 @@ namespace Xwt.Mac
 		}
 		
 		#region IWidgetBackend implementation
-		
+
+		public Point ConvertToParentCoordinates (Point widgetCoordinates)
+		{
+			var location =  Widget.WidgetLocation ();
+			location.X += widgetCoordinates.X;
+			location.Y += widgetCoordinates.Y;
+			return location;
+		}
+
+		public Point ConvertToWindowCoordinates (Point widgetCoordinates)
+		{
+			return Widget.ConvertPointToView (widgetCoordinates.ToCGPoint (), null).ToXwtPoint ();
+		}
+
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
 		{
 			var lo = Widget.ConvertPointToView (new CGPoint ((nfloat)widgetCoordinates.X, (nfloat)widgetCoordinates.Y), null);
@@ -525,8 +532,6 @@ namespace Xwt.Mac
 		{	var s = Frontend.Surface.GetPreferredSize ();
 			Widget.SetFrameSize (new CGSize ((nfloat)s.Width, (nfloat)s.Height));
 		}
-
-		NSObject gotFocusObserver;
 		
 		public virtual void EnableEvent (object eventId)
 		{

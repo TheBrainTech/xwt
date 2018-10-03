@@ -25,21 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using Xwt.Backends;
-using Xwt.Drawing;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
-using CGRect = System.Drawing.RectangleF;
-#else
 using AppKit;
 using CoreGraphics;
 using Foundation;
-#endif
+using Xwt.Accessibility;
+using Xwt.Backends;
+using Xwt.Drawing;
 
 namespace Xwt.Mac
 {
@@ -150,20 +141,12 @@ namespace Xwt.Mac
 						Widget.BezelStyle = NSBezelStyle.RegularSquare;
 					else
 						Widget.BezelStyle = NSBezelStyle.Rounded;
-					#if MONOMAC
-					Messaging.void_objc_msgSend_bool (Widget.Handle, selSetShowsBorderOnlyWhileMouseInside.Handle, false);
-					#else
 					Widget.ShowsBorderOnlyWhileMouseInside = false;
-					#endif
 					break;
 				case ButtonStyle.Borderless:
 				case ButtonStyle.Flat:
 					Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
-					#if MONOMAC
-					Messaging.void_objc_msgSend_bool (Widget.Handle, selSetShowsBorderOnlyWhileMouseInside.Handle, true);
-					#else
 					Widget.ShowsBorderOnlyWhileMouseInside = true;
-					#endif
 					break;
 				case ButtonStyle.AlwaysBorderless:
 					Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
@@ -172,23 +155,16 @@ namespace Xwt.Mac
 					break;
 				case ButtonStyle.CompactFlatMomentary:
 					Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
-					#if MONOMAC
-					Messaging.void_objc_msgSend_bool (Widget.Handle, selSetShowsBorderOnlyWhileMouseInside.Handle, true);
-					#else
 					Widget.ShowsBorderOnlyWhileMouseInside = true;
-					#endif
 					break;
 				case ButtonStyle.CompactFlatToggle:
 					Widget.BezelStyle = NSBezelStyle.ShadowlessSquare;
 					Widget.SetButtonType (NSButtonType.OnOff);
+					Widget.ShowsBorderOnlyWhileMouseInside = true;
 					break;
 				}
 			}
 		}
-		
-#if MONOMAC
-		protected static Selector selSetShowsBorderOnlyWhileMouseInside = new Selector ("setShowsBorderOnlyWhileMouseInside:");
-#endif
 
 		public void SetButtonType (ButtonType type)
 		{
@@ -223,20 +199,17 @@ namespace Xwt.Mac
 				}
 			}
 		}
-			
+		
+		bool isDefault;
 		public bool IsDefault {
-			get {
-				return Widget.KeyEquivalent == "\r";
-			}
+			get { return isDefault; }
 			set {
-				if(value == true) {
-					Widget.KeyEquivalent = "\r";
-				} else {
-					Widget.KeyEquivalent = "";
-				}
+				isDefault = value;
+				if (Widget.Window != null && Widget.Window.DefaultButtonCell != Widget.Cell)
+					Widget.Window.DefaultButtonCell = Widget.Cell;
 			}
 		}
-		
+
 		#endregion
 
 		public override Color BackgroundColor {
@@ -272,7 +245,7 @@ namespace Xwt.Mac
 		}
 	}
 	
-	class MacButton: NSButton, IViewObject
+	class MacButton: NSButton, IViewObject, INSAccessibleEventSource
 	{
 		//
 		// This is necessary since the Activated event for NSControl in AppKit does 
@@ -311,9 +284,7 @@ namespace Xwt.Mac
 		public MacButton (IRadioButtonEventSink eventSink, ApplicationContext context)
 		{
 			Activated += delegate {
-				context.InvokeUserCode (delegate {
-					eventSink.OnClicked ();
-				});
+				context.InvokeUserCode (eventSink.OnClicked);
 				OnActivatedInternal ();
 			};
 		}
@@ -330,6 +301,12 @@ namespace Xwt.Mac
 
 		public void DisableEvent (ButtonEvent ev)
 		{
+		}
+
+		public override void ViewDidMoveToWindow ()
+		{
+			if ((Backend as ButtonBackend)?.IsDefault == true && Window != null)
+				Window.DefaultButtonCell = Cell;
 		}
 
 		void OnActivatedInternal ()
@@ -356,6 +333,34 @@ namespace Xwt.Mac
 			}
 		}
 
+		public override bool AllowsVibrancy {
+			get {
+				// we don't support vibrancy
+				if (EffectiveAppearance.AllowsVibrancy)
+					return false;
+				return base.AllowsVibrancy;
+			}
+		}
+
+		NSButtonType buttonType = NSButtonType.MomentaryPushIn;
+		public override void SetButtonType (NSButtonType aType)
+		{
+			buttonType = aType;
+			base.SetButtonType (aType);
+		}
+
+		public override NSAppearance EffectiveAppearance {
+			get {
+				// HACK: if vibrancy is enabled (inside popover) radios/checks don't handle background drawing correctly
+				// FIXME: this fix doesn't work for the vibrant light theme, the label background is wrong if
+				//        the window background is set to a custom color
+				if (base.EffectiveAppearance.AllowsVibrancy &&
+				    (buttonType == NSButtonType.Switch || buttonType == NSButtonType.Radio))
+					Cell.BackgroundStyle = base.EffectiveAppearance.Name.Contains ("Dark") ? NSBackgroundStyle.Dark : NSBackgroundStyle.Light;
+				return base.EffectiveAppearance;
+			}
+		}
+
 		class ColoredButtonCell : NSButtonCell
 		{
 			public Color? Color { get; set; }
@@ -369,8 +374,19 @@ namespace Xwt.Mac
 		public override void KeyUp(NSEvent theEvent) {
 			base.KeyUp(theEvent);
 			//radio button eventSink could be null
-			if (eventSink != null) 
+			if(eventSink != null)
 				eventSink.OnKeyReleased(theEvent.ToXwtKeyEventArgs());
+		}
+
+		public Func<bool> PerformAccessiblePressDelegate { get; set; }
+
+		public override bool AccessibilityPerformPress ()
+		{
+			if (PerformAccessiblePressDelegate != null) {
+				if (PerformAccessiblePressDelegate ())
+					return true;
+			}
+			return base.AccessibilityPerformPress ();
 		}
 	}
 }

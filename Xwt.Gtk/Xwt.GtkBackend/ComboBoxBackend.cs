@@ -96,9 +96,7 @@ namespace Xwt.GtkBackend
 
 		void HandleChanged (object sender, EventArgs e)
 		{
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnSelectionChanged ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnSelectionChanged);
 		}
 
 		#region IComboBoxBackend implementation
@@ -183,6 +181,10 @@ namespace Xwt.GtkBackend
 		}
 
 		public void QueueDraw (object target, Gtk.TreeIter iter)
+		{
+		}
+
+		public void QueueResize (object target, Gtk.TreeIter iter)
 		{
 		}
 

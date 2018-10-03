@@ -1,4 +1,4 @@
-﻿// 
+// 
 // ScrollViewBackend.cs
 //  
 // Author:
@@ -193,7 +193,7 @@ namespace Xwt.WPFBackend
 				case ScrollPolicy.Automatic:
 					return ScrollBarVisibility.Auto;
 				case ScrollPolicy.Never:
-					return ScrollBarVisibility.Hidden;
+					return ScrollBarVisibility.Disabled;
 
 				default:
 					throw new NotSupportedException();
@@ -207,7 +207,7 @@ namespace Xwt.WPFBackend
 					return ScrollPolicy.Automatic;
 				case ScrollBarVisibility.Visible:
 					return ScrollPolicy.Always;
-				case ScrollBarVisibility.Hidden:
+				case ScrollBarVisibility.Disabled:
 					return ScrollPolicy.Never;
 
 				default:

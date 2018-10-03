@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using AppKit;
 
 namespace Xwt.Mac
 {
@@ -31,7 +32,13 @@ namespace Xwt.Mac
 	{
 		CellViewBackend Backend { get; set; }
 		CompositeCell CellContainer { get; set; }
+		NSView CellView { get; }
 		void Fill ();
+	}
+
+	interface ICanvasCellRenderer : ICellRenderer
+	{
+		Size GetRequiredSize (SizeConstraint widthConstraint);
 	}
 	
 	interface ITablePosition

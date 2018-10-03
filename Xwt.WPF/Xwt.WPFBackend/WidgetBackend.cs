@@ -119,6 +119,8 @@ namespace Xwt.WPFBackend
 			}
 		}
 
+		internal bool HasAccessibleObject { get; set; }
+
 		Color? customBackgroundColor;
 
 		public virtual Color BackgroundColor {
@@ -264,6 +266,18 @@ namespace Xwt.WPFBackend
 		public static FrameworkElement GetFrameworkElement (IWidgetBackend backend)
 		{
 			return backend == null ? null : (FrameworkElement)backend.NativeWidget;
+		}
+
+		public Point ConvertToParentCoordinates (Point widgetCoordinates)
+		{
+			var p = Widget.TranslatePoint (widgetCoordinates.ToWpfPoint (), Frontend.Parent.Surface.NativeWidget as UIElement);
+			return p.ToXwtPoint ();
+		}
+
+		public Point ConvertToWindowCoordinates (Point widgetCoordinates)
+		{
+			var p = Widget.TranslatePoint (widgetCoordinates.ToWpfPoint (), GetParentWindow ());
+			return p.ToXwtPoint ();
 		}
 
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
@@ -433,7 +447,7 @@ namespace Xwt.WPFBackend
 				Widget.Cursor = Cursors.Arrow;
 			else if (cursor == CursorType.Crosshair)
 				Widget.Cursor = Cursors.Cross;
-			else if (cursor == CursorType.Hand)
+			else if (cursor == CursorType.Hand || cursor == CursorType.Hand2)
 				Widget.Cursor = Cursors.Hand;
 			else if (cursor == CursorType.IBeam)
 				Widget.Cursor = Cursors.IBeam;
@@ -449,6 +463,10 @@ namespace Xwt.WPFBackend
 				Widget.Cursor = Cursors.SizeWE;
 			else if (cursor == CursorType.ResizeLeftRight)
 				widget.Cursor = Cursors.SizeWE;
+			else if (cursor == CursorType.ResizeNE || cursor == CursorType.ResizeSW)
+				widget.Cursor = Cursors.SizeNESW;
+			else if (cursor == CursorType.ResizeNW || cursor == CursorType.ResizeSE)
+				widget.Cursor = Cursors.SizeNWSE;
 			else if (cursor == CursorType.Move)
 				widget.Cursor = Cursors.SizeAll;
 			else if (cursor == CursorType.Wait)
@@ -457,6 +475,8 @@ namespace Xwt.WPFBackend
 				widget.Cursor = Cursors.Help;
 			else if (cursor == CursorType.Invisible)
 				widget.Cursor = Cursors.None;
+			else if (cursor == CursorType.NotAllowed)
+				widget.Cursor = Cursors.No;
 			else
 				Widget.Cursor = Cursors.Arrow;
 		}
@@ -606,7 +626,7 @@ namespace Xwt.WPFBackend
 		void WidgetKeyDownHandler (object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			KeyEventArgs args;
-			if (MapToXwtKeyArgs (e, out args)) {
+			if (e.MapToXwtKeyArgs (out args)) {
 				Context.InvokeUserCode (delegate {
 					eventSink.OnKeyPressed (args);
 				});
@@ -618,7 +638,7 @@ namespace Xwt.WPFBackend
 		void WidgetKeyUpHandler (object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			KeyEventArgs args;
-			if (MapToXwtKeyArgs (e, out args)) {
+			if (e.MapToXwtKeyArgs (out args)) {
 				Context.InvokeUserCode (delegate
 				{
 					eventSink.OnKeyReleased (args);
@@ -626,18 +646,6 @@ namespace Xwt.WPFBackend
 				if (args.Handled)
 					e.Handled = true;
 			}
-		}
-
-		bool MapToXwtKeyArgs (System.Windows.Input.KeyEventArgs e, out KeyEventArgs result)
-		{
-			result = null;
-
-			var key = KeyboardUtil.TranslateToXwtKey (e.Key);
-			if ((int)key == 0)
-				return false;
-
-			result = new KeyEventArgs (key, (int)e.Key, KeyboardUtil.GetModifiers (), e.IsRepeat, e.Timestamp);
-			return true;
 		}
 
 		void WidgetPreviewTextInputHandler (object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -653,7 +661,7 @@ namespace Xwt.WPFBackend
 
 		void WidgetMouseDownHandler (object o, MouseButtonEventArgs e)
 		{
-			var args = ToXwtButtonArgs (e);
+			var args = e.ToXwtButtonArgs (Widget);
 			Context.InvokeUserCode (delegate () {
 				eventSink.OnButtonPressed (args);
 			});
@@ -661,9 +669,14 @@ namespace Xwt.WPFBackend
 				e.Handled = true;
 		}
 
+		internal void WidgetMouseDownForDragHandler(object o, MouseButtonEventArgs e)
+		{
+			SetupDragRect(e);
+		}
+
 		void WidgetMouseUpHandler (object o, MouseButtonEventArgs e)
 		{
-			var args = ToXwtButtonArgs (e);
+			var args = e.ToXwtButtonArgs (Widget);
 			Context.InvokeUserCode (delegate ()
 			{
 				eventSink.OnButtonReleased (args);
@@ -712,6 +725,11 @@ namespace Xwt.WPFBackend
 			return Widget.GetParentWindow ();
 		}
 
+		private SW.Window GetParentOrMainWindow ()
+		{
+			return Widget.GetParentOrMainWindow ();
+		}
+
 		public void DragStart (DragStartData data)
 		{
 			if (data.Data == null)
@@ -720,7 +738,7 @@ namespace Xwt.WPFBackend
 			DataObject dataObj = data.Data.ToDataObject();
 
 			if (data.ImageBackend != null) {
-				AdornedWindow = GetParentWindow ();
+				AdornedWindow = GetParentOrMainWindow ();
 				AdornedWindow.AllowDrop = true;
 
 				var e = (UIElement)AdornedWindow.Content;
@@ -774,6 +792,7 @@ namespace Xwt.WPFBackend
 			DragDropInfo.TargetTypes = types == null ? new TransferDataType [0] : types;
 			Widget.MouseUp += WidgetMouseUpForDragHandler;
 			Widget.MouseMove += WidgetMouseMoveForDragHandler;
+			Widget.MouseDown += WidgetMouseDownForDragHandler;
 		}
 
 		private void SetupDragRect (MouseEventArgs e)
@@ -784,7 +803,7 @@ namespace Xwt.WPFBackend
 			DragDropInfo.DragRect = new Rect (loc.X - width / 2, loc.Y - height / 2, width, height);
 		}
 
-		void WidgetMouseUpForDragHandler (object o, EventArgs e)
+		internal void WidgetMouseUpForDragHandler (object o, EventArgs e)
 		{
 			DragDropInfo.DragRect = Rect.Empty;
 		}
@@ -797,7 +816,7 @@ namespace Xwt.WPFBackend
 				return;
 
 			if (DragDropInfo.DragRect.IsEmpty)
-				SetupDragRect (e);
+				return;
 
 			if (DragDropInfo.DragRect.Contains (e.GetPosition (Widget)))
 				return;
@@ -903,7 +922,7 @@ namespace Xwt.WPFBackend
 		void WidgetDragOverHandler (object sender, System.Windows.DragEventArgs e)
 		{
 			if (Adorner != null) {
-				var w = GetParentWindow ();
+                var w = GetParentOrMainWindow ();
 				if (w == null) {
 					return;
 				}

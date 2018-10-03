@@ -24,36 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 using System;
-using Xwt.Backends;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-using CGSize = System.Drawing.SizeF;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-#else
-using Foundation;
 using AppKit;
 using CoreGraphics;
-#endif
+using Foundation;
+using ObjCRuntime;
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
-	class CompositeCell: NSCell, ICopiableObject, ICellDataSource
+	class CompositeCell : NSView, ICopiableObject, ICellDataSource, INSCopying
 	{
 		ICellSource source;
 		NSObject val;
 		List<ICellRenderer> cells = new List<ICellRenderer> ();
-		Orientation direction;
-		NSCell trackingCell;
 		ITablePosition tablePosition;
 		ApplicationContext context;
 
@@ -63,21 +49,19 @@ namespace Xwt.Mac
 			}
 		}
 
-		static CompositeCell ()
-		{
-			Util.MakeCopiable<CompositeCell> ();
-		}
-
-		public CompositeCell (ApplicationContext context, Orientation dir, ICellSource source)
+		public CompositeCell (ApplicationContext context, ICellSource source)
 		{
 			if (source == null)
-				throw new ArgumentNullException ("source");
-			direction = dir;
+				throw new ArgumentNullException (nameof (source));
 			this.context = context;
 			this.source = source;
 		}
-		
-		public CompositeCell (IntPtr p): base (p)
+
+		public CompositeCell (IntPtr p) : base (p)
+		{
+		}
+
+		CompositeCell ()
 		{
 		}
 
@@ -104,47 +88,69 @@ namespace Xwt.Mac
 			source.SetCurrentEventRow (tablePosition.Position);
 		}
 
-#if !MONOMAC
-		public override NSObject Copy (NSZone zone)
+		bool recalculatingHeight = false;
+		public void InvalidateRowHeight ()
 		{
-			var ob = (ICopiableObject) base.Copy (zone);
-			ob.CopyFrom (this);
-			return (NSObject) ob;
+			if (tablePosition != null && !recalculatingHeight) {
+				recalculatingHeight = true;
+				source.InvalidateRowHeight (tablePosition.Position);
+				recalculatingHeight = false;
+			}
 		}
-#endif
+
+		public double GetRequiredHeightForWidth (double width)
+		{
+			Fill (false);
+			double height = 0;
+			foreach (var c in GetCells (new CGSize (width, -1)))
+				height = Math.Max (height, c.Frame.Height);
+			return height;
+		}
+
+		public override NSObject Copy ()
+		{
+			var ob = (ICopiableObject)base.Copy ();
+			ob.CopyFrom (this);
+			return (NSObject)ob;
+		}
+
+		NSObject INSCopying.Copy (NSZone zone)
+		{
+			var ob = (ICopiableObject)new CompositeCell ();
+			ob.CopyFrom (this);
+			return (NSObject)ob;
+		}
 
 		void ICopiableObject.CopyFrom (object other)
 		{
 			var ob = (CompositeCell)other;
 			if (ob.source == null)
 				throw new ArgumentException ("Cannot copy from a CompositeCell with a null `source`");
+			Identifier = ob.Identifier;
 			context = ob.context;
 			source = ob.source;
-			val = ob.val;
-			tablePosition = ob.tablePosition;
-			direction = ob.direction;
-			trackingCell = ob.trackingCell;
 			cells = new List<ICellRenderer> ();
 			foreach (var c in ob.cells) {
-				var copy = (ICellRenderer) Activator.CreateInstance (c.GetType ());
+				var copy = (ICellRenderer)Activator.CreateInstance (c.GetType ());
 				copy.CopyFrom (c);
 				AddCell (copy);
 			}
 			if (tablePosition != null)
-				Fill ();
+				Fill (false);
 		}
-		
-		public override NSObject ObjectValue {
+
+		public virtual NSObject ObjectValue {
+			[Export ("objectValue")]
 			get {
 				return val;
 			}
+			[Export ("setObjectValue:")]
 			set {
 				val = value;
 				if (val is ITablePosition) {
-					tablePosition = (ITablePosition) val;
+					tablePosition = (ITablePosition)val;
 					Fill ();
-				}
-				else if (val is NSNumber) {
+				} else if (val is NSNumber) {
 					tablePosition = new TableRow () {
 						Row = ((NSNumber)val).Int32Value
 					};
@@ -154,169 +160,202 @@ namespace Xwt.Mac
 			}
 		}
 
-		public override bool IsOpaque {
-			get {
-				var b = base.IsOpaque;
-				return true;
-			}
+		internal ITablePosition TablePosition {
+			get { return tablePosition; }
 		}
-		
+
 		public void AddCell (ICellRenderer cell)
 		{
 			cell.CellContainer = this;
 			cells.Add (cell);
+			AddSubview ((NSView)cell);
 		}
-		
-		public void Fill ()
+
+		public void ClearCells ()
+		{
+			foreach (NSView cell in cells) {
+				cell.RemoveFromSuperview ();
+			}
+			cells.Clear ();
+		}
+
+		public override CGRect Frame {
+			get { return base.Frame; }
+			set {
+				var oldSize = base.Frame.Size;
+				base.Frame = value;
+				if (oldSize != value.Size && tablePosition != null) {
+					Fill(false);
+					double height = 0;
+					foreach (var c in GetCells (value.Size)) {
+						c.Cell.Frame = c.Frame;
+						c.Cell.NeedsDisplay = true;
+						height = Math.Max (height, c.Frame.Height);
+					}
+					if (Math.Abs(value.Height - height) > double.Epsilon)
+						InvalidateRowHeight ();
+					
+				}
+			}
+		}
+
+		public void Fill (bool reallocateCells = true)
 		{
 			foreach (var c in cells) {
-				c.Backend.CurrentCell = (NSCell) c;
-				c.Backend.CurrentPosition = tablePosition;
-				c.Backend.Frontend.Load (this);
+				c.Backend.Load (c);
 				c.Fill ();
 			}
+			if (!reallocateCells || Frame.IsEmpty)
+				return;
 
-			var s = CellSize;
+			foreach (var c in GetCells (Frame.Size)) {
+				c.Cell.Frame = c.Frame;
+				c.Cell.NeedsDisplay = true;
+			}
 		}
 
-		IEnumerable<ICellRenderer> VisibleCells {
-			get { return cells.Where (c => c.Backend.Frontend.Visible); }
+		public NSView GetCellViewForBackend (ICellViewBackend backend)
+		{
+			return cells.FirstOrDefault (c => c.Backend == backend) as NSView;
 		}
 
 		CGSize CalcSize ()
 		{
 			nfloat w = 0;
 			nfloat h = 0;
-			foreach (NSCell c in VisibleCells) {
-				var s = c.CellSize;
-				if (direction == Orientation.Horizontal) {
-					w += s.Width;
-					if (s.Height > h)
-						h = s.Height;
-				} else {
-					h += s.Height;
-					if (s.Width > w)
-						w = s.Width;
-				}
+			foreach (var cell in cells) {
+				if (!cell.Backend.Frontend.Visible)
+					continue;
+				var c = (NSView)cell;
+				var s = c.FittingSize;
+				w += s.Width;
+				if (s.Height > h)
+					h = s.Height;
 			}
 			return new CGSize (w, h);
 		}
 
-		public override CGSize CellSizeForBounds (CGRect bounds)
-		{
-			return CalcSize ();
-		}
-
-		public override NSBackgroundStyle BackgroundStyle {
+		public override CGSize FittingSize {
 			get {
-				return base.BackgroundStyle;
-			}
-			set {
-				base.BackgroundStyle = value;
-				foreach (NSCell c in cells)
-					c.BackgroundStyle = value;
+				return CalcSize ();
 			}
 		}
-		
-		public override NSCellStateValue State {
+
+		static readonly Selector selSetBackgroundStyle = new Selector ("setBackgroundStyle:");
+
+		NSBackgroundStyle backgroundStyle;
+
+		public virtual NSBackgroundStyle BackgroundStyle {
+			[Export ("backgroundStyle")]
 			get {
-				return base.State;
+				return backgroundStyle;
 			}
+			[Export ("setBackgroundStyle:")]
 			set {
-				base.State = value;
-				foreach (NSCell c in cells)
-					c.State = value;
+				backgroundStyle = value;
+				foreach (NSView cell in cells)
+					if (cell.RespondsToSelector (selSetBackgroundStyle)) {
+						if (IntPtr.Size == 8)
+							Messaging.void_objc_msgSend_Int64 (cell.Handle, selSetBackgroundStyle.Handle, (long)value);
+						else
+							Messaging.void_objc_msgSend_int (cell.Handle, selSetBackgroundStyle.Handle, (int)value);
+					} else
+						cell.NeedsDisplay = true;
 			}
 		}
 		
-		public override bool Highlighted {
-			get {
-				return base.Highlighted;
-			}
-			set {
-				base.Highlighted = value;
-				foreach (NSCell c in cells)
-					c.Highlighted = value;
-			}
-		}
-		
-		public override void DrawInteriorWithFrame (CGRect cellFrame, NSView inView)
+		List <CellPos> GetCells (CGSize cellSize)
 		{
-			foreach (CellPos cp in GetCells(cellFrame))
-				cp.Cell.DrawInteriorWithFrame (cp.Frame, inView);
-		}
-		
-		public override void Highlight (bool flag, CGRect withFrame, NSView inView)
-		{
-			foreach (CellPos cp in GetCells(withFrame)) {
-				cp.Cell.Highlight (flag, cp.Frame, inView);
-			}
-		}
-		
-		public override NSCellHit HitTest (NSEvent forEvent, CGRect inRect, NSView ofView)
-		{
-			foreach (CellPos cp in GetCells(inRect)) {
-				var h = cp.Cell.HitTest (forEvent, cp.Frame, ofView);
-				if (h != NSCellHit.None)
-					return h;
-			}
-			return NSCellHit.None;
-		}
+			int nexpands = 0;
+			double requiredSize = 0;
+			double availableSize = cellSize.Width;
 
-		public override bool TrackMouse (NSEvent theEvent, CGRect cellFrame, NSView controlView, bool untilMouseUp)
-		{
-			var c = GetHitCell (theEvent, cellFrame, controlView);
-			if (c != null)
-				return c.Cell.TrackMouse (theEvent, c.Frame, controlView, untilMouseUp);
-			else
-				return base.TrackMouse (theEvent, cellFrame, controlView, untilMouseUp);
-		}
+			var cellFrames = new List<CellPos> (cells.Count);
 
-		public CGRect GetCellRect (CGRect cellFrame, NSCell cell)
-		{
-			foreach (var c in GetCells (cellFrame)) {
-				if (c.Cell == cell)
-					return c.Frame;
+			// Get the natural size of each child
+			foreach (var cell in cells) {
+				if (!cell.Backend.Frontend.Visible)
+					continue;
+				var cellPos = new CellPos { Cell = (NSView)cell, Frame = CGRect.Empty };
+				cellFrames.Add (cellPos);
+				var size = cellPos.Cell.FittingSize;
+				cellPos.Frame.Width = size.Width;
+				requiredSize += size.Width;
+				if (cell.Backend.Frontend.Expands)
+					nexpands++;
 			}
-			return CGRect.Empty;
-		}
 
-		CellPos GetHitCell (NSEvent theEvent, CGRect cellFrame, NSView controlView)
-		{
-			foreach (CellPos cp in GetCells(cellFrame)) {
-				var h = cp.Cell.HitTest (theEvent, cp.Frame, controlView);
-				if (h != NSCellHit.None)
-					return cp;
-			}
-			return null;
-		}
-		
-		IEnumerable<CellPos> GetCells (CGRect cellFrame)
-		{
-			if (direction == Orientation.Horizontal) {
-				foreach (NSCell c in VisibleCells) {
-					var s = c.CellSize;
-					var w = (nfloat) Math.Min ((nfloat)cellFrame.Width, (nfloat)s.Width);
-					var f = new CGRect (cellFrame.X, cellFrame.Y, w, cellFrame.Height);
-					cellFrame.X += w;
-					cellFrame.Width -= w;
-					yield return new CellPos () { Cell = c, Frame = f };
-				}
-			} else {
-				nfloat y = cellFrame.Y;
-				foreach (NSCell c in VisibleCells) {
-					var s = c.CellSize;
-					var f = new CGRect (cellFrame.X, y, s.Width, cellFrame.Height);
-					y += s.Height;
-					yield return new CellPos () { Cell = c, Frame = f };
+			double remaining = availableSize - requiredSize;
+			if (remaining > 0) {
+				var expandRemaining = new SizeSplitter (remaining, nexpands);
+				foreach (var cellFrame in cellFrames) {
+					if (((ICellRenderer)cellFrame.Cell).Backend.Frontend.Expands)
+						cellFrame.Frame.Width += (nfloat)expandRemaining.NextSizePart ();
 				}
 			}
+
+			double x = 0;
+			foreach (var cellFrame in cellFrames) {
+				var width = cellFrame.Frame.Width;
+				var canvas = cellFrame.Cell as ICanvasCellRenderer;
+				var height = (canvas != null) ? canvas.GetRequiredSize (SizeConstraint.WithSize (width)).Height : cellFrame.Cell.FittingSize.Height;
+				// y-align only if the cell has a valid height, otherwise we're just recalculating the required size
+				var y = cellSize.Height > 0 ? (cellSize.Height - height) / 2 : 0;
+				cellFrame.Frame = new CGRect (x, y, width, height);
+				x += width;
+			}
+			return cellFrames;
 		}
-		
+
 		class CellPos
 		{
-			public NSCell Cell;
+			public NSView Cell;
 			public CGRect Frame;
+		}
+
+		class SizeSplitter
+		{
+			int rem;
+			int part;
+
+			public SizeSplitter (double total, int numParts)
+			{
+				if (numParts > 0)
+				{
+					part = ((int)total) / numParts;
+					rem = ((int)total) % numParts;
+				}
+			}
+
+			public double NextSizePart ()
+			{
+				if (rem > 0)
+				{
+					rem--;
+					return part + 1;
+				} else
+					return part;
+			}
+		}
+
+		bool isDisposed;
+
+		public bool IsDisposed {
+			get {
+				try {
+					// Cocoa may dispose the native view in NSView based table mode
+					// in this case Handle and SuperHandle will become Zero.
+					return isDisposed || Handle == IntPtr.Zero || SuperHandle == IntPtr.Zero;
+				} catch {
+					return true;
+				}
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			isDisposed = true;
+			base.Dispose(disposing);
 		}
 	}
 }

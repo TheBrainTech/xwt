@@ -26,19 +26,9 @@
 // THE SOFTWARE.
 
 using System;
-using Xwt.Backends;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.CoreGraphics;
-using MonoMac.AppKit;
-using CGRect = System.Drawing.RectangleF;
-using CGSize = System.Drawing.SizeF;
-#else
 using AppKit;
 using CoreGraphics;
-#endif
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
@@ -103,66 +93,43 @@ namespace Xwt.Mac
 
 		public override void UpdateTrackingAreas ()
 		{
-			if (trackingArea != null) {
-				RemoveTrackingArea (trackingArea);
-				trackingArea.Dispose ();
-			}
-			CGRect viewBounds = this.Bounds;
-			var options = NSTrackingAreaOptions.MouseMoved | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.MouseEnteredAndExited;
-			trackingArea = new NSTrackingArea (viewBounds, options, this, null);
-			AddTrackingArea (trackingArea);
+			this.UpdateEventTrackingArea (ref trackingArea);
 		}
 
 		public override void RightMouseDown (NSEvent theEvent)
 		{
-			var p = ConvertPointFromView (theEvent.LocationInWindow, null);
-			ButtonEventArgs args = new ButtonEventArgs ();
-			args.X = p.X;
-			args.Y = p.Y;
-			args.Button = PointerButton.Right;
-			args.MultiplePress = (int)theEvent.ClickCount;
-			context.InvokeUserCode (delegate {
-				eventSink.OnButtonPressed (args);
-			});
+			if (!this.HandleMouseDown (theEvent))
+				base.RightMouseDown (theEvent);
 		}
 
 		public override void RightMouseUp (NSEvent theEvent)
 		{
-			var p = ConvertPointFromView (theEvent.LocationInWindow, null);
-			ButtonEventArgs args = new ButtonEventArgs ();
-			args.X = p.X;
-			args.Y = p.Y;
-			args.Button = PointerButton.Right;
-			args.MultiplePress = (int)theEvent.ClickCount;
-			context.InvokeUserCode (delegate {
-				eventSink.OnButtonReleased (args);
-			});
+			if (!this.HandleMouseUp (theEvent))
+				base.RightMouseUp (theEvent);
 		}
 
 		public override void MouseDown (NSEvent theEvent)
 		{
-			var p = ConvertPointFromView (theEvent.LocationInWindow, null);
-			ButtonEventArgs args = new ButtonEventArgs ();
-			args.X = p.X;
-			args.Y = p.Y;
-			args.Button = PointerButton.Left;
-			args.MultiplePress = (int)theEvent.ClickCount;
-			context.InvokeUserCode (delegate {
-				eventSink.OnButtonPressed (args);
-			});
+			if (!this.HandleMouseDown (theEvent))
+				base.MouseDown (theEvent);
 		}
 
 		public override void MouseUp (NSEvent theEvent)
 		{
-			var p = ConvertPointFromView (theEvent.LocationInWindow, null);
-			ButtonEventArgs args = new ButtonEventArgs ();
-			args.X = p.X;
-			args.Y = p.Y;
-			args.Button = (PointerButton) (int)theEvent.ButtonNumber + 1;
-			args.MultiplePress = (int)theEvent.ClickCount;
-			context.InvokeUserCode (delegate {
-				eventSink.OnButtonReleased (args);
-			});
+			if (!this.HandleMouseUp (theEvent))
+				base.MouseUp (theEvent);
+		}
+
+		public override void OtherMouseDown (NSEvent theEvent)
+		{
+			if (!this.HandleMouseDown (theEvent))
+				base.OtherMouseDown (theEvent);
+		}
+
+		public override void OtherMouseUp (NSEvent theEvent)
+		{
+			if (!this.HandleMouseUp (theEvent))
+				base.OtherMouseUp (theEvent);
 		}
 
 		public override void OtherMouseDown(NSEvent theEvent) {
@@ -211,63 +178,47 @@ namespace Xwt.Mac
 
 		public override void MouseEntered (NSEvent theEvent)
 		{
-			context.InvokeUserCode (delegate {
-				eventSink.OnMouseEntered ();
-			});
+			this.HandleMouseEntered (theEvent);
 		}
 
 		public override void MouseExited (NSEvent theEvent)
 		{
-			context.InvokeUserCode (delegate {
-				eventSink.OnMouseExited ();
-			});
+			this.HandleMouseExited (theEvent);
 		}
 
 		public override void MouseMoved (NSEvent theEvent)
 		{
-			var p = ConvertPointFromView (theEvent.LocationInWindow, null);
-			MouseMovedEventArgs args = new MouseMovedEventArgs ((long) TimeSpan.FromSeconds (theEvent.Timestamp).TotalMilliseconds, p.X, p.Y);
-			context.InvokeUserCode (delegate {
-				eventSink.OnMouseMoved (args);
-			});
+			if (!this.HandleMouseMoved (theEvent))
+				base.MouseMoved (theEvent);
+		}
+
+		public override void RightMouseDragged (NSEvent theEvent)
+		{
+			if (!this.HandleMouseMoved (theEvent))
+				base.RightMouseDragged (theEvent);
 		}
 
 		public override void MouseDragged (NSEvent theEvent)
 		{
-			var p = ConvertPointFromView (theEvent.LocationInWindow, null);
-			MouseMovedEventArgs args = new MouseMovedEventArgs ((long) TimeSpan.FromSeconds (theEvent.Timestamp).TotalMilliseconds, p.X, p.Y);
-			context.InvokeUserCode (delegate {
-				eventSink.OnMouseMoved (args);
-			});
+			if (!this.HandleMouseMoved (theEvent))
+				base.MouseDragged (theEvent);
+		}
+
+		public override void OtherMouseDragged (NSEvent theEvent)
+		{
+			if (!this.HandleMouseMoved (theEvent))
+				base.OtherMouseDragged (theEvent);
 		}
 
 		public override void KeyDown (NSEvent theEvent)
 		{
-			var keyArgs = theEvent.ToXwtKeyEventArgs ();
-			context.InvokeUserCode (delegate {
-				eventSink.OnKeyPressed (keyArgs);
-			});
-			if (keyArgs.Handled)
-				return;
-
-			var textArgs = new TextInputEventArgs (theEvent.Characters);
-			if (!String.IsNullOrEmpty(theEvent.Characters))
-				context.InvokeUserCode (delegate {
-					eventSink.OnTextInput (textArgs);
-				});
-			if (textArgs.Handled)
-				return;
-
-			base.KeyDown (theEvent);
+			if (!this.HandleKeyDown (theEvent))
+				base.KeyDown (theEvent);
 		}
 
 		public override void KeyUp (NSEvent theEvent)
 		{
-			var keyArgs = theEvent.ToXwtKeyEventArgs ();
-			context.InvokeUserCode (delegate {
-				eventSink.OnKeyReleased (keyArgs);
-			});
-			if (!keyArgs.Handled)
+			if (!this.HandleKeyUp (theEvent))
 				base.KeyUp (theEvent);
 		}
 
@@ -276,9 +227,7 @@ namespace Xwt.Mac
 			bool changed = !newSize.Equals (Frame.Size);
 			base.SetFrameSize (newSize);
 			if (changed) {
-				context.InvokeUserCode (delegate {
-					eventSink.OnBoundsChanged ();
-				});
+				context.InvokeUserCode (eventSink.OnBoundsChanged);
 			}
 		}
 

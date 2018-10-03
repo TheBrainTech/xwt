@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,11 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
+    <LangVersion>6</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <XamMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll</XamMacPath>
+    <XamMacPath Condition="Exists('$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\Xamarin.Mac\v2.0\Xamarin.Mac.dll')">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\Xamarin.Mac\v2.0\Xamarin.Mac.dll</XamMacPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -38,7 +44,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="Xamarin.Mac">
-      <HintPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll</HintPath>
+      <HintPath>$(XamMacPath)</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +135,11 @@
     <Compile Include="Xwt.Mac\SelectFontDialogBackend.cs" />
     <Compile Include="Xwt.Mac\NSApplicationInitializer.cs" />
     <Compile Include="Xwt.Mac\SelectColorDialogBackend.cs" />
+    <Compile Include="Xwt.Mac.CellViews\RadioButtonTableCell.cs" />
+    <Compile Include="Xwt.Mac\GtkQuartz.cs" />
+    <Compile Include="Xwt.Mac\AccessibleBackend.cs" />
+    <Compile Include="Xwt.Mac\PopupWindowBackend.cs" />
+    <Compile Include="Xwt.Mac\SearchTextEntryBackend.cs" />
   </ItemGroup>
   <Import Project="..\BuildHelpers.targets" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

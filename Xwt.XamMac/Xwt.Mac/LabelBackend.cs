@@ -25,21 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using Xwt.Backends;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreGraphics;
-#else
 using AppKit;
-using ObjCRuntime;
 using CoreGraphics;
-#endif
+using Foundation;
+using ObjCRuntime;
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
@@ -102,8 +92,16 @@ namespace Xwt.Mac
 
 		public void SetFormattedText (FormattedText text)
 		{
+			// HACK: wrapping needs to be enabled in order to display Attributed string correctly on Mac
+			if (Wrap == WrapMode.None)
+				Wrap = WrapMode.Character;
 			Widget.AllowsEditingTextAttributes = true;
-			Widget.AttributedStringValue = text.ToAttributedString ();
+			if (TextAlignment == Alignment.Start)
+				Widget.AttributedStringValue = text.ToAttributedString ();
+			else
+				Widget.AttributedStringValue = text.ToAttributedString ().WithAlignment (Widget.Alignment);
+
+			ResetFittingSize ();
 		}
 
 		public Xwt.Drawing.Color TextColor {
@@ -117,6 +115,8 @@ namespace Xwt.Mac
 			}
 			set {
 				Widget.Alignment = value.ToNSTextAlignment ();
+				if (Widget.AttributedStringValue != null)
+					Widget.AttributedStringValue = (Widget.AttributedStringValue.MutableCopy () as NSMutableAttributedString).WithAlignment (Widget.Alignment);
 			}
 		}
 		
@@ -227,11 +227,7 @@ namespace Xwt.Mac
 			if (expandVertically)
 				Child.Frame = new CGRect (0, 0, Frame.Width, Frame.Height);
 			else {
-#if MONOMAC
-				Child.Frame = new System.Drawing.RectangleF (0, (Frame.Height - Child.Frame.Height) / 2, Frame.Width, Child.Frame.Height);
-#else
 				Child.Frame = new CGRect (0, (Frame.Height - Child.Frame.Height) / 2, Frame.Width, Child.Frame.Height);
-#endif
 			}
 			Child.NeedsDisplay = true;
 		}
@@ -268,11 +264,44 @@ namespace Xwt.Mac
 		{
 			return false;
 		}
+
+		public override bool AllowsVibrancy {
+			get {
+				// we don't support vibrancy
+				if (EffectiveAppearance.AllowsVibrancy)
+					return false;
+				return base.AllowsVibrancy;
+			}
+		}
 	}
 
 	class CustomTextFieldCell: NSTextFieldCell
 	{
 		CGColor bgColor;
+
+		public CustomTextFieldCell ()
+		{
+		}
+
+		protected CustomTextFieldCell (IntPtr ptr) : base (ptr)
+		{
+		}
+
+		/// <summary>
+		/// Like what happens for the ios designer, AppKit can sometimes clone the native `NSTextFieldCell` using the Copy (NSZone)
+		/// method. We *need* to ensure we can create a new managed wrapper for the cloned native object so we need the IntPtr
+		/// constructor. NOTE: By keeping this override in managed we ensure the new wrapper C# object is created ~immediately,
+		/// which makes it easier to debug issues.
+		/// </summary>
+		/// <returns>The copy.</returns>
+		/// <param name="zone">Zone.</param>
+		public override NSObject Copy(NSZone zone)
+		{
+			// Don't remove this override because the comment on this explains why we need this!
+			var newCell = (CustomTextFieldCell)base.Copy(zone);
+			newCell.bgColor = bgColor;
+			return newCell;
+		}
 
 		public void SetBackgroundColor (CGColor c)
 		{

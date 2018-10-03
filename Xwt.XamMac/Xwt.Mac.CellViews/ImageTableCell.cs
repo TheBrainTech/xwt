@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ImageTableCell.cs
 //  
 // Author:
@@ -25,61 +25,137 @@
 // THE SOFTWARE.
 
 using System;
-
-using Xwt.Drawing;
-using Xwt.Backends;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using CGSize = System.Drawing.SizeF;
-using MonoMac.AppKit;
-#else
-using Foundation;
 using AppKit;
 using CoreGraphics;
-#endif
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
-	class ImageTableCell: NSImageCell, ICellRenderer
+	class ImageTableCell : NSImageView, ICellRenderer
 	{
-		public ImageTableCell ()
-		{
-		}
-		
-		public ImageTableCell (IntPtr p): base (p)
-		{
-		}
-		
+		NSTrackingArea trackingArea;
+
 		IImageCellViewFrontend Frontend {
-			get { return (IImageCellViewFrontend) Backend.Frontend; }
+			get { return (IImageCellViewFrontend)Backend.Frontend; }
 		}
 
 		public CellViewBackend Backend { get; set; }
 
 		public CompositeCell CellContainer { get; set; }
 
+		public NSView CellView { get { return this; } }
+
 		public void Fill ()
 		{
-			ObjectValue = Frontend.Image.ToImageDescription (CellContainer.Context).ToNSImage ();
+			if (Frontend.Image != null) {
+				Image = Frontend.Image.ToImageDescription (Backend.Context).ToNSImage ();
+				SetFrameSize (Image.Size);
+			} else
+				SetFrameSize (CoreGraphics.CGSize.Empty);
+			Hidden = !Frontend.Visible;
 		}
-		
-		public override CGSize CellSize {
+
+		public override CoreGraphics.CGSize FittingSize {
 			get {
-				NSImage img = ObjectValue as NSImage;
-				if (img != null)
-					return img.Size;
-				else
-					return base.CellSize;
+				if (Image == null)
+					return CGSize.Empty;
+				return Image.Size;
 			}
 		}
-		
+
+		public override void SizeToFit()
+		{
+			if (Frame.Size.IsEmpty && Image != null)
+				SetFrameSize (Image.Size);
+		}
+
 		public void CopyFrom (object other)
 		{
 			var ob = (ImageTableCell)other;
 			Backend = ob.Backend;
 		}
+
+		public override void UpdateTrackingAreas ()
+		{
+			if (trackingArea != null) {
+				RemoveTrackingArea (trackingArea);
+				trackingArea.Dispose ();
+			}
+			var options = NSTrackingAreaOptions.MouseMoved | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.MouseEnteredAndExited;
+			trackingArea = new NSTrackingArea (Bounds, options, this, null);
+			AddTrackingArea (trackingArea);
+		}
+
+		public override void RightMouseDown (NSEvent theEvent)
+		{
+			if (!this.HandleMouseDown (theEvent))
+				base.RightMouseDown (theEvent); 
+		}
+
+		public override void RightMouseUp (NSEvent theEvent)
+		{
+			if (!this.HandleMouseUp (theEvent))
+				base.RightMouseUp (theEvent); 
+		}
+
+		public override void MouseDown (NSEvent theEvent)
+		{
+			if (!this.HandleMouseDown (theEvent))
+				base.MouseDown (theEvent); 
+		}
+
+		public override void MouseUp (NSEvent theEvent)
+		{
+			if (!this.HandleMouseUp (theEvent))
+				base.MouseUp (theEvent); 
+		}
+
+		public override void OtherMouseDown (NSEvent theEvent)
+		{
+			if (!this.HandleMouseDown (theEvent))
+				base.OtherMouseDown (theEvent);
+		}
+
+		public override void OtherMouseUp (NSEvent theEvent)
+		{
+			if (!this.HandleMouseUp (theEvent))
+				base.OtherMouseUp (theEvent);
+		}
+
+		public override void MouseEntered (NSEvent theEvent)
+		{
+			this.HandleMouseEntered (theEvent);
+				base.MouseEntered (theEvent);
+		}
+
+		public override void MouseExited (NSEvent theEvent)
+		{
+			this.HandleMouseExited (theEvent);
+				base.MouseExited (theEvent);
+		}
+
+		public override void MouseMoved (NSEvent theEvent)
+		{
+			if (!this.HandleMouseMoved (theEvent))
+				base.MouseMoved (theEvent);
+		}
+
+		public override void MouseDragged (NSEvent theEvent)
+		{
+			if (!this.HandleMouseMoved (theEvent))
+				base.MouseDragged (theEvent);
+		}
+
+		public override void KeyDown (NSEvent theEvent)
+		{
+			if (!this.HandleKeyDown (theEvent))
+				base.KeyDown (theEvent);
+		}
+
+		public override void KeyUp (NSEvent theEvent)
+		{
+			if (!this.HandleKeyUp (theEvent))
+				base.KeyUp (theEvent);
+		}
 	}
 }
-

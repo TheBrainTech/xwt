@@ -134,6 +134,15 @@ namespace Xwt.GtkBackend
 			}
 		}
 
+		public string TooltipText {
+			get {
+				return item.TooltipText;
+			}
+			set {
+				item.TooltipText = value;
+			}
+		}
+
 		public bool UseMnemonic {
 			get { return label.UseUnderline; }
 			set { label.UseUnderline = value; }
@@ -245,9 +254,7 @@ namespace Xwt.GtkBackend
 		void HandleItemActivated (object sender, EventArgs e)
 		{
 			if (!changingCheck) {
-				context.InvokeUserCode (delegate {
-					eventSink.OnClicked ();
-				});
+				context.InvokeUserCode (eventSink.OnClicked);
 			}
 		}
 	}

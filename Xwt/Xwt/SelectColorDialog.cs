@@ -86,10 +86,13 @@ namespace Xwt
 		/// </summary>
 		public bool Run (WindowFrame parentWindow, Action<Color> colorChangedCallback)
 		{
-			if(backend.Color != Colors.Transparent) {
+			if(backend.Color != Colors.Transparent)
 				backend.Color = backend.Color;
-			}
-			return backend.Run((IWindowFrameBackend)Toolkit.CurrentEngine.GetSafeBackend(parentWindow), title, supportsAlpha, colorChangedCallback);
+			bool result = false;
+			Toolkit.CurrentEngine.InvokePlatformCode(delegate {
+				result = backend.Run((IWindowFrameBackend)Toolkit.GetBackend(parentWindow), title, supportsAlpha, colorChangedCallback);
+			});
+			return result;
 		}
 
 		public Size Size {

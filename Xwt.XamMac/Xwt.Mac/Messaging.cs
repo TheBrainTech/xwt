@@ -23,18 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Runtime.InteropServices;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-#else
 using Foundation;
-using AppKit;
-#endif
 
 namespace Xwt.Mac
 {
@@ -65,5 +57,23 @@ namespace Xwt.Mac
 
 		[DllImport (LIBOBJC_DYLIB, EntryPoint="objc_msgSend")]
 		public static extern void void_objc_msgSend_bool (IntPtr handle, IntPtr sel, bool a1);
+
+		//[DllImport (LIBOBJC_DYLIB, EntryPoint = "objc_msgSend")]
+		//public static extern long Int64_objc_msgSend (IntPtr receiver, IntPtr selector);
+
+		//[DllImport (LIBOBJC_DYLIB, EntryPoint = "objc_msgSend")]
+		//public static extern int int_objc_msgSend (IntPtr receiver, IntPtr selector);
+
+		[DllImport (LIBOBJC_DYLIB, EntryPoint = "objc_msgSend")]
+		public static extern void void_objc_msgSend_int (IntPtr receiver, IntPtr selector, int arg1);
+
+		[DllImport (LIBOBJC_DYLIB, EntryPoint = "objc_msgSend")]
+		public static extern void void_objc_msgSend_Int64 (IntPtr receiver, IntPtr selector, long arg1);
+
+		//[DllImport (LIBOBJC_DYLIB, EntryPoint = "objc_msgSendSuper")]
+		//public static extern void void_objc_msgSendSuper_int (IntPtr receiver, IntPtr selector, int arg1);
+
+		//[DllImport (LIBOBJC_DYLIB, EntryPoint = "objc_msgSendSuper")]
+		//public static extern void void_objc_msgSendSuper_Int64 (IntPtr receiver, IntPtr selector, long arg1);
 	}
 }

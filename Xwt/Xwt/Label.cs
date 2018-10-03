@@ -77,6 +77,7 @@ namespace Xwt
 				markup = value;
 				var t = FormattedText.FromMarkup (markup);
 				Backend.SetFormattedText (t);
+				OnPreferredSizeChanged ();
 			}
 		}
 

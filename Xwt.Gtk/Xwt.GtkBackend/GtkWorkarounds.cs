@@ -554,11 +554,11 @@ namespace Xwt.GtkBackend
 		
 		//introduced in GTK 2.20
 		[DllImport (GtkInterop.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
-		extern static bool gdk_keymap_add_virtual_modifiers (IntPtr keymap, ref Gdk.ModifierType state);
+		extern static void gdk_keymap_add_virtual_modifiers (IntPtr keymap, ref Gdk.ModifierType state);
 		
 		//Custom patch in Mono Mac w/GTK+ 2.24.8+
 		[DllImport (GtkInterop.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
-		extern static bool gdk_quartz_set_fix_modifiers (bool fix);
+		extern static void gdk_quartz_set_fix_modifiers (bool fix);
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		static Dictionary<ulong,MappedKeys> mappedKeys = new Dictionary<ulong,MappedKeys> ();
@@ -1294,6 +1294,11 @@ namespace Xwt.GtkBackend
 			var bindingSet = gtk_binding_set_find (gtype.ToString ());
 			if (bindingSet != IntPtr.Zero)
 				gtk_binding_entry_remove (bindingSet, (uint)key, modifiers);
+		}
+
+		public static IntPtr GetData (GLib.Object o, string name)
+		{
+			return g_object_get_data (o.Handle, name);
 		}
 
 		[DllImport (GtkInterop.LIBGTK, CallingConvention = CallingConvention.Cdecl)]

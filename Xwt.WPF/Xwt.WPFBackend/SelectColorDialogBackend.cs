@@ -45,7 +45,7 @@ namespace Xwt.WPFBackend {
 			dialog.Color = System.Drawing.Color.FromArgb((byte)(this.Color.Alpha * 255), (byte)(this.Color.Red * 255), (byte)(this.Color.Green * 255), (byte)(this.Color.Blue * 255));
 			bool output;
 			if (parent != null)
-				output = (this.dialog.ShowDialog(new WpfWin32Window(((WindowFrameBackend)parent).Window)) == DialogResult.OK);
+				output = (this.dialog.ShowDialog(new XwtWin32Window(parent)) == DialogResult.OK);
 			else
 				output = (this.dialog.ShowDialog() == DialogResult.OK);
 

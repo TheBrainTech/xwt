@@ -87,17 +87,21 @@ namespace Xwt
 				} else {
 					NavigateToUrl -= DummyHandleNavigateToUrl;
 				}
+				Accessible.Uri = value;
 			}
 		}
 
 		public LinkLabel ()
 		{
+			Accessible.Role = Accessibility.Role.Link;
 		}
 
-		public LinkLabel (string text)
+		public LinkLabel (string text) : base ()
 		{
 			VerifyConstructorCall (this);
 			Text = text;
+
+			Accessible.Role = Accessibility.Role.Link;
 		}
 
 		protected override BackendHost CreateBackendHost ()

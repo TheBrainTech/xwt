@@ -25,24 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-
 using System.Collections.Generic;
-using Xwt.Backends;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using CGSize = System.Drawing.SizeF;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreGraphics;
-#else
-using Foundation;
 using AppKit;
-using ObjCRuntime;
 using CoreGraphics;
-#endif
+using Foundation;
+using ObjCRuntime;
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
@@ -146,6 +134,10 @@ namespace Xwt.Mac
 			RegisterBackend <Xwt.Backends.ICalendarBackend,CalendarBackend> ();
 			RegisterBackend <Xwt.Backends.ISelectFontDialogBackend, SelectFontDialogBackend> ();
 			RegisterBackend <Xwt.Backends.ISelectColorDialogBackend, SelectColorDialogBackend> (); 
+			RegisterBackend <Xwt.Backends.IAccessibleBackend, AccessibleBackend> ();
+			RegisterBackend <Xwt.Backends.IPopupWindowBackend, PopupWindowBackend> ();
+			RegisterBackend <Xwt.Backends.IUtilityWindowBackend, PopupWindowBackend> ();
+			RegisterBackend <Xwt.Backends.ISearchTextEntryBackend, SearchTextEntryBackend> ();
 		}
 
 		public override void RunApplication ()
@@ -194,9 +186,7 @@ namespace Xwt.Mac
 			if (action == null)
 				throw new ArgumentNullException ("action");
 
-			NSRunLoop.Main.BeginInvokeOnMainThread (delegate {
-				action ();
-			});
+			NSRunLoop.Main.BeginInvokeOnMainThread (action);
 		}
 		
 		public override object TimerInvoke (Func<bool> action, TimeSpan timeSpan)
@@ -318,6 +308,16 @@ namespace Xwt.Mac
 		private void OnDeactivated(NSNotification notifcation) {
 			Xwt.Application.OnDeactivated();
 		}
+		
+		public override Rectangle GetScreenBounds (object nativeWidget)
+		{
+			var widget = nativeWidget as NSView;
+			if (widget == null)
+				throw new InvalidOperationException ("Widget belongs to a different toolkit");
+			var lo = widget.ConvertPointToView (new CGPoint(0, 0), null);
+			lo = widget.Window.ConvertRectToScreen (new CGRect (lo, CGSize.Empty)).Location;
+			return MacDesktopBackend.ToDesktopRect (new CGRect (lo.X, lo.Y, widget.Frame.Width, widget.Frame.Height));
+		}
 	}
 
 	public class AppDelegate : NSApplicationDelegate
@@ -330,7 +330,8 @@ namespace Xwt.Mac
 		public event EventHandler<OpenFilesEventArgs> OpenFilesRequest;
 		public event EventHandler<OpenUrlEventArgs> OpenUrl;
 		public event EventHandler<HandleReopenEventArgs> HandleReopen;
-
+		public event EventHandler<ShowDockMenuArgs> ShowDockMenu;
+		
 		public AppDelegate (bool launched)
 		{
 			this.launched = launched;
@@ -417,6 +418,19 @@ namespace Xwt.Mac
 			}
 			return true;
 		}
+		
+		public override NSMenu ApplicationDockMenu (NSApplication sender)
+		{
+			NSMenu retMenu = null;
+			var showDockMenuEvent = ShowDockMenu;
+			if (showDockMenuEvent != null) {
+				var args = new ShowDockMenuArgs ();
+				showDockMenuEvent (NSApplication.SharedApplication, args);
+				retMenu = args.DockMenu;
+			}
+
+			return retMenu;
+		}
 	}
 
 	public class TerminationEventArgs : EventArgs
@@ -452,5 +466,10 @@ namespace Xwt.Mac
 		public HandleReopenEventArgs(bool hasVisibleWindows) {
 			HasVisibleWindows = hasVisibleWindows;
 		}
+	}
+	
+	public class ShowDockMenuArgs : EventArgs
+	{
+		public NSMenu DockMenu { get; set; }
 	}
 }

@@ -393,7 +393,15 @@ namespace Xwt.Drawing
 			else
 				return Path.GetExtension (fileName);
 		}
-		
+
+		public static Size GetSize (string file)
+		{
+			var toolkit = Toolkit.CurrentEngine;
+			if (toolkit == null)
+				throw new ToolkitNotInitializedException ();
+			return toolkit.ImageBackendHandler.GetSize (file);
+		}
+
 		public void Save (string file, ImageFileType fileType)
 		{
 			using (var f = File.OpenWrite (file))
@@ -1104,7 +1112,6 @@ namespace Xwt.Drawing
 			var res = new Image (img, toolkit) {
 				requestedSize = reqSize
 			};
-			var ld = loader;
 			res.NativeRef.SetCustomLoaderSource (loader, fileName, tags);
 			return res;
 		}

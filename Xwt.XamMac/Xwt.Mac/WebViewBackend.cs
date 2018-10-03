@@ -26,22 +26,12 @@
 // THE SOFTWARE.
 
 using System;
-using Xwt.Backends;
 using System.Linq;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.WebKit;
-using WebKitView = MonoMac.WebKit.WebView;
-#else
-using Foundation;
 using AppKit;
+using Foundation;
 using WebKit;
+using Xwt.Backends;
 using WebKitView = WebKit.WebView;
-#endif
 
 namespace Xwt.Mac
 {
@@ -213,24 +203,18 @@ namespace Xwt.Mac
 
 		void HandleLoadStarted (object o, EventArgs args)
 		{
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnLoading ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnLoading);
 		}
 
 		void HandleLoadFinished (object o, EventArgs args)
 		{
 			SetCustomCss ();
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnLoaded ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnLoaded);
 		}
 
 		void HandleTitleChanged (object sender, WebFrameTitleEventArgs e)
 		{
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnTitleChanged ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnTitleChanged);
 		}
 		#endregion
 

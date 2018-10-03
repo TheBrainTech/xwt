@@ -25,30 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using Xwt.Backends;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Xwt.Drawing;
 using System.IO;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
-using CGSize = System.Drawing.SizeF;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreGraphics;
-#else
-using Foundation;
+using System.Linq;
+using System.Runtime.InteropServices;
 using AppKit;
 using CoreGraphics;
+using Foundation;
 using ObjCRuntime;
-#endif
+using Xwt.Backends;
+using Xwt.Drawing;
 
 namespace Xwt.Mac
 {
@@ -100,6 +86,12 @@ namespace Xwt.Mac
 		public override object CreateCustomDrawn (ImageDrawCallback drawCallback)
 		{
 			return new CustomImage (ApplicationContext, drawCallback);
+		}
+
+		public override Size GetSize (string file)
+		{
+			using (var rep = NSImageRep.ImageRepFromFile (file))
+				return rep.Size.ToXwtSize ();
 		}
 
 		public override Xwt.Drawing.Image GetStockIcon (string id)
@@ -319,6 +311,17 @@ namespace Xwt.Mac
 			AddRepresentation (imgRep);
 		}
 
+		public override CGSize Size
+		{
+			get {
+				return base.Size;
+			}
+			set {
+				base.Size = value;
+				imgRep.Size = value;
+			}
+		}
+
 		[Export ("drawIt:")]
 		public void DrawIt (NSObject ob)
 		{
@@ -347,9 +350,9 @@ namespace Xwt.Mac
 
 		internal void DrawInContext (CGContextBackend ctx, ImageDescription idesc)
 		{
-			var s = ctx.Size != CGSize.Empty ? ctx.Size : Size;
+			var s = ctx.Size != CGSize.Empty ? ctx.Size : new CGSize (idesc.Size.Width, idesc.Size.Height);
 			actx.InvokeUserCode (delegate {
-				drawCallback (ctx, new Rectangle (0, 0, s.Width, s.Height), Image, actx.Toolkit);
+				drawCallback (ctx, new Rectangle (0, 0, s.Width, s.Height), idesc, actx.Toolkit);
 			});
 		}
 
@@ -358,12 +361,10 @@ namespace Xwt.Mac
 			return new CustomImage (actx, drawCallback);
 		}
 
-		#if !MONOMAC
 		public override NSObject Copy (NSZone zone)
 		{
 			return new CustomImage (actx, drawCallback);
 		}
-		#endif
 	}
 }
 
