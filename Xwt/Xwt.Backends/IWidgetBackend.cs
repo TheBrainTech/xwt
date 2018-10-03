@@ -202,6 +202,10 @@ namespace Xwt.Backends
 		/// <value>The background color.</value>
 		Color BackgroundColor { get; set; }
 
+		/// <summary>
+		/// Gets or sets the text color of this widget.
+		/// </summary>
+		/// <value>The text color.</value>
 		Color TextColor { get; set; }
 
 		/// <summary>

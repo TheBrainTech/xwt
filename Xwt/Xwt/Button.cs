@@ -114,15 +114,6 @@ namespace Xwt
 			}
 		}
 
-		public bool IsDefault {
-			get {
-				return Backend.IsDefault;
-			}
-			set {
-				Backend.IsDefault = value;
-			}
-		}
-
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Xwt.Button"/> uses a mnemonic.
 		/// </summary>

@@ -65,14 +65,6 @@ namespace Xwt
 		}
 
 		/// <summary>
-		/// Gets or sets the color to be used for labels and other UI text
-		/// </summary>
-		public Color TextColor {
-			get { return Backend.TextColor; }
-			set { Backend.TextColor = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the selected color
 		/// </summary>
 		public Color Color {
@@ -227,7 +219,7 @@ namespace Xwt
 			Color = Colors.White;
 		}
 
-		public Color TextColor {
+		public override Color TextColor {
 			get {
 				return labelWidgets[0].TextColor;
 			}

@@ -33,7 +33,6 @@ namespace Xwt.Backends
 	{
 		string Text { get; set; }
 		bool Selectable { get; set; }
-		Color TextColor { get; set; }
 		Alignment TextAlignment { get; set; }
 		EllipsizeMode Ellipsize { get; set; }
 		WrapMode Wrap { get; set; }

@@ -411,7 +411,7 @@ namespace Xwt
 		}
 		
 		public object GetNativeWindow (Window window) {
-			return window.Backend;
+			return window.WindowBackend;
 		}
 
 		/// <summary>

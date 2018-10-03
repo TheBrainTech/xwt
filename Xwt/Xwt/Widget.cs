@@ -756,7 +756,7 @@ namespace Xwt
 			set { Backend.BackgroundColor = value; }
 		}
 
-		public Color TextColor {
+		public virtual Color TextColor {
 			get { return Backend.TextColor; }
 			set { Backend.TextColor = value; }
 		}
@@ -983,7 +983,7 @@ namespace Xwt
 		protected virtual void SetScrollAdjustments (ScrollAdjustment horizontal, ScrollAdjustment vertical)
 		{
 		}
-		
+
 
 		[MappedEvent(WidgetEvent.DragOverCheck)]
 		/// <summary>

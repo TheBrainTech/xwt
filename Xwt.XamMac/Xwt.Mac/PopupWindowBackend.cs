@@ -620,6 +620,21 @@ namespace Xwt.Mac
 				childView.Frame = frame;
 			}
 		}
+		
+		public WindowState WindowState {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+
+		public Rectangle RestoreBounds {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
 

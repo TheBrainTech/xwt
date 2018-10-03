@@ -86,11 +86,6 @@ namespace Xwt
 			set { Backend.Selectable = value; }
 		}
 
-		public Color TextColor {
-			get { return Backend.TextColor; }
-			set { Backend.TextColor = value; }
-		}
-
 		[DefaultValue (Alignment.Start)]
 		public Alignment TextAlignment {
 			get { return Backend.TextAlignment; }

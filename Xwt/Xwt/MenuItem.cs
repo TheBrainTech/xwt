@@ -83,7 +83,11 @@ namespace Xwt
 			Image = command.Icon;
 		}
 		
-		public IMenuItemBackend Backend {
+		public IMenuItemBackend MenuItemBackend {
+			get { return Backend; }
+		}
+
+		IMenuItemBackend Backend {
 			get { return (IMenuItemBackend) base.BackendHost.Backend; }
 		}
 

@@ -55,11 +55,6 @@ namespace Xwt
 			}
 		}
 
-		static FileSelector ()
-		{
-			MapEvent (FileSelectorEvent.FileChanged, typeof (FileSelector), "OnFileChanged");
-		}
-
 		public FileSelector ()
 		{
 		}
@@ -123,6 +118,7 @@ namespace Xwt
 			set { Backend.FileSelectionMode = value; }
 		}
 
+		[MappedEvent(FileSelectorEvent.FileChanged)]
 		protected virtual void OnFileChanged (EventArgs args)
 		{
 			if (fileChanged != null)

@@ -257,10 +257,10 @@ namespace Xwt.Mac
 			((NSView)(Widget.DocumentView)).SetFrameSize (size.ToCGSize ());
 			
 			if(bounceViewTop != null) {
-				bounceViewTop.Frame = new CGRect(-maxBounce, -maxBounce, (nfloat)w + maxBounce * 2, (nfloat)maxBounce);
-				bounceViewBottom.Frame = new CGRect(-maxBounce, h, (nfloat)w + maxBounce * 2, (nfloat)maxBounce);
-				bounceViewLeft.Frame = new CGRect(-maxBounce, 0, (nfloat)maxBounce, h);
-				bounceViewRight.Frame = new CGRect(w, 0, (nfloat)maxBounce, h);
+				bounceViewTop.Frame = new CGRect(-maxBounce, -maxBounce, (nfloat)size.Width + maxBounce * 2, (nfloat)maxBounce);
+				bounceViewBottom.Frame = new CGRect(-maxBounce, size.Height, (nfloat)size.Width + maxBounce * 2, (nfloat)maxBounce);
+				bounceViewLeft.Frame = new CGRect(-maxBounce, 0, (nfloat)maxBounce, size.Height);
+				bounceViewRight.Frame = new CGRect(size.Width, 0, (nfloat)maxBounce, size.Height);
 			}
 		}
 		

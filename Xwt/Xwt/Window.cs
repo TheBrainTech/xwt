@@ -66,8 +66,12 @@ namespace Xwt
 			if (!initialPadding.IsZero)
 				Padding = initialPadding;
 		}
-		
-		public IWindowBackend Backend {
+
+		public IWindowBackend WindowBackend {
+			get { return Backend; } 
+		}
+
+		IWindowBackend Backend {
 			get { return (IWindowBackend) BackendHost.Backend; } 
 		}
 

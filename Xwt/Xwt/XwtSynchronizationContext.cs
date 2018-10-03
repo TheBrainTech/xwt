@@ -61,7 +61,7 @@ namespace Xwt
 
 		public override void Post (SendOrPostCallback d, object state)
 		{
-			Application.Invoke (() => d.Invoke (state), toolkit);
+			Application.Invoke (() => d.Invoke (state), toolkit, true);
 		}
 
 		public override void Send (SendOrPostCallback d, object state)
@@ -78,7 +78,7 @@ namespace Xwt
 						Thread.MemoryBarrier ();
 						evt.Set ();
 					}
-				}, toolkit);
+				}, toolkit, true);
 				evt.Wait ();
 				if (exception != null)
 					throw exception;

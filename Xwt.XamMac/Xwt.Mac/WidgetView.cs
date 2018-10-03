@@ -120,18 +120,6 @@ namespace Xwt.Mac
 				base.MouseUp (theEvent);
 		}
 
-		public override void OtherMouseDown (NSEvent theEvent)
-		{
-			if (!this.HandleMouseDown (theEvent))
-				base.OtherMouseDown (theEvent);
-		}
-
-		public override void OtherMouseUp (NSEvent theEvent)
-		{
-			if (!this.HandleMouseUp (theEvent))
-				base.OtherMouseUp (theEvent);
-		}
-
 		public override void OtherMouseDown(NSEvent theEvent) {
 			var p = ConvertPointFromView(theEvent.LocationInWindow, null);
 			ButtonEventArgs args = new ButtonEventArgs();
