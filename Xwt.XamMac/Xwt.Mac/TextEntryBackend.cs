@@ -175,6 +175,8 @@ namespace Xwt.Mac
 				return (int)Widget.CurrentEditor.SelectedRange.Location;
 			}
 			set {
+				if (Widget.CurrentEditor == null)
+					return;
 				Widget.CurrentEditor.SelectedRange = new NSRange (value, SelectionLength);
 				HandleSelectionChanged ();
 			}
