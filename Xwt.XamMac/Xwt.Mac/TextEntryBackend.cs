@@ -108,6 +108,8 @@ namespace Xwt.Mac
 			}
 			set {
 				Widget.StringValue = value ?? string.Empty;
+				EventSink.OnChanged ();
+				EventSink.OnSelectionChanged ();
 			}
 		}
 
