@@ -627,7 +627,7 @@ namespace Xwt.WPFBackend
 			}
 		}
 
-		bool MapToXwtKeyArgs (System.Windows.Input.KeyEventArgs e, out KeyEventArgs result)
+		public static bool MapToXwtKeyArgs (System.Windows.Input.KeyEventArgs e, out KeyEventArgs result)
 		{
 			result = null;
 
