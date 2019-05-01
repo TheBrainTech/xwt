@@ -791,6 +791,10 @@ namespace Xwt.Mac
 					pb.AddTypes (new string[] { NSPasteboard.NSStringType }, null);
 					pb.SetStringForType ((string)data.GetValue (t), NSPasteboard.NSStringType);
 				}
+				else if (t == TransferDataType.Html) {
+					pb.AddTypes(new string[] { NSPasteboard.NSHtmlType }, null);
+					pb.SetStringForType((string)data.GetValue(t), NSPasteboard.NSHtmlType);
+				}
 			}
 		}
 
@@ -799,8 +803,10 @@ namespace Xwt.Mac
 			foreach (var t in types) {
 				if (!pb.Types.Contains (t))
 					continue;
-				if (t == NSPasteboard.NSStringType)
-					store.AddText (pb.GetStringForType (t));
+				if(t == NSPasteboard.NSStringType)
+					store.AddText (pb.GetStringForType(t));
+				else if(t == NSPasteboard.NSHtmlType)
+					store.AddHtml (pb.GetStringForType (t));
 				else if (t == NSPasteboard.NSFilenamesType) {
 					string data = pb.GetStringForType (t);
 					XmlDocument doc = new XmlDocument ();

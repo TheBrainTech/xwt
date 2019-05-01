@@ -50,7 +50,11 @@ namespace Xwt.Backends
 		{
 			data [TransferDataType.Text] = text;
 		}
-		
+
+		public void AddHtml(string html) {
+			data[TransferDataType.Html] = html;
+		}
+
 		/// <summary>
 		/// Adds an image to transfer.
 		/// </summary>
@@ -129,6 +133,12 @@ namespace Xwt.Backends
 		bool ITransferData.HasType (TransferDataType type)
 		{
 			return data.ContainsKey (type);
+		}
+
+		string ITransferData.Html {
+			get {
+				return (string) GetValue(TransferDataType.Html);
+			}
 		}
 		
 		string ITransferData.Text {
