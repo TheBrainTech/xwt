@@ -772,28 +772,29 @@ namespace Xwt.Mac
 		void InitPasteboard (NSPasteboard pb, TransferDataSource data)
 		{
 			pb.ClearContents ();
-			foreach (var t in data.DataTypes) {
-				if (t == TransferDataType.Uri) {
+			foreach (TransferDataType t in data.DataTypes) {
+				if(t == TransferDataType.Uri) {
 					Uri url = (Uri)data.GetValue(t);
-					if (url.IsFile) {
+					if(url.IsFile) {
 						string path = url.ToString().Replace("file://", "");
 						NSArray arr = NSArray.FromStrings(new string[] { path });
 						pb.DeclareTypes(new string[] { NSPasteboard.NSFilenamesType }, null);
 						pb.SetPropertyListForType(arr, NSPasteboard.NSFilenamesType);
-					} else if (IsWebURL(url.ToString())) {
-						pb.AddTypes (new string[] { NSPasteboard.NSStringType }, null);
-						pb.SetStringForType (url.ToString(), NSPasteboard.NSStringType);
+					} else if(IsWebURL(url.ToString())) {
+						pb.AddTypes(new string[] { NSPasteboard.NSStringType }, null);
+						pb.SetStringForType(url.ToString(), NSPasteboard.NSStringType);
 					} else {
 						Console.WriteLine("Check your inputs to your DragOperation and make sure your URL or file looks like what expect");
 					}
-				}
-				else if (t == TransferDataType.Text) {
-					pb.AddTypes (new string[] { NSPasteboard.NSStringType }, null);
-					pb.SetStringForType ((string)data.GetValue (t), NSPasteboard.NSStringType);
-				}
-				else if (t == TransferDataType.Html) {
-					pb.AddTypes(new string[] { NSPasteboard.NSHtmlType }, null);
-					pb.SetStringForType((string)data.GetValue(t), NSPasteboard.NSHtmlType);
+				} else if(t == TransferDataType.Text) {
+					pb.AddTypes(new string[] { NSPasteboard.NSStringType }, null);
+					pb.SetStringForType((string)data.GetValue(t), NSPasteboard.NSStringType);
+				} else {
+					pb.AddTypes(new string[] { t.Id }, null);
+					object obj = data.GetValue(t);
+					byte[] bytes = obj as byte[];
+					NSData nsData = NSData.FromArray(bytes);
+					pb.SetDataForType(nsData, t.Id);
 				}
 			}
 		}
@@ -813,6 +814,9 @@ namespace Xwt.Mac
 					doc.XmlResolver = null; // Avoid DTD validation
 					doc.LoadXml (data);
 					store.AddUris (doc.SelectNodes ("/plist/array/string").Cast<XmlElement> ().Select (e => new Uri (e.InnerText)).ToArray ());
+				} else {
+					NSData data = pb.GetDataForType(t);
+					store.AddValue(TransferDataType.FromId(t), data.ToArray());
 				}
 			}
 		}
