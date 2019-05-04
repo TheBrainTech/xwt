@@ -792,7 +792,7 @@ namespace Xwt.Mac
 				} else {
 					pb.AddTypes(new string[] { t.Id }, null);
 					object obj = data.GetValue(t);
-					byte[] bytes = obj as byte[];
+					byte[] bytes = TransferDataSource.SerializeValue(obj);
 					NSData nsData = NSData.FromArray(bytes);
 					pb.SetDataForType(nsData, t.Id);
 				}
@@ -816,7 +816,7 @@ namespace Xwt.Mac
 					store.AddUris (doc.SelectNodes ("/plist/array/string").Cast<XmlElement> ().Select (e => new Uri (e.InnerText)).ToArray ());
 				} else {
 					NSData data = pb.GetDataForType(t);
-					store.AddValue(TransferDataType.FromId(t), data.ToArray());
+					store.AddValue(TransferDataType.FromId(t), TransferDataSource.DeserializeValue(data.ToArray()));
 				}
 			}
 		}
