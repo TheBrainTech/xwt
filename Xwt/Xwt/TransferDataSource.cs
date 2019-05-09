@@ -89,7 +89,12 @@ namespace Xwt
 		{
 			data [type] = null;
 		}
-		
+
+		public void AddType (TransferDataType type, object value)
+		{
+			data [type] = value;
+		}
+
 		/// <summary>
 		/// Registers that the data store contains data of the provided type
 		/// </summary>

@@ -791,6 +791,13 @@ namespace Xwt.Mac
 					pb.AddTypes (new string[] { NSPasteboard.NSStringType }, null);
 					pb.SetStringForType ((string)data.GetValue (t), NSPasteboard.NSStringType);
 				}
+				else {
+					pb.AddTypes(new string[] { t.Id }, null);
+					object obj = data.GetValue(t);
+					byte[] bytes = TransferDataSource.SerializeValue(obj);
+					NSData nsData = NSData.FromArray(bytes);
+					pb.SetDataForType(nsData, t.Id);
+				}
 			}
 		}
 
@@ -807,6 +814,9 @@ namespace Xwt.Mac
 					doc.XmlResolver = null; // Avoid DTD validation
 					doc.LoadXml (data);
 					store.AddUris (doc.SelectNodes ("/plist/array/string").Cast<XmlElement> ().Select (e => new Uri (e.InnerText)).ToArray ());
+				} else {
+					NSData data = pb.GetDataForType(t);
+					store.AddValue(TransferDataType.FromId(t), TransferDataSource.DeserializeValue(data.ToArray()));
 				}
 			}
 		}

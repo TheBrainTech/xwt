@@ -855,8 +855,12 @@ namespace Xwt.WPFBackend
 				else if (type == TransferDataType.Uri) {
 					var uris = ((string [])value).Select (f => new Uri (f)).ToArray ();
 					store.AddUris (uris);
-				} else if (value is byte[])
-					store.AddValue (type, (byte[]) value);
+				} else if (value is byte[]) {
+					// Deserialize any data type, including possibly a byte[] that is wrapped in
+					// a header/footer (in another longer byte[]), to get the original value back out.
+					// Now it's a byte array again, or whatever type of object...
+					store.AddValue (type, TransferDataSource.DeserializeValue(value as byte[]));
+				}
 				else
 					store.AddValue (type, value);
 			}
