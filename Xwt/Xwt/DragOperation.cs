@@ -145,8 +145,6 @@ namespace Xwt
 		/// <value>The transferred text.</value>
 		string Text { get; }
 
-		string Html { get; }
-
 		/// <summary>
 		/// Gets the transferred uris.
 		/// </summary>

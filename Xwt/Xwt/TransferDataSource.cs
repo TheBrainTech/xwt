@@ -90,8 +90,9 @@ namespace Xwt
 			data [type] = null;
 		}
 
-		public void AddType(TransferDataType type, object value) {
-			data[type] = value;
+		public void AddType (TransferDataType type, object value)
+		{
+			data [type] = value;
 		}
 
 		/// <summary>
