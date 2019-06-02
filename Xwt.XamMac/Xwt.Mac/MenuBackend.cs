@@ -135,7 +135,7 @@ namespace Xwt.Mac
 		
 		public void Popup (IWidgetBackend widget, double x, double y)
 		{
-			NSMenu.PopUpContextMenu (this, NSApplication.SharedApplication.CurrentEvent, ((ViewBackend)widget).Widget);
+			PopUpMenu(null, new CoreGraphics.CGPoint(x, y), ((ViewBackend)widget).Widget);
 		}
 
 		object IMenuBackend.Font {
