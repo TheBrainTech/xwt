@@ -6,6 +6,7 @@
 //
 // Copyright (c) 2012 Xamarin, Inc.
 using System;
+using Xwt.Drawing;
 
 namespace Xwt.Backends
 {

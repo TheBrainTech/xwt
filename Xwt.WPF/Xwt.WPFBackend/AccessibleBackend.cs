@@ -18,6 +18,8 @@ namespace Xwt.WPFBackend
 		IAccessibleEventSink eventSink;
 		ApplicationContext context;
 
+		IList<object> nativeChildren = new List<object> ();
+
 		public bool IsAccessible { get; set; }
 
 		private string identifier;
@@ -103,6 +105,18 @@ namespace Xwt.WPFBackend
 			Initialize (popup, eventSink);
 		}
 
+		public void Initialize(IMenuBackend parentMenu, IAccessibleEventSink eventSync)
+		{
+			var menuBackend = (MenuBackend)parentMenu;
+			Initialize(menuBackend.NativeMenu, eventSink);
+		}
+
+		public void Initialize (IMenuItemBackend parentMenuItem, IAccessibleEventSink eventSink)
+		{
+			var menuItemBackend = (MenuItemBackend)parentMenuItem;
+			Initialize (menuItemBackend.MenuItem, eventSink);
+		}
+
 		public void Initialize (object parentWidget, IAccessibleEventSink eventSink)
 		{
 			this.element = parentWidget as UIElement;
@@ -124,25 +138,34 @@ namespace Xwt.WPFBackend
 		// The following child methods are only supported for Canvas based widgets
 		public void AddChild (object nativeChild)
 		{
-			var peer = nativeChild as AutomationPeer;
-			var canvas = element as CustomCanvas;
-			if (peer != null && canvas != null)
-				canvas.AutomationPeer?.AddChild (peer);
+			if (element is CustomCanvas && nativeChild is AutomationPeer)
+				((CustomCanvas)element).AutomationPeer?.AddChild ((AutomationPeer)nativeChild);
+			else
+				nativeChildren.Add (nativeChild);
 		}
 
 		public void RemoveAllChildren ()
 		{
-			var canvas = element as CustomCanvas;
-			if (canvas != null)
-				canvas.AutomationPeer?.RemoveAllChildren ();
+			if (element is CustomCanvas)
+				((CustomCanvas)element).AutomationPeer?.RemoveAllChildren ();
+			else
+				nativeChildren.Clear ();
 		}
 
 		public void RemoveChild (object nativeChild)
 		{
-			var peer = nativeChild as AutomationPeer;
-			var canvas = element as CustomCanvas;
-			if (peer != null && canvas != null)
-				canvas.AutomationPeer?.RemoveChild (peer);
+			if (element is CustomCanvas && nativeChild is AutomationPeer)
+				((CustomCanvas)element).AutomationPeer?.RemoveChild ((AutomationPeer)nativeChild);
+			else
+				nativeChildren.Remove (nativeChild);
+		}
+
+		public IEnumerable<object> GetChildren ()
+		{
+			if (element is CustomCanvas)
+				return ((CustomCanvas)element).AutomationPeer.GetChildren ();
+			else
+				return nativeChildren;
 		}
 
 		public static AutomationControlType RoleToControlType (Role role)

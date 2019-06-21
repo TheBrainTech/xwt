@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xwt.Backends;
 
 namespace Xwt.Accessibility
@@ -47,7 +49,7 @@ namespace Xwt.Accessibility
 					b = new DefaultNoOpAccessibleBackend ();
 				return b;
 			}
-			
+
 			protected override void OnBackendCreated ()
 			{
 				object parentBackend = Parent.parentComponent?.GetBackend ();
@@ -56,6 +58,10 @@ namespace Xwt.Accessibility
 					Backend.Initialize ((IWidgetBackend) parentBackend, this);
 				else if (parentBackend is IPopoverBackend)
 					Backend.Initialize ((IPopoverBackend) parentBackend, this);
+				else if (parentBackend is IMenuBackend)
+					Backend.Initialize ((IMenuBackend) parentBackend, this);
+				else if (parentBackend is IMenuItemBackend)
+					Backend.Initialize ((IMenuItemBackend) parentBackend, this);
 				else
 					Backend.Initialize (Parent.parentNativeObject, this);
 			}
@@ -66,22 +72,32 @@ namespace Xwt.Accessibility
 			}
 		}
 
-		internal Accessible (Widget parent)
+		internal Accessible (Widget parent): this ((XwtComponent)parent)
 		{
-			if (parent == null)
-				throw new ArgumentNullException (nameof (parent));
-			parentComponent = parent;
-			backendHost = new AccessibleBackendHost ();
-			backendHost.Parent = this;
 		}
 
-		internal Accessible (Popover parent)
+		internal Accessible (Popover parent): this ((XwtComponent)parent)
+		{
+		}
+
+		internal Accessible (Menu parent): this ((XwtComponent)parent)
+		{
+		}
+
+		internal Accessible (MenuItem parent): this ((XwtComponent)parent)
+		{
+		}
+
+		Accessible (XwtComponent parent)
 		{
 			if (parent == null)
 				throw new ArgumentNullException (nameof (parent));
 			parentComponent = parent;
 			backendHost = new AccessibleBackendHost ();
 			backendHost.Parent = this;
+			if (parent.GetBackend () is XwtWidgetBackend)
+				backendHost.SetCustomBackend (new XwtAccessibleBackend());
+
 		}
 
 		internal Accessible (object nativeParent)
@@ -92,6 +108,7 @@ namespace Xwt.Accessibility
 			backendHost = new AccessibleBackendHost ();
 			backendHost.Parent = this;
 		}
+
 
 		IAccessibleBackend Backend {
 			get { return backendHost.Backend; }
@@ -205,6 +222,11 @@ namespace Xwt.Accessibility
 			}
 		}
 
+		public IEnumerable<object> GetChildren ()
+		{
+			return Backend.GetChildren ();
+		}
+
 		public void AddChild (object nativeChild)
 		{
 			Backend.AddChild (nativeChild);
@@ -276,6 +298,11 @@ namespace Xwt.Accessibility
 		{
 		}
 
+		public IEnumerable<object> GetChildren ()
+		{
+			return Enumerable.Empty<object>();
+		}
+
 		public void DisableEvent (object eventId)
 		{
 		}
@@ -289,6 +316,15 @@ namespace Xwt.Accessibility
 		}
 
 		public void Initialize (IPopoverBackend parentPopover, IAccessibleEventSink eventSink)
+		{
+		}
+
+
+		public void Initialize(IMenuBackend parentMenu, IAccessibleEventSink eventSink)
+		{
+		}
+
+		public void Initialize (IMenuItemBackend parentMenuItem, IAccessibleEventSink eventSink)
 		{
 		}
 

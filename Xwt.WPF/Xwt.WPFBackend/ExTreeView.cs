@@ -38,6 +38,7 @@ using SWC = System.Windows.Controls;
 using WKey = System.Windows.Input.Key;
 using System.Windows.Input;
 using System.Windows.Controls.Primitives;
+using System.Windows.Automation.Peers;
 
 namespace Xwt.WPFBackend
 {
@@ -313,6 +314,9 @@ namespace Xwt.WPFBackend
 
 		public void SelectItem(ExTreeViewItem item)
 		{
+			if (item == null)
+				return;
+
 			FocusItem(item);
 			if (!CtrlPressed)
 				SelectedItems.Clear();
@@ -364,6 +368,10 @@ namespace Xwt.WPFBackend
 			var allVisibleItems = GetAllVisibleItems(this).ToList();
 			var startIndex = allVisibleItems.IndexOf(startItem);
 			var endIndex = allVisibleItems.IndexOf(endItem);
+
+			// Handle empty selection
+			if (startIndex == -1)
+				startIndex = 0;
 
 			if (endIndex == startIndex)
 				return new List<ExTreeViewItem> { endItem };
@@ -446,7 +454,12 @@ namespace Xwt.WPFBackend
 			int indexOfP = items.IndexOf(p);
 			if (indexOfP == 0)
 				return p;
-			else
+			else if (indexOfP == -1) {
+				if (items.Count > 0)
+					return items [items.Count - 1];
+
+				return null;
+ 			} else
 				return items[indexOfP - 1];
 		}
 
@@ -459,5 +472,38 @@ namespace Xwt.WPFBackend
 			else
 				return items[indexOfP + 1];
 		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			var backend = this.Backend as TreeViewBackend;
+			var treeView = backend?.Frontend as Xwt.TreeView;
+
+			var peer = treeView?.Accessible.GetChildren ()?.FirstOrDefault () as AutomationPeer;
+			if (peer != null)
+				return peer;
+
+			return base.OnCreateAutomationPeer ();
+		}
+
+		internal AutomationPeer CreateChildAutomationPeer (object itemData, TreeViewItem itemView)
+		{
+			var backend = this.Backend as TreeViewBackend;
+			var treeView = backend?.Frontend as Xwt.TreeView;
+
+			var peer = treeView?.Accessible.GetChildren ()?.FirstOrDefault () as ExTreeViewAutomationPeer;
+			if (peer != null)
+				return peer.CreateChildAutomationPeer (itemData, itemView);
+
+			return null;
+		}
+	}
+
+	public abstract class ExTreeViewAutomationPeer: TreeViewAutomationPeer
+	{
+		public ExTreeViewAutomationPeer (SWC.TreeView owner): base (owner)
+		{
+		}
+
+		public abstract TreeViewItemAutomationPeer CreateChildAutomationPeer (object item, TreeViewItem viewItem);
 	}
 }

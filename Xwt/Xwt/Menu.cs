@@ -27,6 +27,7 @@
 using System;
 using Xwt.Backends;
 using Xwt.Drawing;
+using Xwt.Accessibility;
 
 namespace Xwt
 {
@@ -76,6 +77,16 @@ namespace Xwt
 			}
 		}
 		
+		Accessible accessible;
+		public Accessible Accessible {
+			get {
+				if (accessible == null) {
+					accessible = new Accessible (this);
+				}
+				return accessible;
+			}
+		}
+
 		public Menu ()
 		{
 			items = new MenuItemCollection (this);
@@ -115,7 +126,7 @@ namespace Xwt
 		/// <param name="y">The y coordinate, relative to the widget origin</param>
 		public virtual void Popup (Widget parentWidget, double x, double y)
 		{
-			Backend.Popup ((IWidgetBackend)BackendHost.ToolkitEngine.GetSafeBackend (parentWidget), x, y);
+			Backend.Popup (parentWidget.GetBackend (), x, y);
 		}
 		
 		/// <summary>

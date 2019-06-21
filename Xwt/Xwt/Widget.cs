@@ -624,7 +624,7 @@ namespace Xwt
 		/// Gets or sets the content of this <see cref="Xwt.Widget"/>.
 		/// </summary>
 		/// <value>The content of the widget.</value>
-		protected Widget Content {
+		internal protected Widget Content {
 			get { return contentWidget; }
 			set {
 				ICustomWidgetBackend bk = Backend as ICustomWidgetBackend;
@@ -1700,12 +1700,14 @@ namespace Xwt
 				foreach (var w in toReallocate) {
 					// The widget may already have been reallocated as a result of reallocating the parent
 					// so we have to check if it is still in the queue
-					if (reallocationQueue.Contains (w))
+					if (!w.IsDisposed && reallocationQueue.Contains (w))
 						w.Surface.Reallocate ();
 				}
 				foreach (var w in resizeWindows.ToArray ()) {
-					w.AdjustSize ();
-					w.Reallocate ();
+					if (!w.IsDisposed) {
+						w.AdjustSize();
+						w.Reallocate();
+					}
 				}
 			} finally {
 				resizeRequestQueue.Clear ();

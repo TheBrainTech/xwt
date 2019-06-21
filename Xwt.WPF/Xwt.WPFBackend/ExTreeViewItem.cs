@@ -43,6 +43,7 @@ namespace Xwt.WPFBackend
 	public class ExTreeViewItem
 		: TreeViewItem
 	{
+
 		public ExTreeViewItem()
 		{
 			Loaded += OnLoaded;
@@ -57,6 +58,9 @@ namespace Xwt.WPFBackend
 
 		protected override void OnExpanded (RoutedEventArgs e)
 		{
+			if (!(DataContext is TreeStoreNode))
+				return;
+
 			var node = (TreeStoreNode)DataContext;
 			view.Backend.Context.InvokeUserCode (delegate {
 				((ITreeViewEventSink)view.Backend.EventSink).OnRowExpanding (node);
@@ -71,10 +75,10 @@ namespace Xwt.WPFBackend
 
 		protected override void OnCollapsed(RoutedEventArgs e)
 		{
-			var node = DataContext as TreeStoreNode;
-			if (node == null) {
+			if (!(DataContext is TreeStoreNode))
 				return;
-			}
+
+			var node = (TreeStoreNode)DataContext;
 			if (!IsExpanded)
 				UnselectChildren((object o, ExTreeViewItem i) =>
 				{
@@ -244,7 +248,7 @@ namespace Xwt.WPFBackend
 
 		protected override AutomationPeer OnCreateAutomationPeer ()
 		{
-			return new ExTreeViewItemAutomationPeer (this);
+			return view.CreateChildAutomationPeer (DataContext, this) ?? new ExTreeViewItemAutomationPeer(this);
 		}
 
 		class ExTreeViewItemAutomationPeer : TreeViewItemAutomationPeer

@@ -129,8 +129,19 @@ namespace Xwt.WPFBackend
 			} while (true);
 		}
 
+		void SetupBorderMargin ()
+		{
+			if (Frontend.Padding != 0)
+				return;
+
+			Border.Padding = new Thickness (1, 1, 1, 1);
+			Border.BorderThickness = new Thickness (1);
+			Border.Margin = new Thickness (1);
+		}
+
 		public PopoverBackend ()
 		{
+<<<<<<< HEAD
 
 			grid = new Grid() { 
 				Margin = new Thickness(0, VERTICAL_MARGIN, 0, 0) };
@@ -162,6 +173,19 @@ namespace Xwt.WPFBackend
 				Margin = new Thickness(0, CARET_HEIGHT - 1, 0, 0),
 				VerticalAlignment = VerticalAlignment.Top,
 				Background = BACKGROUND_BRUSH
+=======
+			Border = new System.Windows.Controls.Border {
+					Padding = new Thickness (15, 10, 15, 15),
+					BorderThickness = new Thickness (1),
+					Margin = new Thickness (10),
+					Effect = new System.Windows.Media.Effects.DropShadowEffect () {
+					Color = Colors.Black,
+					Direction = 270,
+					BlurRadius = 15,
+					Opacity = .15,
+					ShadowDepth = 1,
+				}
+>>>>>>> f7ddf3e63b23e3e27feeb7d127f8357cc3284098
 			};
 
 			//Set background color of popover
@@ -203,7 +227,12 @@ namespace Xwt.WPFBackend
 		public void Show (Xwt.Popover.Position orientation, Xwt.Widget reference, Xwt.Rectangle positionRect, Widget child)
 		{
 			ActualPosition = orientation;
+<<<<<<< HEAD
 			border.Child = (System.Windows.FrameworkElement)Context.Toolkit.GetNativeWidget (child);
+=======
+			SetupBorderMargin ();
+			Border.Child = (System.Windows.FrameworkElement)Context.Toolkit.GetNativeWidget (child);
+>>>>>>> f7ddf3e63b23e3e27feeb7d127f8357cc3284098
 			NativeWidget.CustomPopupPlacementCallback = (popupSize, targetSize, offset) => {
 				System.Windows.Point location;
 				if (ActualPosition == Popover.Position.Top)

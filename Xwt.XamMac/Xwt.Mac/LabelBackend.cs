@@ -43,6 +43,7 @@ namespace Xwt.Mac
 		protected LabelBackend (IViewObject view)
 		{
 			View = view;
+			view.Backend = this;
 		}
 
 		IViewObject View;
@@ -50,6 +51,7 @@ namespace Xwt.Mac
 		public override void Initialize ()
 		{
 			ViewObject = new CustomAlignedContainer (EventSink, ApplicationContext, (NSView)View);
+			CanGetFocus = false;
 			Widget.StringValue = string.Empty;
 			Widget.Editable = false;
 			Widget.Bezeled = false;
@@ -231,6 +233,11 @@ namespace Xwt.Mac
 			}
 			Child.NeedsDisplay = true;
 		}
+
+		public override bool AcceptsFirstResponder()
+		{
+			return false;
+		}
 	}
 	
 	class TextFieldView: NSTextField, IViewObject
@@ -253,6 +260,7 @@ namespace Xwt.Mac
 		public TextFieldView ()
 		{
 			Cell = cell = new CustomTextFieldCell ();
+			AccessibilityRole = NSAccessibilityRoles.StaticTextRole;
 		}
 
 		public void SetBackgroundColor (CGColor c)

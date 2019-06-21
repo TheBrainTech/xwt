@@ -436,13 +436,12 @@ namespace Xwt.WPFBackend
 			var size = rect.Size;
 			var loc = rect.Location;
 
-			var border = GetBorderSize ();
-			size.Height += border.Height * 2;
-			size.Width += border.Width * 2;
-			loc.X -= border.Width;
-			loc.Y -= border.Height;
-
 			if (((IWindowFrameBackend)this).Decorated) {
+			    var border = GetBorderSize ();
+			    size.Height += border.Height * 2;
+			    size.Width += border.Width * 2;
+			    loc.X -= border.Width;
+			    loc.Y -= border.Height;
 				size.Height += SystemParameters.WindowCaptionHeight;
 				loc.Y -= SystemParameters.WindowCaptionHeight;
 			}
@@ -459,13 +458,13 @@ namespace Xwt.WPFBackend
 			var size = rect.Size;
 			var loc = rect.Location;
 
-			var border = GetBorderSize ();
-			size.Height -= border.Height * 2;
-			size.Width -= border.Width * 2;
-			loc.X += border.Width;
-			loc.Y += border.Height;
 
 			if (((IWindowFrameBackend)this).Decorated) {
+			    var border = GetBorderSize ();
+			    size.Height -= border.Height * 2;
+			    size.Width -= border.Width * 2;
+			    loc.X += border.Width;
+			    loc.Y += border.Height;
                 size.Height -= SystemParameters.WindowCaptionHeight;
                 loc.Y += SystemParameters.WindowCaptionHeight;
 			}

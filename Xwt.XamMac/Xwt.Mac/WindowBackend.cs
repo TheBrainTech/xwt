@@ -40,7 +40,7 @@ using Xwt.Drawing;
 
 namespace Xwt.Mac
 {
-	public class WindowBackend: NSWindow, IWindowBackend
+	public class WindowBackend: NSWindow, IWindowBackend, IMacWindowBackend
 	{
 		WindowBackendController controller;
 		IWindowFrameEventSink eventSink;
@@ -122,7 +122,12 @@ namespace Xwt.Mac
 		}
 
 		public string Name { get; set; }
-		
+
+		void IMacWindowBackend.InternalShow ()
+		{
+			InternalShow ();
+		}
+
 		internal void InternalShow ()
 		{
 			MakeKeyAndOrderFront (MacEngine.App);
@@ -578,13 +583,9 @@ namespace Xwt.Mac
 
 		static Selector closeSel = new Selector ("close");
 
+		static readonly bool XamMacDangerousDispose = Version.Parse(Constants.Version) < new Version(5, 6);
+
 		bool disposing, disposed;
-
-		static HashSet<NSWindow> windowsNotReleaseWhenClosed = new HashSet<NSWindow>();
-
-		public static void TrackWindowNotToReleaseWhenClosed(NSWindow window) {
-			windowsNotReleaseWhenClosed.Add(window);
-		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -593,14 +594,10 @@ namespace Xwt.Mac
 				this.disposing = true;
 				try
 				{
-					if (VisibilityEventsEnabled() && ContentView != null)
+					if(VisibilityEventsEnabled() && ContentView != null)
 						ContentView.RemoveObserver(this, HiddenProperty);
 
-					// Disable the following hack - not really sure what it is supposed to accomplish but when it is here,
-					// some dialog windows cause a crash when they are disposed. Exclusion list avoids this problem. WIN-5549
-					if(windowsNotReleaseWhenClosed.Contains(this)) {
-						windowsNotReleaseWhenClosed.Remove(this);
-					} else {
+					if (XamMacDangerousDispose) {
 						// HACK: Xamarin.Mac/MonoMac limitation: no direct way to release a window manually
 						// A NSWindow instance will be removed from NSApplication.SharedApplication.Windows
 						// only if it is being closed with ReleasedWhenClosed set to true but not on Dispose
@@ -611,9 +608,9 @@ namespace Xwt.Mac
 						// bump native reference count by calling DangerousRetain()
 						// base.Dispose will now unref the window correctly without crashing
 						DangerousRetain();
-						// tell Cocoa to release the window on Close
-						ReleasedWhenClosed = true;
 					}
+					// tell Cocoa to release the window on Close
+					ReleasedWhenClosed = true;
 
 					// Close the window (Cocoa will do its job even if the window is already closed)
 					Messaging.void_objc_msgSend (this.Handle, closeSel.Handle);

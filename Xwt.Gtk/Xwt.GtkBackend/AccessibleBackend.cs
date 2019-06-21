@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xwt.Accessibility;
 using Xwt.Backends;
 
@@ -59,12 +61,44 @@ namespace Xwt.GtkBackend
 		public void Initialize (IWidgetBackend parentWidget, IAccessibleEventSink eventSink)
 		{
 			var backend = parentWidget as WidgetBackend;
-			Initialize (backend?.Widget, eventSink);
+			Gtk.Widget nativeWidget = null;
+
+			// Needed only for AtkCocoa.
+			if (Platform.IsMac) {
+				// Gtk.ComboBox and Gtk.ComboBoxEntry a11y doesn't work with Gtk/AtkCocoa.
+				// Workaround:
+				// Set a11y properties to their children.
+				// For Gtk.ComboBoxEntry use its Gtk.Entry, for Gtk.ComboBox -- Gtk.ToggleButton.
+				if (backend is IComboBoxEntryBackend) {
+					nativeWidget = (backend?.Widget as Gtk.Bin)?.Child;
+				} else if (backend is IComboBoxBackend) {
+					foreach (var child in ((Gtk.Container)backend.Widget).AllChildren) {
+						if (child is Gtk.ToggleButton) {
+							nativeWidget = (Gtk.Widget)child;
+							break;
+						}
+					}
+				}
+			}
+
+			Initialize (nativeWidget ?? backend?.Widget, eventSink);
 		}
 
 		public void Initialize (IPopoverBackend parentPopover, IAccessibleEventSink eventSink)
 		{
 			// Not currently supported
+		}
+
+		public void Initialize(IMenuBackend parentMenu, IAccessibleEventSink eventSync)
+		{
+			var menuBackend = parentMenu as MenuBackend;
+			Initialize(menuBackend?.Menu, eventSink);
+		}
+
+		public void Initialize (IMenuItemBackend parentMenuItem, IAccessibleEventSink eventSink)
+		{
+			var menuItemBackend = parentMenuItem as MenuItemBackend;
+			Initialize (menuItemBackend?.MenuItem, eventSink);
 		}
 
 		public void Initialize (object parentWidget, IAccessibleEventSink eventSink)
@@ -148,7 +182,7 @@ namespace Xwt.GtkBackend
 			}
 		}
 
-		public Widget LabelWidget {
+		public virtual Widget LabelWidget {
 			set { /* Not supported */ }
 		}
 
@@ -178,6 +212,12 @@ namespace Xwt.GtkBackend
 		public virtual void RemoveAllChildren ()
 		{
 			// TODO
+		}
+
+		public virtual IEnumerable<object> GetChildren ()
+		{
+			// TODO
+			return Enumerable.Empty<object>();
 		}
 
 		public void DisableEvent (object eventId)
