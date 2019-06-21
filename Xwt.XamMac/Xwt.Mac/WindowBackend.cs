@@ -585,6 +585,8 @@ namespace Xwt.Mac
 
 		static readonly bool XamMacDangerousDispose = Version.Parse(Constants.Version) < new Version(5, 6);
 
+		public static bool SetReleasedWhenClosed = true;
+
 		bool disposing, disposed;
 
 		protected override void Dispose(bool disposing)
@@ -597,20 +599,24 @@ namespace Xwt.Mac
 					if(VisibilityEventsEnabled() && ContentView != null)
 						ContentView.RemoveObserver(this, HiddenProperty);
 
-					if (XamMacDangerousDispose) {
-						// HACK: Xamarin.Mac/MonoMac limitation: no direct way to release a window manually
-						// A NSWindow instance will be removed from NSApplication.SharedApplication.Windows
-						// only if it is being closed with ReleasedWhenClosed set to true but not on Dispose
-						// and there is no managed way to tell Cocoa to release the window manually (and to
-						// remove it from the active window list).
-						// see also: https://bugzilla.xamarin.com/show_bug.cgi?id=45298
-						// WORKAROUND:
-						// bump native reference count by calling DangerousRetain()
-						// base.Dispose will now unref the window correctly without crashing
-						DangerousRetain();
+					// Disable the following hack - not really sure what it is supposed to accomplish but when it is here,
+					// some dialog windows cause a crash when they are disposed. Exclusion list avoids this problem. WIN-5549
+					if(SetReleasedWhenClosed) {
+						if(XamMacDangerousDispose) {
+							// HACK: Xamarin.Mac/MonoMac limitation: no direct way to release a window manually
+							// A NSWindow instance will be removed from NSApplication.SharedApplication.Windows
+							// only if it is being closed with ReleasedWhenClosed set to true but not on Dispose
+							// and there is no managed way to tell Cocoa to release the window manually (and to
+							// remove it from the active window list).
+							// see also: https://bugzilla.xamarin.com/show_bug.cgi?id=45298
+							// WORKAROUND:
+							// bump native reference count by calling DangerousRetain()
+							// base.Dispose will now unref the window correctly without crashing
+							DangerousRetain();
+						}
+						// tell Cocoa to release the window on Close
+						ReleasedWhenClosed = true;
 					}
-					// tell Cocoa to release the window on Close
-					ReleasedWhenClosed = true;
 
 					// Close the window (Cocoa will do its job even if the window is already closed)
 					Messaging.void_objc_msgSend (this.Handle, closeSel.Handle);
