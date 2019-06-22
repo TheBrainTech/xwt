@@ -48,7 +48,7 @@ using System.Linq;
 
 namespace Xwt.WPFBackend
 {
-	internal static class DataConverter
+	public static class DataConverter
 	{
 		//
 		// Rect/Point
