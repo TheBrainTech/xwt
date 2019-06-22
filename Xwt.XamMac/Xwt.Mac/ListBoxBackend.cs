@@ -23,22 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using Xwt.Backends;
 
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.AppKit;
-#else
+using System;
 using AppKit;
-#endif
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
 	public class ListBoxBackend: ListViewBackend, IListBoxBackend
 	{
-		ListViewColumn column = new ListViewColumn ();
+		readonly ListViewColumn column = new ListViewColumn { Expands = true };
 		NSTableColumn columnHandle;
 
 		public ListBoxBackend ()
@@ -69,41 +63,6 @@ namespace Xwt.Mac
 			foreach (var v in views)
 				column.Views.Add (v);
 			UpdateColumn (column, columnHandle, ListViewColumnChange.Cells);
-		}
-
-		public override void SetSource (IListDataSource source, IBackend sourceBackend)
-		{
-			base.SetSource (source, sourceBackend);
-
-			// HMH, February 2, 2017
-			// Calling HandleColumnSizeChanged on all of these events results in the ListBox being so slow that it is unusable for any list over 20 or so items.
-			// Removing these event handlers does not appear to have any negative effects in our usage.
-			//source.RowInserted += HandleColumnSizeChanged;
-			//source.RowDeleted += HandleColumnSizeChanged;
-			//source.RowChanged += HandleColumnSizeChanged;
-			ResetColumnSize (source);
-		}
-
-		void HandleColumnSizeChanged (object sender, ListRowEventArgs e)
-		{
-			var source = (IListDataSource)sender;
-			ResetColumnSize (source);
-		}
-
-		void ResetColumnSize (IListDataSource source)
-		{
-			// Calculate size of column
-			// This is how Apple implements it; unfortunately, they don't expose this functionality in the API.
-			// https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSTableViewDelegate_Protocol/index.html#//apple_ref/occ/intfm/NSTableViewDelegate/tableView:sizeToFitWidthOfColumn:
-			nfloat w = 0;
-			for (var row = 0; row < source.RowCount; row++) {
-				using (var cell = Table.GetCell (0, row)) {
-					var size = cell.CellSize;
-					w = (nfloat)Math.Max (w, size.Width);
-				}
-			}
-			columnHandle.MinWidth = w;
-			columnHandle.Width = w;
 		}
 	}
 }

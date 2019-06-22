@@ -52,13 +52,14 @@ namespace Xwt.WPFBackend
 				WindowsClipboard.Clear();
 			}
 
-			if(type == TransferDataType.Html) {
-				WindowsClipboard.SetData(type.ToWpfDataFormat(), GenerateCFHtml(dataSource().ToString()));
-			} else if(type == TransferDataType.Image) {
-				Xwt.Drawing.Image img = dataSource() as Xwt.Drawing.Image;
-				if(img != null) {
-					WpfImage src = img.ToBitmap().GetBackend() as WpfImage;
-					WindowsClipboard.SetData(type.ToWpfDataFormat(), src.MainFrame);
+			if (type == TransferDataType.Html) {
+				WindowsClipboard.SetData (type.ToWpfDataFormat (), GenerateCFHtml (dataSource ().ToString ()));
+			} else if (type == TransferDataType.Image) {
+				var img = dataSource() as Xwt.Drawing.Image;
+				if (img != null)
+				{
+					var src = img.ToBitmap().GetBackend() as WpfImage;
+					WindowsClipboard.SetData (type.ToWpfDataFormat (), src.MainFrame);
 				}
 			} else if(type == TransferDataType.Uri) {
 				WindowsClipboard.SetFileDropList((StringCollection)(dataSource()));

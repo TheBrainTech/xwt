@@ -32,13 +32,13 @@ underlying platform.   These are the engines that are supported on
 each platform:
 
 * Windows: WPF engine, Gtk engine (using Gtk#)
-* MacOS X: Cocoa engine (using MonoMac) and Gtk engine (using Gtk#)
+* MacOS X: Cocoa engine (using Xamarin.Mac) and Gtk engine (using Gtk#)
 * Linux: Gtk engine (using Gtk#)
 
 This means for example that you can write code for Xwt on Windows that
 can be hosted on an existing WPF application (like Visual Studio) or
 an existing Gtk# application (like MonoDevelop).   Or on Mac, you can
-host Xwt on an existing Cocoa/MonoMac application or you can host it
+host Xwt on an existing Cocoa/Xamarin.Mac application or you can host it
 in our own MonoDevelop IDE.
 
 Getting Started
@@ -58,7 +58,7 @@ to pick the libraries that you want to use in your project.
 * Windows+Gtk: Xwt.dll + Xwt.Gtk.dll (requires Gtk#)
 * Linux+Gtk: Xwt.dll + Xwt.Gtk.dll (requires Gtk#)
 * Mac+Gtk: Xwt.dll + Xwt.Gtk.dll (requires Gtk#)
-* Mac+Cocoa: Xwt.dll + Xwt.Mac.dll (requires MonoMac.dll)
+* Mac+Cocoa: Xwt.dll + Xwt.XamMac.dll (requires Xamarin.Mac.dll)
 
 Hello World
 -----------
@@ -70,29 +70,33 @@ at compile time.
 
 This is the simplest Xwt program you can write:
 
-	using System;
-	using Xwt;
-	
-	class XwtDemo {
-		[STAThread]
-		static void Main ()
-		{
-			Application.Initialize (ToolkitType.Gtk);
-			var mainWindow = new Window (){
-				Title = "Xwt Demo Application",
-				Width = 500,
-				Height = 400
-			};
-			mainWindow.Show ();
-			Application.Run ();
-			mainWindow.Dispose ();
-		}
-	}
+```cs
+using System;
+using Xwt;
 
-You use the Application.Initialize() method to get the backend
+class XwtDemo
+{
+    [STAThread]
+    static void Main()
+    {
+        Application.Initialize(ToolkitType.Gtk);
+        var mainWindow = new Window()
+        {
+            Title = "Xwt Demo Application",
+            Width = 500,
+            Height = 400
+        };
+        mainWindow.Show();
+        Application.Run();
+        mainWindow.Dispose();
+    }
+}
+```
+
+You use the `Application.Initialize()` method to get the backend
 initialized. In this example we are using the Gtk backend. If you
 want to use another backend, just change the parameter provided
-to the Initialize() method. Also make sure the appropiate backend
+to the `Initialize()` method. Also make sure the appropiate backend
 DLL is available in the application directory.
 
 Then we create an instance of the Window class, this class exposes two
@@ -157,14 +161,15 @@ based on the contents of the childrens on it.
 For example, the following attaches various labels and data entries to
 a Table:
 
-	t = new Table ();
-	t.Attach (new Label ("One:"), 0, 1, 0, 1);
-	t.Attach (new TextEntry (), 1, 2, 0, 1);
-	t.Attach (new Label ("Two:"), 0, 1, 1, 2);
-	t.Attach (new TextEntry (), 1, 2, 1, 2);
-	t.Attach (new Label ("Three:"), 0, 1, 2, 3);
-	t.Attach (new TextEntry (), 1, 2, 2, 3);
-
+```cs
+var table = new Table();
+table.Attach(new Label ("One:"), 0, 1, 0, 1);
+table.Attach(new TextEntry (), 1, 2, 0, 1);
+table.Attach(new Label ("Two:"), 0, 1, 1, 2);
+table.Attach(new TextEntry (), 1, 2, 1, 2);
+table.Attach(new Label ("Three:"), 0, 1, 2, 3);
+table.Attach(new TextEntry (), 1, 2, 2, 3);
+```
 
 The Application Class
 =====================
@@ -180,14 +185,14 @@ binding to the native toolkit. You can pass an optional parameter to
 this method that specifies the full type name to load as the backend.
 
 For example, you can force the initialization of the backend to be
-specifically Gtk+ or specifically MonoMac based on MacOS.   This is
+specifically Gtk+ or specifically Xamarin.Mac based on MacOS.   This is
 currently done like this:
 
-	Application.Initialize ("Xwt.GtkBackend.GtkEngine, Xwt.Gtk, Version=1.0.0.0");
+	Application.Initialize("Xwt.GtkBackend.GtkEngine, Xwt.Gtk, Version=1.0.0.0");
 
 or:
 
-	Application.Initialize ("Xwt.Mac.MacEngine, Xwt.Mac, Version=1.0.0.0");
+	Application.Initialize("Xwt.Mac.MacEngine, Xwt.XamMac, Version=1.0.0.0");
 
 As you saw from the Hello World sample, toplevel windows are created
 by creating an instance of the "Xwt.Window" class.   This class

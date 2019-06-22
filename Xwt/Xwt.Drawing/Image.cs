@@ -316,7 +316,7 @@ namespace Xwt.Drawing
 				}
 				return new ThemedImage (newImages);
 			} else {
-				var img = new Image (Toolkit.CurrentEngine.ImageBackendHandler.CreateMultiSizeIcon (allImages.Select (i => i.GetBackend ())));
+				var img = new Image (Toolkit.CurrentEngine.ImageBackendHandler.CreateMultiSizeIcon (allImages.Select (ExtensionMethods.GetBackend)));
 
 				if (allImages.All (i => i.NativeRef.HasNativeSource)) {
 					var sources = allImages.Select (i => i.NativeRef.NativeSource).ToArray ();
@@ -330,7 +330,7 @@ namespace Xwt.Drawing
 		{
 			if (Toolkit.CurrentEngine == null)
 				throw new ToolkitNotInitializedException ();
-			return new Image (Toolkit.CurrentEngine.ImageBackendHandler.CreateMultiResolutionImage (images.Select (i => i.GetBackend ())));
+			return new Image (Toolkit.CurrentEngine.ImageBackendHandler.CreateMultiResolutionImage (images.Select (ExtensionMethods.GetBackend)));
 		}
 
 		public static Image FromFile (string file)
@@ -393,7 +393,15 @@ namespace Xwt.Drawing
 			else
 				return Path.GetExtension (fileName);
 		}
-		
+
+		public static Size GetSize (string file)
+		{
+			var toolkit = Toolkit.CurrentEngine;
+			if (toolkit == null)
+				throw new ToolkitNotInitializedException ();
+			return toolkit.ImageBackendHandler.GetSize (file);
+		}
+
 		public void Save (string file, ImageFileType fileType)
 		{
 			using (var f = File.OpenWrite (file))
@@ -1061,9 +1069,7 @@ namespace Xwt.Drawing
 						yield return fn;
 				}
 			} else {
-				if (Path.DirectorySeparatorChar == '\\') // windows)
-					baseName = Path.GetFileName (baseName);
-				var files = Directory.GetFiles (Path.GetDirectoryName (fileName), baseName + "*" + ext);
+				var files = Directory.GetFiles (Path.GetDirectoryName (fileName), Path.GetFileName (baseName) + "*" + ext);
 				foreach (var f in files)
 					yield return f;
 			}
@@ -1106,7 +1112,6 @@ namespace Xwt.Drawing
 			var res = new Image (img, toolkit) {
 				requestedSize = reqSize
 			};
-			var ld = loader;
 			res.NativeRef.SetCustomLoaderSource (loader, fileName, tags);
 			return res;
 		}

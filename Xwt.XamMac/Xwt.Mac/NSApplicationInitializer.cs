@@ -24,14 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
-#if MONOMAC
-using MonoMac.AppKit;
-#else
 using AppKit;
-#endif
-
 
 namespace Xwt.Mac
 {
@@ -42,6 +35,12 @@ namespace Xwt.Mac
 			var ds = System.Threading.Thread.GetNamedDataSlot ("NSApplication.Initialized");
 			if (System.Threading.Thread.GetData (ds) == null) {
 				System.Threading.Thread.SetData (ds, true);
+
+				// IgnoreMissingAssembliesDuringRegistration is only avalilable in Xamarin.Mac 3.4+
+				// Use reflection to not break builds with older Xamarin.Mac
+				var ignoreMissingAssemblies = typeof (NSApplication).GetField ("IgnoreMissingAssembliesDuringRegistration",
+				                                                               System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+				ignoreMissingAssemblies?.SetValue (null, true);
 				NSApplication.Init ();
 			}
 		}

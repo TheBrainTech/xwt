@@ -115,7 +115,17 @@ namespace Xwt
 		ITreeViewBackend Backend {
 			get { return (ITreeViewBackend) BackendHost.Backend; }
 		}
-		
+
+		public bool BorderVisible {
+			get { return Backend.BorderVisible; }
+			set { Backend.BorderVisible = value; }
+		}
+
+		public bool UseAlternatingRowColors {
+			get { return Backend.UseAlternatingRowColors; }
+			set { Backend.UseAlternatingRowColors = value; }
+		}
+
 		public ScrollPolicy VerticalScrollPolicy {
 			get { return Backend.VerticalScrollPolicy; }
 			set { Backend.VerticalScrollPolicy = value; }
@@ -193,6 +203,24 @@ namespace Xwt
 		{
 			get { return Backend.GridLinesVisible; }
 			set { Backend.GridLinesVisible = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether native animations are enabled.
+		/// </summary>
+		/// <value><c>true</c> if animations enabled; otherwise, <c>false</c>.</value>
+		/// <remarks>
+		/// This property controls native TreeView animations (like slow expanding collapsing rows)
+		/// only and is not related to <see cref="T:Xwt.Motion.Animation"/>.
+		/// </remarks>
+		public bool AnimationsEnabled
+		{
+			get {
+				return Backend.AnimationsEnabled;
+			}
+			set {
+				Backend.AnimationsEnabled = value;
+			}
 		}
 		
 		/// <summary>

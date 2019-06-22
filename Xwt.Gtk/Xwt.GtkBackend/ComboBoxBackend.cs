@@ -96,9 +96,7 @@ namespace Xwt.GtkBackend
 
 		void HandleChanged (object sender, EventArgs e)
 		{
-			ApplicationContext.InvokeUserCode (delegate {
-				EventSink.OnSelectionChanged ();
-			});
+			ApplicationContext.InvokeUserCode (EventSink.OnSelectionChanged);
 		}
 
 		#region IComboBoxBackend implementation
@@ -184,6 +182,19 @@ namespace Xwt.GtkBackend
 
 		public void QueueDraw (object target, Gtk.TreeIter iter)
 		{
+		}
+
+		public void QueueResize (object target, Gtk.TreeIter iter)
+		{
+		}
+
+		bool disposed;
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && !disposed)
+				Widget.RowSeparatorFunc = null;
+			disposed = true;
+			base.Dispose(disposing);
 		}
 
 		#endregion

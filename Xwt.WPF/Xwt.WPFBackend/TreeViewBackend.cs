@@ -1,4 +1,4 @@
-﻿//
+//
 // TreeViewBackend.cs
 //
 // Author:
@@ -42,7 +42,7 @@ using System.Windows.Controls;
 namespace Xwt.WPFBackend
 {
 	public class TreeViewBackend
-		: WidgetBackend, ITreeViewBackend
+		: WidgetBackend, ITreeViewBackend, ICellRendererTarget
 	{
 		Dictionary<CellView,CellInfo> cellViews = new Dictionary<CellView, CellInfo> ();
 
@@ -116,6 +116,15 @@ namespace Xwt.WPFBackend
 			}
 		}
 
+		public bool BorderVisible {
+			get {
+				return Tree.BorderThickness.Left != 0;
+			}
+			set {
+				Tree.BorderThickness = value ? new Thickness (1) : new Thickness (0);
+			}
+		}
+
 		private bool headersVisible = true;
 		public bool HeadersVisible {
 			get { return this.headersVisible; }
@@ -143,6 +152,17 @@ namespace Xwt.WPFBackend
 				gridLinesVisible = value;
 			}
 		}
+
+		public bool UseAlternatingRowColors {
+			get {
+				return Tree.AlternationCount == 2;
+			}
+			set {
+				Tree.AlternationCount = value ? 2 : 0;
+			}
+		}
+
+		public bool AnimationsEnabled { get; set; }
 
 		public void SelectRow (TreePosition pos)
 		{
@@ -238,7 +258,7 @@ namespace Xwt.WPFBackend
 				break;
 
 			case ListViewColumnChange.Cells:
-                var cellTemplate = CellUtil.CreateBoundColumnTemplate(Context, Frontend, column.Views);
+                var cellTemplate = CellUtil.CreateBoundColumnTemplate(Context, this, column.Views);
 
 				col.CellTemplate = new DataTemplate { VisualTree = cellTemplate };
 
@@ -322,6 +342,8 @@ namespace Xwt.WPFBackend
 			return true;
 		}
 
+		internal bool RowActivatedEventEnabled { get; private set; }
+
 		public override void EnableEvent (object eventId)
 		{
 			base.EnableEvent (eventId);
@@ -330,6 +352,16 @@ namespace Xwt.WPFBackend
 				case TableViewEvent.SelectionChanged:
 					Tree.SelectedItemsChanged += OnSelectedItemsChanged;
 					break;
+				}
+			}
+
+			if (eventId is TreeViewEvent)
+			{
+				switch ((TreeViewEvent)eventId)
+				{
+					case TreeViewEvent.RowActivated:
+						RowActivatedEventEnabled = true;
+						break;
 				}
 			}
 		}
@@ -342,6 +374,16 @@ namespace Xwt.WPFBackend
 				case TableViewEvent.SelectionChanged:
 					Tree.SelectedItemsChanged -= OnSelectedItemsChanged;
 					break;
+				}
+			}
+
+			if (eventId is TreeViewEvent)
+			{
+				switch ((TreeViewEvent)eventId)
+				{
+					case TreeViewEvent.RowActivated:
+						RowActivatedEventEnabled = false;
+						break;
 				}
 			}
 		}
@@ -513,6 +555,12 @@ namespace Xwt.WPFBackend
 			var result = VisualTreeHelper.HitTest (Tree, new System.Windows.Point (p.X, p.Y)) as PointHitTestResult;
 
 			var element = (result != null) ? result.VisualHit as FrameworkElement : null;
+			return GetRowForElement (element);
+		}
+
+		TreePosition GetRowForElement (FrameworkElement sender)
+		{
+			var element = sender;
 			while (element != null) {
 				if (element is ExTreeViewItem)
 					break;
@@ -526,6 +574,11 @@ namespace Xwt.WPFBackend
 				return null;
 
 			return (element.DataContext as TreeStoreNode);
+		}
+
+		void ICellRendererTarget.SetCurrentEventRow (object dataItem)
+		{
+			CurrentEventRow = dataItem as TreePosition;
 		}
 
 		public Rectangle GetCellBounds (TreePosition pos, CellView cell, bool includeMargin)

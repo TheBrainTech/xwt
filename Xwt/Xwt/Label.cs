@@ -77,12 +77,13 @@ namespace Xwt
 				markup = value;
 				var t = FormattedText.FromMarkup (markup);
 				Backend.SetFormattedText (t);
+				OnPreferredSizeChanged ();
 			}
 		}
 
-		public Color TextColor {
-			get { return Backend.TextColor; }
-			set { Backend.TextColor = value; }
+		public bool Selectable {
+			get { return Backend.Selectable; }
+			set { Backend.Selectable = value; }
 		}
 
 		[DefaultValue (Alignment.Start)]

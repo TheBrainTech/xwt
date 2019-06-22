@@ -55,8 +55,6 @@ namespace Xwt
 			}
 		}
 
-		FileDialogFilterCollection filters = new FileDialogFilterCollection (null);
-
 		public FileSelector ()
 		{
 		}
@@ -101,7 +99,7 @@ namespace Xwt
 		/// Filters that allow the user to chose the kinds of files the dialog displays.
 		/// </summary>
 		public FileDialogFilterCollection Filters {
-			get { return filters; }
+			get { return Backend.Filters; }
 		}
 
 		/// <summary>
@@ -119,7 +117,6 @@ namespace Xwt
 			get { return Backend.FileSelectionMode; }
 			set { Backend.FileSelectionMode = value; }
 		}
-
 
 		[MappedEvent(FileSelectorEvent.FileChanged)]
 		protected virtual void OnFileChanged (EventArgs args)
@@ -166,11 +163,17 @@ namespace Xwt
 			filters = new FileDialogFilterCollection (null);
 		
 			var box = new HBox ();
+			box.Accessible.IsAccessible = true;
+			box.Accessible.Role = Accessibility.Role.Group;
+			box.Accessible.Title = Application.TranslationCatalog.GetString("File Selector");
+
 			entry = new TextEntry ();
+			entry.Accessible.Label = Application.TranslationCatalog.GetString ("Path");
 			entry.Changed += (sender, e) => NotifyFileChange ();
 			box.PackStart (entry, true);
 
 			var btn = new Button ("...");
+			btn.Accessible.Label = Application.TranslationCatalog.GetString ("Browse");
 			box.PackStart (btn);
 			btn.Clicked += BtnClicked;
 			Content = box;
@@ -203,6 +206,10 @@ namespace Xwt
 				else
 					currentFolder = value;
 			}
+		}
+
+		public FileDialogFilterCollection Filters {
+			get { return filters; }
 		}
 
 		public string FileName {

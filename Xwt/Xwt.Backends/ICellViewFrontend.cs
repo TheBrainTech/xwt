@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Xwt.Accessibility;
 
 namespace Xwt.Backends
 {
@@ -34,6 +35,8 @@ namespace Xwt.Backends
 		ICellViewEventSink Load (ICellDataSource dataSource);
 		void Unload ();
 		bool Visible { get; }
+		bool Expands { get; }
+		AccessibleFields AccessibleFields { get; }
 	}
 
 	public interface ICellViewProvider

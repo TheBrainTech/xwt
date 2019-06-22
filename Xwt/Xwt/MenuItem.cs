@@ -28,7 +28,7 @@ using System;
 using Xwt.Backends;
 using System.ComponentModel;
 using Xwt.Drawing;
-
+using Xwt.Accessibility;
 
 namespace Xwt
 {
@@ -54,6 +54,16 @@ namespace Xwt
 			}
 		}
 		
+		Accessible accessible;
+		public Accessible Accessible {
+			get {
+				if (accessible == null) {
+					accessible = new Accessible (this);
+				}
+				return accessible;
+			}
+		}
+
 		protected override Xwt.Backends.BackendHost CreateBackendHost ()
 		{
 			return new MenuItemBackendHost ();
@@ -83,7 +93,11 @@ namespace Xwt
 			Image = command.Icon;
 		}
 		
-		public IMenuItemBackend Backend {
+		public IMenuItemBackend MenuItemBackend {
+			get { return Backend; }
+		}
+
+		IMenuItemBackend Backend {
 			get { return (IMenuItemBackend) base.BackendHost.Backend; }
 		}
 
@@ -98,6 +112,22 @@ namespace Xwt
 				if (IsSeparator)
 					throw new NotSupportedException ();
 				Backend.Label = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the tooltip text.
+		/// </summary>
+		/// <value>The tooltip text.</value>
+		[DefaultValue("")]
+		public string TooltipText
+		{
+			get { return Backend.TooltipText ?? ""; }
+			set
+			{
+				if (IsSeparator)
+					throw new NotSupportedException();
+				Backend.TooltipText = value;
 			}
 		}
 

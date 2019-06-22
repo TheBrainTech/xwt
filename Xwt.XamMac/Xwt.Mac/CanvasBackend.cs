@@ -26,19 +26,9 @@
 // THE SOFTWARE.
 
 using System;
-using Xwt.Backends;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.CoreGraphics;
-using MonoMac.AppKit;
-using CGRect = System.Drawing.RectangleF;
-using CGSize = System.Drawing.SizeF;
-#else
-using CoreGraphics;
 using AppKit;
-#endif
+using CoreGraphics;
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
@@ -102,8 +92,28 @@ namespace Xwt.Mac
 			w.Frame = new CGRect ((nfloat)rect.X, (nfloat)rect.Y, (nfloat)rect.Width, (nfloat)rect.Height);;
 			w.NeedsDisplay = true;
 		}
+
+		bool canGetFocus;
+		public override bool CanGetFocus
+		{
+			get { return canGetFocus; }
+			set { canGetFocus = value; }
+		}
+
+		public override void SetFocus()
+		{
+			if (Widget.Window != null && CanGetFocus)
+				Widget.Window.MakeFirstResponder(Widget);
+		}
+
+		public override bool HasFocus
+		{
+			get {
+				return Widget.Window != null && Widget.Window.FirstResponder == Widget;
+			}
+		}
 	}
-	
+
 	class CanvasView: WidgetView
 	{
 		ICanvasEventSink eventSink;
@@ -128,6 +138,26 @@ namespace Xwt.Mac
 				};
 				eventSink.OnDraw (backend, new Rectangle (dirtyRect.X, dirtyRect.Y, dirtyRect.Width, dirtyRect.Height));
 			});
+		}
+
+		public override Foundation.NSObject AccessibilityProxy {
+			get {
+				return base.AccessibilityProxy;
+			}
+			set {
+				base.AccessibilityProxy = value;
+			}
+		}
+
+		public override bool AcceptsFirstResponder ()
+		{
+			return Backend?.CanGetFocus ?? false;
+		}
+
+		public override bool BecomeFirstResponder()
+		{
+			// this is really required
+			return base.BecomeFirstResponder();
 		}
 	}
 }

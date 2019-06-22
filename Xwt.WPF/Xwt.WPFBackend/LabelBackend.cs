@@ -34,6 +34,8 @@ using SWM = System.Windows.Media;
 using SWD = System.Windows.Documents;
 
 using Xwt.Backends;
+using System.Windows.Automation.Peers;
+using System.Windows.Threading;
 
 namespace Xwt.WPFBackend
 {
@@ -71,6 +73,40 @@ namespace Xwt.WPFBackend
 				Widget.InvalidateMeasure();
 			}
 		}
+
+		public new bool CanGetFocus {
+			get {
+				return ((WpfLabel) Widget).TextBlock.Focusable;
+			}
+			set {
+				((WpfLabel) Widget).TextBlock.Focusable = value;
+			}
+		}
+
+		void FocusOnUIThread ()
+		{
+			// Using Render (7) priority here instead of default Normal (9) so that
+			// the component has some time to initialize and get ready to receive the focus
+			Widget.Dispatcher.BeginInvoke ((Action) (() => {
+				((WpfLabel) Widget).TextBlock.Focus ();
+			}), DispatcherPriority.Render);
+		}
+
+		public new void SetFocus ()
+		{
+			if (Widget.IsLoaded)
+				FocusOnUIThread ();
+			else
+				Widget.Loaded += DeferredFocus;
+		}
+
+		void DeferredFocus (object sender, RoutedEventArgs e)
+		{
+			Widget.Loaded -= DeferredFocus;
+			FocusOnUIThread ();
+		}
+
+		public bool Selectable { get; set; } // TODO: this is only supported on Win10 with UWP?
 
 		public void SetFormattedText (FormattedText text)
 		{
@@ -115,7 +151,7 @@ namespace Xwt.WPFBackend
 					s.TextDecorations.Add (dec);
 				}
 				else if (at is Drawing.StrikethroughTextAttribute) {
-					var xa = (Drawing.UnderlineTextAttribute)at;
+					var xa = (Drawing.StrikethroughTextAttribute)at;
 					var dec = new TextDecoration (TextDecorationLocation.Strikethrough, null, 0, TextDecorationUnit.FontRecommended, TextDecorationUnit.FontRecommended);
 					s.TextDecorations.Add (dec);
 				}
@@ -239,6 +275,23 @@ namespace Xwt.WPFBackend
 		public SWC.TextBlock TextBlock {
 			get;
 			set;
+		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new WpfLabelAutomationPeer (this);
+		}
+
+		class WpfLabelAutomationPeer : LabelAutomationPeer
+		{
+			public WpfLabelAutomationPeer (WpfLabel owner) : base (owner)
+			{
+			}
+
+			protected override string GetNameCore ()
+			{
+				return ((WpfLabel)Owner).TextBlock.Text;
+			}
 		}
 	}
 }

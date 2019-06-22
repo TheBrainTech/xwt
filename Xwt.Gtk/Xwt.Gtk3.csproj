@@ -9,6 +9,7 @@
     <AssemblyName>Xwt.Gtk3</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\xwt.snk</AssemblyOriginatorKeyFile>
+    <NoWarn>0612, 0618</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -20,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +33,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>XWT_GTK3</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -127,6 +130,7 @@
     <Compile Include="Xwt.GtkBackend.CellViews\CustomCellRendererImage.cs" />
     <Compile Include="Xwt.GtkBackend.CellViews\CustomCellRendererText.cs" />
     <Compile Include="Xwt.GtkBackend.CellViews\CustomCellRendererToggle.cs" />
+    <Compile Include="Xwt.GtkBackend.CellViews\CustomCellRendererComboBox.cs" />
     <Compile Include="Xwt.GtkBackend.CellViews\Gtk3CellRendererCustom.cs" />
     <Compile Include="Xwt.GtkBackend\CustomListModel.cs" />
     <Compile Include="Xwt.GtkBackend\ListBoxBackend.cs" />
@@ -158,6 +162,9 @@
     <Compile Include="Xwt.GtkBackend\SelectFontDialogBackend.cs" />
     <Compile Include="Xwt.GtkBackend\Gtk3FontChooserDialog.cs" />
     <Compile Include="Xwt.GtkBackend\FontSelectorBackend.cs" />
+    <Compile Include="Xwt.GtkBackend\AccessibleBackend.cs" />
+    <Compile Include="Xwt.GtkBackend\PopupWindowBackend.cs" />
+    <Compile Include="Xwt.GtkBackend\UtilityWindowBackend.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

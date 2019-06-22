@@ -3,8 +3,10 @@
 //  
 // Author:
 //       Carlos Alberto Cortez <calberto.cortez@gmail.com>
+//       Konrad M. Kruczynski <kkruczynski@antmicro.com>
 // 
 // Copyright (c) 2011 Carlos Alberto Cortez
+// Copyright (c) 2016 Antmicro Ltd
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -37,7 +40,7 @@ using Xwt.Backends;
 
 namespace Xwt.WPFBackend
 {
-	public class WindowFrameBackend : IWindowFrameBackend
+	public class WindowFrameBackend : IWindowFrameBackend, IDispatcherBackend
 	{
 		System.Windows.Window window;
 		WindowInteropHelper interopHelper;
@@ -104,6 +107,10 @@ namespace Xwt.WPFBackend
 		public virtual bool HasMenu {
 			get { return false;  }
 		}
+		public bool FullScreen {
+			get { return false; } // always false on windows
+			set { }
+		}
 
 		protected WindowFrame Frontend {
 			get { return frontend; }
@@ -114,7 +121,7 @@ namespace Xwt.WPFBackend
 			get { return eventSink; }
 		}
 
-		bool IWindowFrameBackend.Decorated {
+		public virtual bool Decorated {
 			get { return window.WindowStyle != WindowStyle.None; }
 			set {
 				window.WindowStyle = value ? WindowStyle.SingleBorderWindow : WindowStyle.None;
@@ -138,7 +145,7 @@ namespace Xwt.WPFBackend
 				Window.Owner = null;
 		}
 
-		bool IWindowFrameBackend.Resizable {
+		public virtual bool Resizable {
 			get {
 				return resizable;
 			}
@@ -159,9 +166,9 @@ namespace Xwt.WPFBackend
 			}
 		}
 
-		void UpdateResizeMode ()
+		protected void UpdateResizeMode ()
 		{
-			var m = resizable && window.WindowStyle == WindowStyle.SingleBorderWindow ? ResizeMode.CanResize : ResizeMode.NoResize;
+			var m = resizable && window.WindowStyle != WindowStyle.None ? ResizeMode.CanResize : ResizeMode.NoResize;
 			if (m != window.ResizeMode) {
 				window.ResizeMode = m;
 				OnResizeModeChanged ();
@@ -210,6 +217,11 @@ namespace Xwt.WPFBackend
 		{
 			get { return window.Opacity; }
 			set { window.Opacity = value; }
+		}
+
+		public bool HasFocus
+		{
+			get { return window.IsActive; }
 		}
 
 		void IWindowFrameBackend.Present ()
@@ -424,13 +436,12 @@ namespace Xwt.WPFBackend
 			var size = rect.Size;
 			var loc = rect.Location;
 
-			var border = GetBorderSize ();
-			size.Height += border.Height * 2;
-			size.Width += border.Width * 2;
-			loc.X -= border.Width;
-			loc.Y -= border.Height;
-
 			if (((IWindowFrameBackend)this).Decorated) {
+			    var border = GetBorderSize ();
+			    size.Height += border.Height * 2;
+			    size.Width += border.Width * 2;
+			    loc.X -= border.Width;
+			    loc.Y -= border.Height;
 				size.Height += SystemParameters.WindowCaptionHeight;
 				loc.Y -= SystemParameters.WindowCaptionHeight;
 			}
@@ -447,13 +458,13 @@ namespace Xwt.WPFBackend
 			var size = rect.Size;
 			var loc = rect.Location;
 
-			var border = GetBorderSize ();
-			size.Height -= border.Height * 2;
-			size.Width -= border.Width * 2;
-			loc.X += border.Width;
-			loc.Y += border.Height;
 
 			if (((IWindowFrameBackend)this).Decorated) {
+			    var border = GetBorderSize ();
+			    size.Height -= border.Height * 2;
+			    size.Width -= border.Width * 2;
+			    loc.X += border.Width;
+			    loc.Y += border.Height;
                 size.Height -= SystemParameters.WindowCaptionHeight;
                 loc.Y += SystemParameters.WindowCaptionHeight;
 			}
@@ -466,6 +477,41 @@ namespace Xwt.WPFBackend
 			size.Height = Math.Max (0, size.Height);
 
 			return new Rectangle (loc, size);
+		}
+
+		Task IDispatcherBackend.InvokeAsync(Action action)
+		{
+			var ts = new TaskCompletionSource<int>();
+			var result = Window.Dispatcher.BeginInvoke((Action)delegate
+			{
+				try
+				{
+					action();
+					ts.SetResult(0);
+				}
+				catch (Exception ex)
+				{
+					ts.SetException(ex);
+				}
+			}, null);
+			return ts.Task;
+		}
+
+		Task<T> IDispatcherBackend.InvokeAsync<T>(Func<T> func)
+		{
+			var ts = new TaskCompletionSource<T>();
+			var result = Window.Dispatcher.BeginInvoke((Action)delegate
+			{
+				try
+				{
+					ts.SetResult(func());
+				}
+				catch (Exception ex)
+				{
+					ts.SetException(ex);
+				}
+			}, null);
+			return ts.Task;
 		}
 	}
 }

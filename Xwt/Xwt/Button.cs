@@ -114,15 +114,6 @@ namespace Xwt
 			}
 		}
 
-		public bool IsDefault {
-			get {
-				return Backend.IsDefault;
-			}
-			set {
-				Backend.IsDefault = value;
-			}
-		}
-
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Xwt.Button"/> uses a mnemonic.
 		/// </summary>
@@ -181,6 +172,16 @@ namespace Xwt
 				Backend.SetButtonType (type);
 				OnPreferredSizeChanged ();
 			}
+		}
+
+		public Color LabelColor {
+			get { return Backend.LabelColor; }
+			set { Backend.LabelColor = value; }
+		}
+
+		public bool IsDefault {
+			get { return Backend.IsDefault; }
+			set { Backend.IsDefault = value; }
 		}
 		
 		[MappedEvent(ButtonEvent.Clicked)]

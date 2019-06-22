@@ -321,6 +321,7 @@ namespace Xwt.GtkBackend
 
 			if (changed_timeout_id > 0) {
 				GLib.Source.Remove (changed_timeout_id);
+				changed_timeout_id = 0;
 			}
 
 			if (Ready)
@@ -329,6 +330,7 @@ namespace Xwt.GtkBackend
 
 		private bool OnChangedTimeout ()
 		{
+			changed_timeout_id = 0;
 			OnChanged ();
 			return false;
 		}
@@ -699,11 +701,20 @@ namespace Xwt.GtkBackend
 
 			private void RefreshGC ()
 			{
+				if (text_gc == null)
+					return;
+
+				text_gc.Dispose ();
 				text_gc = null;
 			}
 
 			protected override void OnDestroyed ()
 			{
+				RefreshGC();
+				if (layout != null) {
+					layout.Dispose ();
+					layout = null;
+				}
 				parent.StyleSet -= OnParentStyleSet;
 				base.OnDestroyed ();
 			}

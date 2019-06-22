@@ -24,13 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 using System;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-#endif
+using System.Collections.Generic;
+using AppKit;
 
 namespace Xwt.Mac
 {
@@ -39,6 +35,8 @@ namespace Xwt.Mac
 		object GetValue (object pos, int nField);
 		void SetValue (object pos, int nField, object value);
 		void SetCurrentEventRow (object pos);
-		nfloat RowHeight { get; set; }
+		void InvalidateRowHeight (object pos);
+		List<NSTableColumn> Columns { get; }
+		NSTableView TableView { get; }
 	}
 }

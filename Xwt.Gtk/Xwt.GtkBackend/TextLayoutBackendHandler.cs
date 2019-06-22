@@ -79,10 +79,7 @@ namespace Xwt.GtkBackend
 				set {
 					text = value ?? String.Empty;;
 					indexer = null;
-					if (attributes != null) {
-						attributes.Dispose ();
-						attributes = null;
-					}
+					ClearAttributes ();
 				}
 			}
 			
@@ -160,7 +157,13 @@ namespace Xwt.GtkBackend
 		{
 			this.Heigth = value;
 		}
-		
+
+		public override void SetAlignment (object backend, Alignment alignment)
+		{
+			var tl = (PangoBackend)backend;
+			tl.Layout.Alignment = alignment.ToPangoAlignment ();
+		}
+
 		public override void SetTrimming (object backend, TextTrimming textTrimming)
 		{
 			var tl = (PangoBackend)backend;
@@ -195,7 +198,7 @@ namespace Xwt.GtkBackend
 		{
 			var tl = (PangoBackend) backend;
 			int index, trailing;
-			tl.Layout.XyToIndex ((int)x, (int)y, out index, out trailing);
+			tl.Layout.XyToIndex (Pango.Units.FromPixels ((int)x), Pango.Units.FromPixels ((int)y), out index, out trailing);
 			return tl.TextIndexer.ByteIndexToIndex (index);
 		}
 

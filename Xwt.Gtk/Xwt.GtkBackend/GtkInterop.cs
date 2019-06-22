@@ -61,7 +61,10 @@ namespace Xwt.GtkBackend
 	/// </summary>
 	internal class FastPangoAttrList : IDisposable
 	{
+		const float PangoScale = 1024;
+
 		IntPtr list;
+		public Gdk.Color DefaultLinkColor = Toolkit.CurrentEngine.Defaults.FallbackLinkColor.ToGtkValue ();
 
 		public FastPangoAttrList ()
 		{
@@ -90,7 +93,11 @@ namespace Xwt.GtkBackend
 			else if (attr is FontWeightTextAttribute) {
 				var xa = (FontWeightTextAttribute)attr;
 				AddWeightAttribute ((Pango.Weight)(int)xa.Weight, start, end);
-			}
+			} 
+			else if (attr is FontSizeTextAttribute) {
+				var xa = (FontSizeTextAttribute)attr;
+				AddFontSizeAttribute ((int) (xa.Size * PangoScale), start, end);
+			} 
 			else if (attr is FontStyleTextAttribute) {
 				var xa = (FontStyleTextAttribute)attr;
 				AddStyleAttribute ((Pango.Style)(int)xa.Style, start, end);
@@ -108,8 +115,9 @@ namespace Xwt.GtkBackend
 				AddFontAttribute ((Pango.FontDescription)Toolkit.GetBackend (xa.Font), start, end);
 			}
 			else if (attr is LinkTextAttribute) {
+				// TODO: support "link-color" style prop for TextLayoutBackendHandler and CellRendererText
 				AddUnderlineAttribute (Pango.Underline.Single, start, end);
-				AddForegroundAttribute (Colors.Blue.ToGtkValue (), start, end);
+				AddForegroundAttribute (DefaultLinkColor, start, end);
 			}
 		}
 
@@ -147,6 +155,11 @@ namespace Xwt.GtkBackend
 			Add (pango_attr_strikethrough_new (strikethrough), start, end);
 		}
 
+		public void AddFontSizeAttribute (int size, uint start, uint end)
+		{
+			Add (pango_attr_size_new_absolute (size), start, end);
+		}
+
 		public void AddFontAttribute (Pango.FontDescription font, uint start, uint end)
 		{
 			Add (pango_attr_font_desc_new (font.Handle), start, end);
@@ -161,6 +174,9 @@ namespace Xwt.GtkBackend
 			}
 			pango_attr_list_insert (list, attribute);
 		}
+
+		[DllImport (GtkInterop.LIBPANGO, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr pango_attr_size_new_absolute (int size);
 
 		[DllImport (GtkInterop.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_style_new (Pango.Style style);
@@ -226,10 +242,12 @@ namespace Xwt.GtkBackend
 		}
 	}
 
-	internal class TextIndexer
+	public class TextIndexer
 	{
-		int[] indexToByteIndex;
-		int[] byteIndexToIndex;
+		static readonly List<int> emptyList = new List<int> ();
+		static readonly int [] emptyArray = new int [0];
+		int [] indexToByteIndex;
+		List<int> byteIndexToIndex;
 
 		public TextIndexer (string text)
 		{
@@ -239,7 +257,10 @@ namespace Xwt.GtkBackend
 		public int IndexToByteIndex (int i)
 		{
 			if (i >= indexToByteIndex.Length)
-				return i;
+				// if the index exceeds the byte index range, return the last byte index + 1
+				// telling pango to span the attribute to the end of the string
+				// this happens if the string contains multibyte characters
+				return indexToByteIndex[indexToByteIndex.Length-1] + 1;
 			return indexToByteIndex[i];
 		}
 
@@ -250,24 +271,27 @@ namespace Xwt.GtkBackend
 
 		public void SetupTables (string text)
 		{
-			if (text == null) {
-				this.indexToByteIndex = new int[0];
-				this.byteIndexToIndex = new int[0];
+			if (string.IsNullOrEmpty (text)) {
+				this.indexToByteIndex = emptyArray;
+				this.byteIndexToIndex = emptyList;
 				return;
 			}
 
-			var arr = text.ToCharArray ();
 			int byteIndex = 0;
-			int[] indexToByteIndex = new int[arr.Length];
-			var byteIndexToIndex = new List<int> ();
-			for (int i = 0; i < arr.Length; i++) {
-				indexToByteIndex[i] = byteIndex;
-				byteIndex += System.Text.Encoding.UTF8.GetByteCount (arr, i, 1);
-				while (byteIndexToIndex.Count < byteIndex)
-					byteIndexToIndex.Add (i);
+			int [] indexToByteIndex = new int [text.Length];
+			var byteIndexToIndex = new System.Collections.Generic.List<int> (text.Length);
+			unsafe {
+				fixed (char* p = text) {
+					for (int i = 0; i < text.Length; i++) {
+						indexToByteIndex[i] = byteIndex;
+						byteIndex += System.Text.Encoding.UTF8.GetByteCount (p + i, 1);
+						while (byteIndexToIndex.Count < byteIndex)
+							byteIndexToIndex.Add (i);
+					}
+				}
 			}
 			this.indexToByteIndex = indexToByteIndex;
-			this.byteIndexToIndex = byteIndexToIndex.ToArray ();
+			this.byteIndexToIndex = byteIndexToIndex;
 		}
 	}
 }

@@ -32,7 +32,7 @@ namespace Xwt.Backends
 	public interface ILabelBackend: IWidgetBackend
 	{
 		string Text { get; set; }
-		Color TextColor { get; set; }
+		bool Selectable { get; set; }
 		Alignment TextAlignment { get; set; }
 		EllipsizeMode Ellipsize { get; set; }
 		WrapMode Wrap { get; set; }

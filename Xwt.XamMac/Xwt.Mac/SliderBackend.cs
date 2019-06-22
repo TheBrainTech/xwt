@@ -26,19 +26,10 @@
 // THE SOFTWARE.
 
 using System;
-using Xwt.Backends;
 using System.Collections.Generic;
-
-#if MONOMAC
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using nint = System.Int32;
-using CGSize = System.Drawing.SizeF;
-#else
 using AppKit;
-using Foundation;
 using CoreGraphics;
-#endif
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
@@ -53,7 +44,6 @@ namespace Xwt.Mac
 		public void Initialize (Orientation dir)
 		{
 			orientation = dir;
-
 			// starting with macOS Sierra, for NSSlider, the orientation (.IsVertical readonly property)
 			// is set in the constructor based on the frame size (if width > height or not).
 			// (Cannot set frame size AFTER constructor.)
@@ -212,6 +202,15 @@ namespace Xwt.Mac
 			}
 			set {
 				((MacSliderCell)Cell).StepIncrement = value;
+			}
+		}
+
+		public override bool AllowsVibrancy {
+			get {
+				// we don't support vibrancy
+				if (EffectiveAppearance.AllowsVibrancy)
+					return false;
+				return base.AllowsVibrancy;
 			}
 		}
 	}

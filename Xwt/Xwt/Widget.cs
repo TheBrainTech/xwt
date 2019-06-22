@@ -36,6 +36,7 @@ using System.Reflection;
 using System.Xaml;
 using System.Linq;
 using Xwt.Motion;
+using Xwt.Accessibility;
 
 namespace Xwt
 {
@@ -64,6 +65,7 @@ namespace Xwt
 		WidgetPlacement alignHorizontal = WidgetPlacement.Fill;
 		bool expandVertical;
 		bool expandHorizontal;
+		Accessible accessible;
 
 		EventHandler<DragOverCheckEventArgs> dragOverCheck;
 		EventHandler<DragOverEventArgs> dragOver;
@@ -302,6 +304,15 @@ namespace Xwt
 			Xwt.Application.Invoke(() => {
 				ResourceManager.FreeResource(Backend);
 			});
+		}
+
+		public Accessible Accessible {
+			get {
+				if (accessible == null) {
+					accessible = new Accessible (this);
+				}
+				return accessible;
+			}
 		}
 		
 		/// <summary>
@@ -613,7 +624,7 @@ namespace Xwt
 		/// Gets or sets the content of this <see cref="Xwt.Widget"/>.
 		/// </summary>
 		/// <value>The content of the widget.</value>
-		protected Widget Content {
+		internal protected Widget Content {
 			get { return contentWidget; }
 			set {
 				ICustomWidgetBackend bk = Backend as ICustomWidgetBackend;
@@ -745,7 +756,7 @@ namespace Xwt
 			set { Backend.BackgroundColor = value; }
 		}
 
-		public Color TextColor {
+		public virtual Color TextColor {
 			get { return Backend.TextColor; }
 			set { Backend.TextColor = value; }
 		}
@@ -782,6 +793,42 @@ namespace Xwt
 		public bool ShouldSerializeCursor ()
 		{
 			return Cursor != CursorType.Arrow;
+		}
+
+		/// <summary>
+		/// Converts widget relative coordinates to its parent widget coordinates.
+		/// </summary>
+		/// <returns>The parent widget coordinates.</returns>
+		/// <param name="widgetCoordinates">The relative widget coordinates.</param>
+		public Point ConvertToParentCoordinates (Point widgetCoordinates)
+		{
+			return Backend.ConvertToParentCoordinates (widgetCoordinates);
+		}
+
+		/// <summary>
+		/// Gets the bounds of the widget in its parent window coordinates
+		/// </summary>
+		/// <value>The widget bounds.</value>
+		public Rectangle ParentBounds {
+			get { return new Rectangle (ConvertToParentCoordinates (new Point (0, 0)), Size); }
+		}
+
+		/// <summary>
+		/// Converts widget relative coordinates to its parent window coordinates.
+		/// </summary>
+		/// <returns>The window coordinates.</returns>
+		/// <param name="widgetCoordinates">The relative widget coordinates.</param>
+		public Point ConvertToWindowCoordinates (Point widgetCoordinates)
+		{
+			return Backend.ConvertToWindowCoordinates (widgetCoordinates);
+		}
+
+		/// <summary>
+		/// Gets the bounds of the widget in its parent widgets coordinates
+		/// </summary>
+		/// <value>The widget bounds.</value>
+		public Rectangle WindowBounds {
+			get { return new Rectangle (ConvertToWindowCoordinates (new Point (0, 0)), Size); }
 		}
 
 		/// <summary>
@@ -855,7 +902,7 @@ namespace Xwt
 		/// <param name='types'>Types of data that can be dropped on this widget.</param>
 		public void SetDragDropTarget (params Type[] types)
 		{
-			Backend.SetDragTarget (types.Select (t => TransferDataType.FromType (t)).ToArray (), DragDropAction.All);
+			Backend.SetDragTarget (types.Select (TransferDataType.FromType).ToArray (), DragDropAction.All);
 		}
 		
 		/// <summary>
@@ -875,7 +922,7 @@ namespace Xwt
 		/// <param name='dragAction'>Bitmask of possible actions for a drop on this widget</param>
 		public void SetDragDropTarget (DragDropAction dragAction, params Type[] types)
 		{
-			Backend.SetDragTarget (types.Select (t => TransferDataType.FromType (t)).ToArray(), dragAction);
+			Backend.SetDragTarget (types.Select (TransferDataType.FromType).ToArray(), dragAction);
 		}
 
 		public void UnregisterDragDropTarget() {
@@ -897,7 +944,7 @@ namespace Xwt
 		/// <param name='types'>Types of data that can be dragged from this widget</param>
 		public void SetDragSource (params Type[] types)
 		{
-			Backend.SetDragSource (types.Select (t => TransferDataType.FromType (t)).ToArray(), DragDropAction.All);
+			Backend.SetDragSource (types.Select (TransferDataType.FromType).ToArray(), DragDropAction.All);
 		}
 		
 		/// <summary>
@@ -917,7 +964,7 @@ namespace Xwt
 		/// <param name='dragAction'>Bitmask of possible actions for a drag from this widget</param>
 		public void SetDragSource (DragDropAction dragAction, params Type[] types)
 		{
-			Backend.SetDragSource (types.Select (t => TransferDataType.FromType (t)).ToArray(), dragAction);
+			Backend.SetDragSource (types.Select (TransferDataType.FromType).ToArray(), dragAction);
 		}
 		
 		/// <summary>
@@ -936,7 +983,7 @@ namespace Xwt
 		protected virtual void SetScrollAdjustments (ScrollAdjustment horizontal, ScrollAdjustment vertical)
 		{
 		}
-		
+
 
 		[MappedEvent(WidgetEvent.DragOverCheck)]
 		/// <summary>
@@ -1653,12 +1700,14 @@ namespace Xwt
 				foreach (var w in toReallocate) {
 					// The widget may already have been reallocated as a result of reallocating the parent
 					// so we have to check if it is still in the queue
-					if (reallocationQueue.Contains (w))
+					if (!w.IsDisposed && reallocationQueue.Contains (w))
 						w.Surface.Reallocate ();
 				}
 				foreach (var w in resizeWindows.ToArray ()) {
-					w.AdjustSize ();
-					w.Reallocate ();
+					if (!w.IsDisposed) {
+						w.AdjustSize();
+						w.Reallocate();
+					}
 				}
 			} finally {
 				resizeRequestQueue.Clear ();
@@ -1726,7 +1775,7 @@ namespace Xwt
 				return;
 
 			if (w.Surface.ToolkitEngine != Surface.ToolkitEngine)
-				throw new InvalidOperationException ("Widget belongs to a different toolkit");
+				throw new InvalidOperationException (string.Format ("Widget belongs to toolkit '{0}' but it should belong to '{1}'.", w.Surface.ToolkitEngine, Surface.ToolkitEngine));
 
 			var wback = w.Backend as XwtWidgetBackend;
 

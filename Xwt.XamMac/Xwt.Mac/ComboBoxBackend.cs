@@ -49,16 +49,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using Xwt.Backends;
-
-#if MONOMAC
-using nint = System.Int32;
-using nfloat = System.Single;
-using MonoMac.AppKit;
-#else
 using AppKit;
-#endif
+using Xwt.Backends;
 
 namespace Xwt.Mac
 {
@@ -77,9 +69,7 @@ namespace Xwt.Mac
 			ViewObject = new PopUpButton ();
 			Widget.Menu = new NSMenu ();
 			Widget.Activated += delegate {
-				ApplicationContext.InvokeUserCode (delegate {
-					EventSink.OnSelectionChanged ();
-				});
+				ApplicationContext.InvokeUserCode (EventSink.OnSelectionChanged);
 				Widget.SynchronizeTitleAndSelectedItem ();
 				ResetFittingSize ();
 			};
@@ -184,9 +174,7 @@ namespace Xwt.Mac
 			}
 			set {
 				Widget.SelectItem (value);
-				ApplicationContext.InvokeUserCode (delegate {
-					EventSink.OnSelectionChanged ();
-				});
+				ApplicationContext.InvokeUserCode (EventSink.OnSelectionChanged);
 				Widget.SynchronizeTitleAndSelectedItem ();
 				ResetFittingSize ();
 			}
@@ -233,6 +221,15 @@ namespace Xwt.Mac
 			base.ResetCursorRects ();
 			if (Backend.Cursor != null)
 				AddCursorRect (Bounds, Backend.Cursor);
+		}
+
+		public override bool AllowsVibrancy {
+			get {
+				// we don't support vibrancy
+				if (EffectiveAppearance.AllowsVibrancy)
+					return false;
+				return base.AllowsVibrancy;
+			}
 		}
 	}
 }
