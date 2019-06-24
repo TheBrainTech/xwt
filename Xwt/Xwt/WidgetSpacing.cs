@@ -43,7 +43,7 @@ namespace Xwt
 	/// Spacing/Margin around a widget.
 	/// </summary>
 	[TypeConverter (typeof(WidgetSpacingValueConverter))]
-	[ValueSerializer (typeof(WidgetSpacingValueSerializer))]
+	//[ValueSerializer (typeof(WidgetSpacingValueSerializer))]
 	public struct WidgetSpacing : IEquatable<WidgetSpacing>
 	{
 		public static WidgetSpacing Zero = new WidgetSpacing ();

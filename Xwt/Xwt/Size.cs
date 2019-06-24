@@ -32,7 +32,7 @@ using System.Globalization;
 namespace Xwt {
 	
 	[TypeConverter (typeof(SizeValueConverter))]
-	[ValueSerializer (typeof(SizeValueSerializer))]
+	//[ValueSerializer (typeof(SizeValueSerializer))]
 	[Serializable]
 	public struct Size : IEquatable<Size>
 	{		

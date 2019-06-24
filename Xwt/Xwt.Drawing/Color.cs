@@ -33,7 +33,7 @@ using System.Globalization;
 namespace Xwt.Drawing
 {
 	[TypeConverter (typeof(ColorValueConverter))]
-	[ValueSerializer (typeof(ColorValueSerializer))]
+	//[ValueSerializer (typeof(ColorValueSerializer))]
 	[Serializable]
 	public struct Color : IEquatable<Color>
 	{

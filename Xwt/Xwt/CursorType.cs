@@ -31,7 +31,7 @@ using System.Collections.Generic;
 namespace Xwt
 {
 	[TypeConverter (typeof(CursorTypeValueConverter))]
-	[ValueSerializer (typeof(CursorTypeValueSerializer))]
+	//[ValueSerializer (typeof(CursorTypeValueSerializer))]
 	public class CursorType
 	{
 		string id;

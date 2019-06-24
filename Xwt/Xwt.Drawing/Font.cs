@@ -38,7 +38,7 @@ using System.Linq;
 namespace Xwt.Drawing
 {
 	[TypeConverter (typeof(FontValueConverter))]
-	[ValueSerializer (typeof(FontValueSerializer))]
+	//[ValueSerializer (typeof(FontValueSerializer))]
 	public sealed class Font: XwtObject
 	{
 		FontBackendHandler handler;
