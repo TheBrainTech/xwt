@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\XWT\Xwt\Xwt.csproj">
-      <Project>{DCB75F9E-CE2E-4A22-8467-0B1DE1789C71}</Project>
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
     </ProjectReference>
   </ItemGroup>
