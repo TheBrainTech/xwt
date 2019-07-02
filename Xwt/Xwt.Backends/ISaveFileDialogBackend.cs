@@ -28,54 +28,8 @@ using System.Collections.Generic;
 
 namespace Xwt.Backends
 {
-	public interface ISaveFileDialogBackend: IBackend
+	public interface ISaveFileDialogBackend: IFileDialogBackend
 	{
-		void Initialize (IEnumerable<FileDialogFilter> filters, bool multiselect, string title);
-
-		/// <summary>
-		/// Gets or sets the title of the dialog
-		/// </summary>
-		string Title { get; set; }
-
-		string FileName { get; set;}
-
-		/// <summary>
-		/// Gets or sets the folder whose contents are shown in the dialog
-		/// </summary>
-		/// <value>
-		/// The current folder.
-		/// </value>
-		/// <remarks>
-		/// This property can be invoked at any time after a call to Initialize, and before the call to Close
-		/// </remarks>
-		string CurrentFolder { get; set; }
-
-		FileDialogFilter ActiveFilter { get; set; }
-
-		/// <summary>
-		/// Runs the dialog, allowing the user to select a folder
-		/// </summary>
-		/// <param name='parent'>
-		/// Parent window (the dialog will be modal to this window). It can be null.
-		/// </param>
-		/// <returns>
-		/// <c>true</c> if the user clicked OK, <c>false</c> otherwise
-		/// </returns>
-		/// <remarks>
-		/// The Run method will always be called once (and only once) after an Initialize call.
-		/// The dialog must be shown in modal mode. The method returns when the user clicks on
-		/// OK or Cancel. The dialog must be already closed when this method returns.
-		/// </remarks>
-		bool Run (IWindowFrameBackend parent);
-
-		/// <summary>
-		/// Frees native resources
-		/// </summary>
-		/// <remarks>
-		/// This method is called after Run, so that the backend can release
-		/// the native resources. The Initialize method can be called after Cleanup.
-		/// </remarks>
-		void Cleanup ();	
 	}
 }
 
