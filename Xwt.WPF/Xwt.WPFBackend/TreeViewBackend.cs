@@ -55,8 +55,18 @@ namespace Xwt.WPFBackend
 		private static readonly ResourceDictionary TreeResourceDictionary;
 		static TreeViewBackend()
 		{
-			Uri uri = new Uri ("pack://application:,,,/Xwt.WPF;component/XWT.WPFBackend/TreeView.xaml");
-			TreeResourceDictionary = (ResourceDictionary)XamlReader.Load (System.Windows.Application.GetResourceStream (uri).Stream);
+			// XAML must be loaded from the current assembly, not a hardcoded assembly name due to obfuscation.
+			// This need for a dynamic assembly also applies to the classes referenced from within the XAML, thus the
+			// need for the text replacement code below.
+			var thisAssembly = System.Reflection.Assembly.GetAssembly(typeof(TreeViewBackend));
+			using(System.IO.Stream stream = thisAssembly.GetManifestResourceStream("Xwt.WPF.Xwt.WPFBackend.TreeView.xaml"))
+			using(System.IO.StreamReader reader = new System.IO.StreamReader(stream)) {
+				string text = reader.ReadToEnd();
+				text = text.Replace("assembly=Xwt.WPF", $"assembly={thisAssembly.FullName}");
+				using(System.IO.Stream modifiedStream = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(text))) {
+					TreeResourceDictionary = (ResourceDictionary)XamlReader.Load(modifiedStream);
+				}
+			}
 		}
 
 		public TreeViewBackend ()

@@ -177,9 +177,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Xwt.WPFBackend\TreeView.xaml">
+    <EmbeddedResource Include="Xwt.WPFBackend\TreeView.xaml">
       <SubType>Designer</SubType>
-    </Resource>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\add-16.png" />
@@ -192,9 +192,9 @@
     <EmbeddedResource Include="icons\remove-16~dark~disabled.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Xwt.WPFBackend\ScrollView.xaml">
+    <EmbeddedResource Include="Xwt.WPFBackend\ScrollView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Resource>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
