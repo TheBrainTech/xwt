@@ -125,7 +125,10 @@ namespace Xwt.WPFBackend
 				base.Decorated = value;
 				if (value)
 					Window.WindowStyle = defaultWindowStyle;
-				Window.AllowsTransparency = Window.WindowStyle == WindowStyle.None && BackgroundColor.Alpha < 1.0;
+				// don't attempt to change transparency unless necessary
+				bool transparency = Window.WindowStyle == WindowStyle.None && BackgroundColor.Alpha < 1.0;
+				if(transparency != Window.AllowsTransparency)
+					Window.AllowsTransparency = transparency;
 			}
 		}
 
