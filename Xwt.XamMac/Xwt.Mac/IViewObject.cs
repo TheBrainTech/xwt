@@ -87,8 +87,8 @@ namespace Xwt.Mac
 			if (view.View == null)
 				throw new InvalidOperationException ();
 			CGPoint p = view.View.ConvertPointFromEvent (theEvent);
-			if (!view.View.Bounds.Contains (p))
-				return false;
+			// Do not test if the view contains the point - if this message is being received it may be because the view has the mouse
+			// focus since it was under the mouse when the down event fired
 			ButtonEventArgs args = new ButtonEventArgs ();
 			args.X = p.X;
 			args.Y = p.Y;
@@ -123,8 +123,8 @@ namespace Xwt.Mac
 			if (view.View == null)
 				throw new InvalidOperationException ();
 			CGPoint p = view.View.ConvertPointFromEvent (theEvent);
-			if (!view.View.Bounds.Contains (p))
-				return false;
+			// Do not test if the view contains the point - if this message is being received it may be because the view has the mouse
+			// focus since it was under the mouse when the down event fired
 			MouseMovedEventArgs args = new MouseMovedEventArgs ((long)TimeSpan.FromSeconds (theEvent.Timestamp).TotalMilliseconds, p.X, p.Y);
 			view.Backend.ApplicationContext.InvokeUserCode (delegate {
 				view.Backend.EventSink.OnMouseMoved (args);
