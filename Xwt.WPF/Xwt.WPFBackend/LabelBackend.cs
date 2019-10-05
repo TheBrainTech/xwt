@@ -37,6 +37,7 @@ using Xwt.Backends;
 using System.Windows.Automation.Peers;
 using System.Windows.Threading;
 
+
 namespace Xwt.WPFBackend
 {
 	public class LabelBackend : WidgetBackend, ILabelBackend
@@ -53,17 +54,6 @@ namespace Xwt.WPFBackend
 		new ILabelEventSink EventSink
 		{
 			get { return (ILabelEventSink)base.EventSink; }
-		}
-
-		public override Size GetPreferredSize (SizeConstraint widthConstraint, SizeConstraint heightConstraint)
-		{
-			var s = base.GetPreferredSize (widthConstraint, heightConstraint);
-
-			// If the label is ellipsized or can wrap then the width can't be dermined unless we have a constraint.
-			// If there is no constraint, just return the smallest size
-			if (!widthConstraint.IsConstrained && (Wrap != WrapMode.None || Ellipsize != EllipsizeMode.None))
-				s.Width = 1;
-			return s;
 		}
 
 		public string Text {
@@ -235,7 +225,6 @@ namespace Xwt.WPFBackend
 					Label.TextBlock.TextTrimming = TextTrimming.None;
 				else
 					Label.TextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
-				Widget.InvalidateMeasure ();
 			}
 		}
 
