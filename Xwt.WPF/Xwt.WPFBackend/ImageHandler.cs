@@ -44,7 +44,7 @@ namespace Xwt.WPFBackend
 	{
 		public override object LoadFromStream(Stream stream, string name)
 		{
-			if(name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase)) {
+			if(name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || name.EndsWith(".jpeg", StringComparison.InvariantCultureIgnoreCase)) {
 				return LoadJpgFromStream(stream);
 			} else {
 				return LoadFromStream(stream);
@@ -59,8 +59,7 @@ namespace Xwt.WPFBackend
 
 			BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 			BitmapMetadata importedMetaData = new BitmapMetadata("jpg");
-			Stream sourceStream = stream;
-			BitmapDecoder sourceDecoder = BitmapDecoder.Create(sourceStream, createOptions, BitmapCacheOption.Default);
+			BitmapDecoder sourceDecoder = BitmapDecoder.Create(stream, createOptions, BitmapCacheOption.Default);
 			BitmapSource imageSource = sourceDecoder.Frames[0];
 			if(imageSource.Metadata != null) {
 				imageSource.Metadata.Freeze();
@@ -69,34 +68,35 @@ namespace Xwt.WPFBackend
 
 			UInt16? orientation = importedMetaData.GetQuery("/app1/ifd/exif:{uint=274}") as UInt16?;
 
+			Rotation rotation = Rotation.Rotate0;
 			if(orientation.HasValue && orientation != 1) {
-				int angle = 0;
 				switch(orientation) {
 					case 8:
-						angle = 270;
+						rotation = Rotation.Rotate270;
 						break;
 					case 3:
-						angle = 180;
+						rotation = Rotation.Rotate180;
 						break;
 					case 6:
-						angle = 90;
+						rotation = Rotation.Rotate90;
 						break;
 				}
-				TransformedBitmap tbm = new TransformedBitmap(imageSource, new RotateTransform(angle));
-				imageSource = tbm;
 			}
 
-			WpfImage wpfImage = LoadFromImageSource(imageSource) as WpfImage;
-
-			return wpfImage;
+			stream.Position = 0;
+			return LoadFromStream(stream, rotation);
 		}
 
-		public override object LoadFromStream (Stream stream)
-		{
+		public override object LoadFromStream(Stream stream) {
+			return LoadFromStream(stream, Rotation.Rotate0);
+		}
+
+		private object LoadFromStream(Stream stream, Rotation rotation) {
 			var img = new SWMI.BitmapImage ();
 			img.BeginInit();
 			img.CacheOption = SWMI.BitmapCacheOption.OnLoad;
 			img.StreamSource = stream;
+			img.Rotation = rotation;
 			img.EndInit();
 
 			return LoadFromImageSource (img);
