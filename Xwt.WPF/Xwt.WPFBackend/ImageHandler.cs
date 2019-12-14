@@ -542,6 +542,8 @@ namespace Xwt.WPFBackend
 				if (bmpImage != null && (Math.Abs (bmpImage.PixelHeight - scaledHeight) > 0.001 || Math.Abs (bmpImage.PixelWidth - scaledWidth) > 0.001))
 					f = new TransformedBitmap (bmpImage, new ScaleTransform (scaledWidth / bmpImage.PixelWidth, scaledHeight / bmpImage.PixelHeight));
 
+				f.Freeze();
+
 				dc.DrawImage (f, new Rect (x, y, idesc.Size.Width, idesc.Size.Height));
 
 				if (idesc.Alpha < 1)
