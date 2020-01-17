@@ -38,8 +38,37 @@ namespace Xwt.WPFBackend
 	public class WpfClipboardBackend
 		: ClipboardBackend {
 
+		// Clipboard may be locked by another process. In order to overcome this, it can be queried repeatedly.
+		// See https://stackoverflow.com/questions/12769264/openclipboard-failed-when-copy-pasting-data-from-wpf-datagrid
+		// And https://www.infragistics.com/community/forums/f/ultimate-ui-for-wpf/35379/failed-to-copy-clipbrd_e_cant_open
+		// The wrapper below implements retry logic that should make it more reliable.
+		const int MaxRetries = 10;
+		const int SleepTime = 10;
+		private static void CatchExceptionsAndRetry(Action action) {
+			int retryCount = 0;
+			Exception exception = null;
+			while(retryCount < MaxRetries) {
+				try {
+					action.Invoke();
+					return;
+				} catch(Exception e) {
+					exception = e;
+					if(exception.Message.Contains("CLIPBRD_E_BAD_DATA")) {
+						// do not retry
+						break;
+					}
+					System.Threading.Thread.Sleep(SleepTime);
+					retryCount++;
+				}
+			}
+
+			throw exception;
+		}
+
 		public override void Clear() {
-			WindowsClipboard.Clear();
+			CatchExceptionsAndRetry(() => {
+				WindowsClipboard.Clear();
+			});
 		}
 
 		public override void SetData(TransferDataType type, Func<object> dataSource, bool cleanClipboardFirst = true) {
@@ -49,22 +78,30 @@ namespace Xwt.WPFBackend
 				throw new ArgumentNullException("dataSource");
 
 			if(cleanClipboardFirst) {
-				WindowsClipboard.Clear();
+				Clear();
 			}
 
 			if (type == TransferDataType.Html) {
-				WindowsClipboard.SetData (type.ToWpfDataFormat (), GenerateCFHtml (dataSource ().ToString ()));
+				CatchExceptionsAndRetry(() => {
+					WindowsClipboard.SetData(type.ToWpfDataFormat(), GenerateCFHtml(dataSource().ToString()));
+				});
 			} else if (type == TransferDataType.Image) {
 				var img = dataSource() as Xwt.Drawing.Image;
 				if (img != null)
 				{
 					var src = img.ToBitmap().GetBackend() as WpfImage;
-					WindowsClipboard.SetData (type.ToWpfDataFormat (), src.MainFrame);
+					CatchExceptionsAndRetry(() => {
+						WindowsClipboard.SetData(type.ToWpfDataFormat(), src.MainFrame);
+					});
 				}
 			} else if(type == TransferDataType.Uri) {
-				WindowsClipboard.SetFileDropList((StringCollection)(dataSource()));
+				CatchExceptionsAndRetry(() => {
+					WindowsClipboard.SetFileDropList((StringCollection)(dataSource()));
+				});
 			} else {
-				WindowsClipboard.SetData(type.ToWpfDataFormat(), dataSource());
+				CatchExceptionsAndRetry(() => {
+					WindowsClipboard.SetData(type.ToWpfDataFormat(), dataSource());
+				});
 			}
 		}
 
@@ -101,14 +138,26 @@ namespace Xwt.WPFBackend
 				throw new ArgumentNullException ("type");
 
 			if (type == TransferDataType.Text) {
-				if (WindowsClipboard.ContainsFileDropList()) {
-					foreach (string s in WindowsClipboard.GetFileDropList()) {
+				bool containsFileDropList = false;
+				CatchExceptionsAndRetry(() => {
+					containsFileDropList = WindowsClipboard.ContainsFileDropList();
+				});
+				if(containsFileDropList) {
+					StringCollection stringCollection = null;
+					CatchExceptionsAndRetry(() => {
+						stringCollection = WindowsClipboard.GetFileDropList();
+					});
+					foreach(string s in stringCollection) {
 						return true;
 					}
 				}
 			}
 
-			return WindowsClipboard.ContainsData (type.ToWpfDataFormat ());
+			bool val = false;
+			CatchExceptionsAndRetry(() => {
+				val = WindowsClipboard.ContainsData(type.ToWpfDataFormat());
+			});
+			return val;
 		}
 
 
@@ -186,7 +235,9 @@ namespace Xwt.WPFBackend
 			}
 
 			if (bmp == null) {
-				bmp = WindowsClipboard.GetImage();
+				CatchExceptionsAndRetry(() => {
+					bmp = WindowsClipboard.GetImage();
+				});
 			}
 			bmp = TryFixAlphaChannel(bmp);
 			return bmp;
@@ -201,20 +252,35 @@ namespace Xwt.WPFBackend
 				return null;
 
 			if (type == TransferDataType.Text) {
-				if (WindowsClipboard.ContainsFileDropList()) {
-					foreach (string s in WindowsClipboard.GetFileDropList()) {
+				bool containsFileDropList = false;
+				CatchExceptionsAndRetry(() => {
+					containsFileDropList = WindowsClipboard.ContainsFileDropList();
+				});
+				if(containsFileDropList) {
+					StringCollection stringCollection = null;
+					CatchExceptionsAndRetry(() => {
+						stringCollection = WindowsClipboard.GetFileDropList();
+					});
+					foreach(string s in stringCollection) {
 						return "file://" + s;
 					}
 				}
 			}
 
 			if(type == TransferDataType.Image) {
-				var ob = WindowsClipboard.GetDataObject();
+				IDataObject ob = null;
+				CatchExceptionsAndRetry(() => {
+					ob = WindowsClipboard.GetDataObject();
+				});
 				var bmp = GetBestPossibletAlphaBitmapFromDataObject(ob);
 				return ApplicationContext.Toolkit.WrapImage(bmp);
 			}
 
-			return WindowsClipboard.GetData (type.ToWpfDataFormat ());
+			object result = null;
+			CatchExceptionsAndRetry(() => {
+				result = WindowsClipboard.GetData(type.ToWpfDataFormat());
+			});
+			return result;
 		}
 
 		public override IAsyncResult BeginGetData (TransferDataType type, AsyncCallback callback, object state)
