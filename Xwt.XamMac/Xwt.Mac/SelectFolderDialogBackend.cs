@@ -58,7 +58,7 @@ namespace Xwt.Mac
 
 		public string Folder {
 			get {
-				return this.Url.Path;
+				return this.Url != null ? this.Url.Path : null;
 			}
 		}
 
