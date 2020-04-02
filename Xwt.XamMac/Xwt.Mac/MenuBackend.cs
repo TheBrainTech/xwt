@@ -126,7 +126,7 @@ namespace Xwt.Mac
 			}
 		}
 		
-		public void Popup ()
+		public void Popup (IWidgetBackend widget)
 		{
 			var evt = NSApplication.SharedApplication.CurrentEvent;
 			if (evt != null && evt.Window != null)
