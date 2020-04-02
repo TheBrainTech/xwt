@@ -113,9 +113,10 @@ namespace Xwt
 		/// <summary>
 		/// Shows the menu at the current position of the cursor
 		/// </summary>
-		public virtual void Popup ()
+		/// <param name="parentWidget">Widget upon which to base the scale of the menu</param>
+		public virtual void Popup (Widget parentWidget)
 		{
-			Backend.Popup ();
+			Backend.Popup (parentWidget.GetBackend ());
 		}
 
 		/// <summary>

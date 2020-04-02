@@ -119,9 +119,13 @@ namespace Xwt.WPFBackend
 			ParentItem = null;
 		}
 
-		public void Popup ()
+		public void Popup (IWidgetBackend widget)
 		{
 			var menu = CreateContextMenu ();
+			var target = widget.NativeWidget as UIElement;
+			if(target == null)
+				throw new System.ArgumentException("Widget belongs to an unsupported Toolkit", nameof(widget));
+			menu.PlacementTarget = target;
 			menu.Placement = PlacementMode.MousePoint;
 			menu.IsOpen = true;
 		}
