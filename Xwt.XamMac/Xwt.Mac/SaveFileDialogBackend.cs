@@ -39,8 +39,10 @@ namespace Xwt.Mac
 		#region IFileDialogBackend implementation
 		public void Initialize (System.Collections.Generic.IEnumerable<FileDialogFilter> filters, bool multiselect, string initialFileName)
 		{
-			if (!string.IsNullOrEmpty (initialFileName))
-				this.DirectoryUrl = new NSUrl (initialFileName,true);
+			if(!string.IsNullOrEmpty(initialFileName)) {
+				this.NameFieldStringValue = initialFileName;
+				this.DirectoryUrl = new NSUrl(initialFileName, true);
+			}
 
 			this.Prompt = Application.TranslationCatalog.GetString("Select File");
 		}
