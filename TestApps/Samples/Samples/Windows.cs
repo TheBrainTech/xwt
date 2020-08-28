@@ -103,7 +103,7 @@ namespace Samples
 			PackStart (b);
 			b.Clicked += delegate {
 				SaveFileDialog dlg = new SaveFileDialog ("Select a file");
-				dlg.FileName = "Some file";
+				dlg.InitialFileName = "Some file";
 				dlg.ActiveFilter = new FileDialogFilter ("Xwt files", "*.xwt");
 				if (dlg.Run ())
 					MessageDialog.ShowMessage ("Files have been selected!", string.Join ("\n", dlg.FileName));

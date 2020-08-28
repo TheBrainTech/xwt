@@ -76,7 +76,7 @@ namespace Samples
 		void HandleButtonPressed (object sender, ButtonEventArgs e)
 		{
 			if (e.Button == PointerButton.Right) {
-				menu.Popup();
+				menu.Popup(this);
 				menu.Accessible.Label = "Menu";
 				menu.Accessible.Identifier = nameof(menu);
 			}
