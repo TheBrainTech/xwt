@@ -23,9 +23,7 @@ namespace Xwt.WPFBackend
 			PasswordBox = new PasswordBox();
 			adornerDecorator.Child = PasswordBox;
 			Adorner = new PlaceholderTextAdorner(PasswordBox);
-			PasswordBox.Loaded += delegate {
-				AdornerLayer.GetAdornerLayer (PasswordBox).Add (Adorner);
-			};
+			AdornerLayer.GetAdornerLayer(PasswordBox).Add(Adorner);
 			PasswordBox.VerticalContentAlignment = VerticalAlignment.Center;
 		}
 
