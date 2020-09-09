@@ -17,18 +17,19 @@ namespace Xwt.WPFBackend
 
 		public PasswordEntryBackend ()
 		{
-			Widget = new PasswordBox ();
-			Adorner = new PlaceholderTextAdorner (PasswordBox);
+			// If this is not in a ScrollContentPresenter, AdornerLayer.GetAdornerLayer will return null
+			var adornerDecorator = new AdornerDecorator();
+			Widget = adornerDecorator;
+			PasswordBox = new PasswordBox();
+			adornerDecorator.Child = PasswordBox;
+			Adorner = new PlaceholderTextAdorner(PasswordBox);
 			PasswordBox.Loaded += delegate {
 				AdornerLayer.GetAdornerLayer (PasswordBox).Add (Adorner);
 			};
 			PasswordBox.VerticalContentAlignment = VerticalAlignment.Center;
 		}
 
-		protected PasswordBox PasswordBox
-		{
-			get { return (PasswordBox) Widget; }
-		}
+		protected PasswordBox PasswordBox { get; private set; }
 
 		public string Password
 		{
@@ -95,6 +96,24 @@ namespace Xwt.WPFBackend
 		void OnPasswordChanged (object s, RoutedEventArgs e)
 		{
 			Context.InvokeUserCode (EventSink.OnChanged);
+		}
+
+		public override Drawing.Color TextColor {
+			get {
+				return this.PasswordBox.Foreground.ToXwtColor();
+			}
+			set {
+				this.PasswordBox.Foreground = new SolidColorBrush(value.ToWpfColor());
+			}
+		}
+
+		public override Drawing.Color BackgroundColor {
+			get {
+				return this.PasswordBox.Background.ToXwtColor();
+			}
+			set {
+				this.PasswordBox.Background = new SolidColorBrush(value.ToWpfColor());
+			}
 		}
 	}
 }
