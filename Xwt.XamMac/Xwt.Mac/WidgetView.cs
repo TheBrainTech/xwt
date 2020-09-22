@@ -93,6 +93,7 @@ namespace Xwt.Mac
 
 		public override void UpdateTrackingAreas ()
 		{
+			base.UpdateTrackingAreas();
 			this.UpdateEventTrackingArea (ref trackingArea);
 		}
 

@@ -165,7 +165,8 @@ namespace Xwt.Mac
 		NSTrackingArea trackingArea;
 		public override void UpdateTrackingAreas ()
 		{
-			if (trackingArea != null) {
+			base.UpdateTrackingAreas();
+			if(trackingArea != null) {
 				RemoveTrackingArea (trackingArea);
 				trackingArea.Dispose ();
 			}
