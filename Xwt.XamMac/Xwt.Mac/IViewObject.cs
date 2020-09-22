@@ -50,8 +50,8 @@ namespace Xwt.Mac
 			}
 			CGRect viewBounds = view.View.Bounds;
 			var options = NSTrackingAreaOptions.MouseMoved | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.MouseEnteredAndExited;
-			var trackingArea = new NSTrackingArea (viewBounds, options, view.View, null);
-			view.View.AddTrackingArea (trackingArea);
+			replaceArea = new NSTrackingArea (viewBounds, options, view.View, null);
+			view.View.AddTrackingArea (replaceArea);
 		}
 
 		public static bool HandleMouseDown (this IViewObject view, NSEvent theEvent)
