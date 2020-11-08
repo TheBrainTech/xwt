@@ -155,8 +155,13 @@ namespace Xwt.Mac
 				} catch (Exception ex) {
 					throw new ArgumentException ("Widget belongs to an unsupported Toolkit", nameof (widget), ex);
 				}
-			} else
-				Popup (refView, new CGPoint (x, y));
+			} else {
+				var location = widget.ConvertToWindowCoordinates(new Point(x, y)).ToCGPoint();
+				if(refView.IsFlipped) {
+					location.Y = refView.Frame.Height - location.Y;
+				}
+				Popup(refView, location);
+			}
 		}
 
 		void Popup (NSView view, CGPoint point)
