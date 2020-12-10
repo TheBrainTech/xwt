@@ -27,6 +27,9 @@ namespace Xwt {
 		private KeyboardKey() { }
 
 		private static void Initialize() {
+
+			// To find the MacInputKeyCode for special keys, see https://boredzo.org/blog/archives/2007-05-22/virtual-key-codes
+
 			allKeys.Add(new KeyboardKey { ConfigurationString = "A",     MacInputKeyCode = -1,  MacInputCharacter = 'A',       MacMenuCharacter = 'A',         ConsoleKey = ConsoleKey.A });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "B",     MacInputKeyCode = -1,  MacInputCharacter = 'B',       MacMenuCharacter = 'B',         ConsoleKey = ConsoleKey.B });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "C",     MacInputKeyCode = -1,  MacInputCharacter = 'C',       MacMenuCharacter = 'C',         ConsoleKey = ConsoleKey.C });
@@ -111,7 +114,7 @@ namespace Xwt {
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Clear", MacInputKeyCode = 71,  MacInputCharacter = '\0',      MacMenuCharacter = (char)63289, ConsoleKey = ConsoleKey.Clear });
 
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Space", MacInputKeyCode = -1,  MacInputCharacter = ' ',       MacMenuCharacter = ' ',         ConsoleKey = ConsoleKey.Spacebar });
-			allKeys.Add(new KeyboardKey { ConfigurationString = "Tab",   MacInputKeyCode = -1,  MacInputCharacter = '\t',      MacMenuCharacter = (char)8677,  ConsoleKey = ConsoleKey.Tab });
+			allKeys.Add(new KeyboardKey { ConfigurationString = "Tab",   MacInputKeyCode = 48,  MacInputCharacter = '\t',      MacMenuCharacter = (char)8677,  ConsoleKey = ConsoleKey.Tab });
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Enter", MacInputKeyCode = -1,  MacInputCharacter = '\r',      MacMenuCharacter = (char)9166,  ConsoleKey = ConsoleKey.Enter });
 
 			allKeys.Add(new KeyboardKey { ConfigurationString = "Num 0", MacInputKeyCode = -1,  MacInputCharacter = '\0',      MacMenuCharacter = (char)0,     ConsoleKey = ConsoleKey.NumPad0 });
