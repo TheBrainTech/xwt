@@ -69,9 +69,9 @@ namespace Xwt
 			}
 		}
 
-		public static void ExecuteOnApplicationThread(Action action) {
+		public static void ExecuteOnApplicationThread(Action action, bool invokeAsync = true) {
 			if(InvokeRequired) {
-				Application.Invoke(action);
+				Application.Invoke(action, invokeAsync);
 			} else {
 				action();
 			}
