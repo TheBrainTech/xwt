@@ -194,7 +194,7 @@ namespace Xwt.Mac
 			set {
 				int offset = UsePullDownStyle ? 1 : 0;
 				Widget.SelectItem (value + offset);
-				if(UsePullDownStyle) {
+				if(UsePullDownStyle && source != null) {
 					Widget.SetTitle((string)source.GetValue(value, 0) ?? "");
 				}
 				ApplicationContext.InvokeUserCode (EventSink.OnSelectionChanged);
