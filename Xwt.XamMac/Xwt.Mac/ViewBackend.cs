@@ -805,6 +805,11 @@ namespace Xwt.Mac
 			}
 		}
 
+		static string[] GetItemsForType(NSPasteboard pboard, NSString type) {
+			var items = NSArray.FromArray<NSString>((NSArray)pboard.GetPropertyListForType(type.ToString()));
+			return items.Select(i => i.ToString()).ToArray();
+		}
+
 		static void FillDataStore (TransferDataStore store, NSPasteboard pb, string[] types)
 		{
 			foreach (var t in types) {
@@ -813,11 +818,9 @@ namespace Xwt.Mac
 				if (t == NSPasteboard.NSStringType)
 					store.AddText (pb.GetStringForType (t));
 				else if (t == NSPasteboard.NSFilenamesType) {
-					string data = pb.GetStringForType (t);
-					XmlDocument doc = new XmlDocument ();
-					doc.XmlResolver = null; // Avoid DTD validation
-					doc.LoadXml (data);
-					store.AddUris (doc.SelectNodes ("/plist/array/string").Cast<XmlElement> ().Select (e => new Uri (e.InnerText)).ToArray ());
+					// pb.GetStringForType (t) returns null on macOS 11.4, so old method of getting the URIs via XML does not work
+					string[] paths = GetItemsForType(pb, NSPasteboard.NSFilenamesType);
+					store.AddUris(paths.Select(p => new Uri(p)).ToArray());
 				} else {
 					NSData data = pb.GetDataForType(t);
 					store.AddValue(TransferDataType.FromId(t), TransferDataSource.DeserializeValue(data.ToArray()));
