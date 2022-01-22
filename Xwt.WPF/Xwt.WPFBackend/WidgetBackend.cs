@@ -997,7 +997,7 @@ namespace Xwt.WPFBackend
 					AdornedWindow.AllowDrop = true;
 					AdornedWindow.DragOver += AdornedWindowOnDragOver;
 
-					AdornedLayer = AdornerLayer.GetAdornerLayer (v);
+					AdornedLayer = v != null ? AdornerLayer.GetAdornerLayer (v) : null;
 					AdornedLayer?.Add (Adorner);
 				}
 
