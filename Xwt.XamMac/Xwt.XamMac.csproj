@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0-macos</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{74727680-113C-4158-BA7D-B49D55C1D1BC}</ProjectGuid>
@@ -14,6 +15,7 @@
     <DisableImplicitNamespaceImports>True</DisableImplicitNamespaceImports>
 
     <SupportedOSPlatformVersion>10.14</SupportedOSPlatformVersion>
+
 
     <AssemblyTitle>Xwt.XamMac</AssemblyTitle>
     <AssemblyDescription>Xamarin Mac Toolkit for the Xwt UI Framework</AssemblyDescription>

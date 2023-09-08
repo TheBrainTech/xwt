@@ -32,6 +32,7 @@ using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
 using Xwt.Backends;
+using NativeHandle = System.IntPtr;
 
 namespace Xwt.Mac
 {

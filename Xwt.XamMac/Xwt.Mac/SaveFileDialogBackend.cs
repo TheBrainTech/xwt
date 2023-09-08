@@ -31,22 +31,19 @@ using Xwt.Backends;
 
 namespace Xwt.Mac
 {
-	public class SaveFileDialogBackend : FileDialogBackend, ISaveFileDialogBackend
-	{
-		protected override NSSavePanel GetFilePanel ()
-		{
-			return NSSavePanel.SavePanel;
+	public class SaveFileDialogBackend : NSSavePanel, ISaveFileDialogBackend {
+
+		public SaveFileDialogBackend() {
 		}
 
-		protected override void OnInitialize (IEnumerable<FileDialogFilter> filters, bool multiselect, string initialFileName)
+		public void Initialize(System.Collections.Generic.IEnumerable<FileDialogFilter> filters, bool multiselect, string initialFileName)
 		{
 			if(!string.IsNullOrEmpty(initialFileName)) {
 				this.NameFieldStringValue = initialFileName;
 				this.DirectoryUrl = new NSUrl(initialFileName, true);
 			}
-			base.OnInitialize (filters, multiselect, initialFileName);
 
-			Panel.Prompt = Application.TranslationCatalog.GetString ("Select File");
+			this.Prompt = Application.TranslationCatalog.GetString("Select File");
 		}
 
 		public bool Run (IWindowFrameBackend parent)

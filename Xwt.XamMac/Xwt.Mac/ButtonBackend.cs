@@ -32,6 +32,7 @@ using ObjCRuntime;
 using Xwt.Accessibility;
 using Xwt.Backends;
 using Xwt.Drawing;
+using NativeHandle = System.IntPtr;
 
 namespace Xwt.Mac
 {

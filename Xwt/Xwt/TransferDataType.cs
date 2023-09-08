@@ -120,7 +120,23 @@ namespace Xwt
 			else
 				return FromId (type.AssemblyQualifiedName);
 		}
-		
+
+		public static Type ToType(string transferDataTypeId) {
+			switch(transferDataTypeId) {
+				case "uri":
+					return typeof(System.Uri);
+				case "image":
+					return typeof(Xwt.Drawing.Image);
+				case "text":
+				case "html":
+				case "rtf":
+					return typeof(string);
+				default:
+					// this is probably an error but try using string
+					return typeof(string);
+			}
+		}
+
 		public override bool Equals (object obj)
 		{
 			TransferDataType t = obj as TransferDataType;

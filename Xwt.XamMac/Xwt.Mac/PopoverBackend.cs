@@ -33,7 +33,7 @@ using Foundation;
 using ObjCRuntime;
 using Xwt.Backends;
 using Xwt.Drawing;
-
+using NativeHandle = System.IntPtr;
 
 namespace Xwt.Mac
 {
@@ -291,7 +291,7 @@ namespace Xwt.Mac
 				controller.EffectiveAppearanceName = refView.EffectiveAppearance.Name;
 
 				if (popover is INSAppearanceCustomization)
-					((INSAppearanceCustomization)popover).Appearance = refView.EffectiveAppearance;
+					((INSAppearanceCustomization)popover).SetAppearance(refView.EffectiveAppearance);
 			}
 
 			popover.Show (positionRect.ToCGRect (),
