@@ -585,7 +585,7 @@ namespace Xwt.Mac
 #if MONOMAC
 					return (Key)((NSKey)key - NSKey.F1 + Key.F1);
 #else
-					return (Key)((NSKey)key - NSKey.F1 + (ulong)Key.F1);
+					return (Key)((NSKey)(key - (ulong)NSKey.F1 + (ulong)Key.F1));
 #endif
 				}
 			}

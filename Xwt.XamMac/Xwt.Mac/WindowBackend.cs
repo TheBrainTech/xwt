@@ -674,17 +674,6 @@ namespace Xwt.Mac
 				childView.Frame = frame;
 			}
 		}
-
-		public override bool ConformsToProtocol (NativeHandle protocol)
-		{
-			// HACK: for some reason on systems with a TouchBar this might be called
-			//       after the window has been closed and released, resulting in
-			//       an ObjectDisposedException followed by a crash
-			if (disposed)
-				return false;
-
-			return base.ConformsToProtocol (protocol);
-		}
 	}
 	
 	public partial class WindowBackendController : NSWindowController

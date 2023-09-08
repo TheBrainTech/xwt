@@ -11,11 +11,9 @@
     <AssemblyName>Xwt.XamMac</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\xwt.snk</AssemblyOriginatorKeyFile>
-    <TargetFramework>$(MacTargetFramework)</TargetFramework>
     <DisableImplicitNamespaceImports>True</DisableImplicitNamespaceImports>
 
     <SupportedOSPlatformVersion>10.14</SupportedOSPlatformVersion>
-
 
     <AssemblyTitle>Xwt.XamMac</AssemblyTitle>
     <AssemblyDescription>Xamarin Mac Toolkit for the Xwt UI Framework</AssemblyDescription>
@@ -33,6 +31,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -41,6 +43,10 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
   </PropertyGroup>
   <PropertyGroup Condition="!$(Net6)">
     <XamMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll</XamMacPath>
@@ -54,9 +60,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
-    <Reference Include="Xamarin.Mac" Condition="!$(Net6)">
-      <HintPath>$(XamMacPath)</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="..\BuildHelpers.targets" />
   <ItemGroup>

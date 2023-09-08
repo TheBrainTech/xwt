@@ -663,8 +663,8 @@ namespace Xwt.Mac
 			var backend = ob.Backend;
 
 			var di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, owns: false);
-			var types = di.GetDraggingPasteboard().Types.Select (ToXwtDragType).ToArray ();
-			var pos = backend.Widget.ConvertPointFromView (di.GetDraggingLocation(), null).ToXwtPoint ();
+			var types = di.DraggingPasteboard.Types.Select (ToXwtDragType).ToArray ();
+			var pos = backend.Widget.ConvertPointFromView (di.DraggingLocation, null).ToXwtPoint ();
 
 			var widget = backend.Frontend;
 			if (widget.ShouldPreventDragByLocation != null) {
@@ -674,7 +674,7 @@ namespace Xwt.Mac
 			}
 
 			if ((backend.currentEvents & WidgetEvent.DragOverCheck) != 0) {
-				var args = new DragOverCheckEventArgs (pos, types, ConvertAction (di.GetDraggingSourceOperationMask()));
+				var args = new DragOverCheckEventArgs (pos, types, ConvertAction (di.DraggingSourceOperationMask));
 				backend.OnDragOverCheck (di, args);
 				if (args.AllowedAction == DragDropAction.None)
 					return NSDragOperation.None;
@@ -684,8 +684,8 @@ namespace Xwt.Mac
 			
 			if ((backend.currentEvents & WidgetEvent.DragOver) != 0) {
 				TransferDataStore store = new TransferDataStore ();
-				FillDataStore (store, di.GetDraggingPasteboard(), ob.View.RegisteredDragTypes ());
-				var args = new DragOverEventArgs (pos, store, ConvertAction (di.GetDraggingSourceOperationMask()));
+				FillDataStore (store, di.DraggingPasteboard, ob.View.RegisteredDragTypes ());
+				var args = new DragOverEventArgs (pos, store, ConvertAction (di.DraggingSourceOperationMask));
 				backend.OnDragOver (di, args);
 				if (args.AllowedAction == DragDropAction.None)
 					return NSDragOperation.None;
@@ -693,7 +693,7 @@ namespace Xwt.Mac
 					return ConvertAction (args.AllowedAction);
 			}
 			
-			return di.GetDraggingSourceOperationMask();
+			return di.DraggingSourceOperationMask;
 		#endif
 		}
 		
@@ -720,11 +720,11 @@ namespace Xwt.Mac
 			var backend = ob.Backend;
 
 			var di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, owns: false);
-			var types = di.GetDraggingPasteboard().Types.Select (ToXwtDragType).ToArray ();
-			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
+			var types = di.DraggingPasteboard.Types.Select (ToXwtDragType).ToArray ();
+			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
 			
 			if ((backend.currentEvents & WidgetEvent.DragDropCheck) != 0) {
-				var args = new DragCheckEventArgs (pos, types, ConvertAction (di.GetDraggingSourceOperationMask()));
+				var args = new DragCheckEventArgs (pos, types, ConvertAction (di.DraggingSourceOperationMask));
 				bool res = backend.ApplicationContext.InvokeUserCode (delegate {
 					backend.eventSink.OnDragDropCheck (args);
 				});
@@ -747,12 +747,12 @@ namespace Xwt.Mac
 			var backend = ob.Backend;
 			
 			var di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, owns: false);
-			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
+			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
 			
 			if ((backend.currentEvents & WidgetEvent.DragDrop) != 0) {
 				TransferDataStore store = new TransferDataStore ();
-				FillDataStore (store, di.GetDraggingPasteboard(), ob.View.RegisteredDragTypes ());
-				var args = new DragEventArgs (pos, store, ConvertAction (di.GetDraggingSourceOperationMask()));
+				FillDataStore (store, di.DraggingPasteboard, ob.View.RegisteredDragTypes ());
+				var args = new DragEventArgs (pos, store, ConvertAction (di.DraggingSourceOperationMask));
 				backend.ApplicationContext.InvokeUserCode (delegate {
 					backend.eventSink.OnDragDrop (args);
 				});

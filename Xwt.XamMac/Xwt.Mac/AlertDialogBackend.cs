@@ -132,22 +132,5 @@ namespace Xwt.Mac
 		public bool ApplyToAll { get; set; }
 		#endregion
 
-		public override bool ConformsToProtocol (NativeHandle protocol)
-		{
-			// HACK: for some reason on systems with a TouchBar this might be called
-			//       after the window has been closed and released, resulting in
-			//       an ObjectDisposedException followed by a crash
-			if (isDisposed)
-				return false;
-
-			return base.ConformsToProtocol (protocol);
-		}
-
-		bool isDisposed;
-		protected override void Dispose (bool disposing)
-		{
-			isDisposed = true;
-			base.Dispose (disposing);
-		}
 	}
 }
