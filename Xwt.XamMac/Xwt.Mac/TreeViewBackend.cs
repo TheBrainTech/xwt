@@ -449,7 +449,7 @@ namespace Xwt.Mac
 			return it;
 		}
 		
-		public override bool AcceptDrop (NSOutlineView outlineView, NSDraggingInfo info, NSObject item, nint index)
+		public override bool AcceptDrop (NSOutlineView outlineView, INSDraggingInfo info, NSObject item, nint index)
 		{
 			return false;
 		}
@@ -512,7 +512,7 @@ namespace Xwt.Mac
 		{
 		}
 
-		public override NSDragOperation ValidateDrop (NSOutlineView outlineView, NSDraggingInfo info, NSObject item, nint index)
+		public override NSDragOperation ValidateDrop (NSOutlineView outlineView, INSDraggingInfo info, NSObject item, nint index)
 		{
 			return NSDragOperation.None;
 		}

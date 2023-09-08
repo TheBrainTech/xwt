@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework>net7.0-macos</TargetFramework>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{74727680-113C-4158-BA7D-B49D55C1D1BC}</ProjectGuid>
@@ -8,8 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Xwt.Mac</RootNamespace>
     <AssemblyName>Xwt.XamMac</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -51,104 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\XWT\Xwt\Xwt.csproj">
-      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
-      <Name>Xwt</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Xwt.Mac\AccessibleBackend.cs" />
-    <Compile Include="Xwt.Mac\AlertDialogBackend.cs" />
-    <Compile Include="Xwt.Mac\BoxBackend.cs" />
-    <Compile Include="Xwt.Mac\ButtonBackend.cs" />
-    <Compile Include="Xwt.Mac\CalendarBackend.cs" />
-    <Compile Include="Xwt.Mac\CanvasBackend.cs" />
-    <Compile Include="Xwt.Mac\CheckBoxBackend.cs" />
-    <Compile Include="Xwt.Mac\CheckBoxMenuItemBackend.cs" />
-    <Compile Include="Xwt.Mac\ColorPickerBackend.cs" />
-    <Compile Include="Xwt.Mac\ComboBoxBackend.cs" />
-    <Compile Include="Xwt.Mac\ComboBoxEntryBackend.cs" />
-    <Compile Include="Xwt.Mac\ContextBackendHandler.cs" />
-    <Compile Include="Xwt.Mac\CustomWidgetBackend.cs" />
-    <Compile Include="Xwt.Mac\DatePickerBackend.cs" />
-    <Compile Include="Xwt.Mac\DialogBackend.cs" />
-    <Compile Include="Xwt.Mac\EmbedNativeWidgetBackend.cs" />
-    <Compile Include="Xwt.Mac\ExpanderBackend.cs" />
-    <Compile Include="Xwt.Mac\FileDialogBackend.cs" />
-    <Compile Include="Xwt.Mac\FontBackendHandler.cs" />
-    <Compile Include="Xwt.Mac\FrameBackend.cs" />
-    <Compile Include="Xwt.Mac\GradientBackendHandler.cs" />
-    <Compile Include="Xwt.Mac\GtkQuartz.cs" />
-    <Compile Include="Xwt.Mac\IViewObject.cs" />
-    <Compile Include="Xwt.Mac\ImageBuilderBackendHandler.cs" />
-    <Compile Include="Xwt.Mac\ImageHandler.cs" />
-    <Compile Include="Xwt.Mac\ImagePatternBackendHandler.cs" />
-    <Compile Include="Xwt.Mac\ImageViewBackend.cs" />
-    <Compile Include="Xwt.Mac\KeyboardUtil.cs" />
-    <Compile Include="Xwt.Mac\LabelBackend.cs" />
-    <Compile Include="Xwt.Mac\LinkLabelBackend.cs" />
-    <Compile Include="Xwt.Mac\ListBoxBackend.cs" />
-    <Compile Include="Xwt.Mac\ListViewBackend.cs" />
-    <Compile Include="Xwt.Mac\MacClipboardBackend.cs" />
-    <Compile Include="Xwt.Mac\MacDesktopBackend.cs" />
-    <Compile Include="Xwt.Mac\MacEngine.cs" />
-    <Compile Include="Xwt.Mac\MacKeyboardHandler.cs" />
-    <Compile Include="Xwt.Mac\MacSystemInformation.cs" />
-    <Compile Include="Xwt.Mac\MenuBackend.cs" />
-    <Compile Include="Xwt.Mac\MenuButtonBackend.cs" />
-    <Compile Include="Xwt.Mac\MenuItemBackend.cs" />
-    <Compile Include="Xwt.Mac\Messaging.cs" />
-    <Compile Include="Xwt.Mac\NSApplicationInitializer.cs" />
-    <Compile Include="Xwt.Mac\NSTableViewBackend.cs" />
-    <Compile Include="Xwt.Mac\NotebookBackend.cs" />
-    <Compile Include="Xwt.Mac\ObjcHelper.cs" />
-    <Compile Include="Xwt.Mac\OpenFileDialogBackend.cs" />
-    <Compile Include="Xwt.Mac\OutlineViewBackend.cs" />
-    <Compile Include="Xwt.Mac\PanedBackend.cs" />
-    <Compile Include="Xwt.Mac\PasswordEntryBackend.cs" />
-    <Compile Include="Xwt.Mac\PathBackendHandler.cs" />
-    <Compile Include="Xwt.Mac\PopoverBackend.cs" />
-    <Compile Include="Xwt.Mac\PopupWindowBackend.cs" />
-    <Compile Include="Xwt.Mac\ProgressBarBackend.cs" />
-    <Compile Include="Xwt.Mac\RadioButtonBackend.cs" />
-    <Compile Include="Xwt.Mac\RadioButtonMenuItemBackend.cs" />
-    <Compile Include="Xwt.Mac\RichTextViewBackend.cs" />
-    <Compile Include="Xwt.Mac\SaveFileDialogBackend.cs" />
-    <Compile Include="Xwt.Mac\ScrollAdjustmentBackend.cs" />
-    <Compile Include="Xwt.Mac\ScrollControlBackend.cs" />
-    <Compile Include="Xwt.Mac\ScrollViewBackend.cs" />
-    <Compile Include="Xwt.Mac\ScrollbarBackend.cs" />
-    <Compile Include="Xwt.Mac\SearchTextEntryBackend.cs" />
-    <Compile Include="Xwt.Mac\SelectColorDialogBackend.cs" />
-    <Compile Include="Xwt.Mac\SelectFolderDialogBackend.cs" />
-    <Compile Include="Xwt.Mac\SelectFontDialogBackend.cs" />
-    <Compile Include="Xwt.Mac\SeparatorBackend.cs" />
-    <Compile Include="Xwt.Mac\SeparatorMenuItemBackend.cs" />
-    <Compile Include="Xwt.Mac\SliderBackend.cs" />
-    <Compile Include="Xwt.Mac\SpinButtonBackend.cs" />
-    <Compile Include="Xwt.Mac\SpinnerBackend.cs" />
-    <Compile Include="Xwt.Mac\StatusIconBackend.cs" />
-    <Compile Include="Xwt.Mac\TableViewBackend.cs" />
-    <Compile Include="Xwt.Mac\TextEntryBackend.cs" />
-    <Compile Include="Xwt.Mac\TextLayoutBackendHandler.cs" />
-    <Compile Include="Xwt.Mac\ToggleButtonBackend.cs" />
-    <Compile Include="Xwt.Mac\TreeViewBackend.cs" />
-    <Compile Include="Xwt.Mac\Util.cs" />
-    <Compile Include="Xwt.Mac\ViewBackend.cs" />
-    <Compile Include="Xwt.Mac\WebViewBackend.cs" />
-    <Compile Include="Xwt.Mac\WidgetView.cs" />
-    <Compile Include="Xwt.Mac\WindowBackend.cs" />
-    <Compile Include="Xwt.Mac\WindowFrameBackend.cs" />
-    <Compile Include="Xwt.Mac.CellViews\CanvasTableCell.cs" />
-    <Compile Include="Xwt.Mac.CellViews\CellUtil.cs" />
-    <Compile Include="Xwt.Mac.CellViews\CellViewBackend.cs" />
-    <Compile Include="Xwt.Mac.CellViews\CheckBoxTableCell.cs" />
-    <Compile Include="Xwt.Mac.CellViews\CompositeCell.cs" />
-    <Compile Include="Xwt.Mac.CellViews\ICellRenderer.cs" />
-    <Compile Include="Xwt.Mac.CellViews\ICellSource.cs" />
-    <Compile Include="Xwt.Mac.CellViews\ImageTableCell.cs" />
-    <Compile Include="Xwt.Mac.CellViews\RadioButtonTableCell.cs" />
-    <Compile Include="Xwt.Mac.CellViews\TextTableCell.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\zoom-in-16.png" />
@@ -168,5 +70,4 @@
     <EmbeddedResource Include="icons\zoom-out-16~sel.png" />
     <EmbeddedResource Include="icons\zoom-out-16~sel%402x.png" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
