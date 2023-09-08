@@ -33,6 +33,7 @@ using System.Linq;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using ObjCRuntime;
 using Xwt.Backends;
 
 namespace Xwt.Mac
@@ -278,7 +279,8 @@ namespace Xwt.Mac
 			this.source = source;
 		}
 
-		public override bool AcceptDrop (NSTableView tableView, INSDraggingInfo info, nint row, NSTableViewDropOperation dropOperation)
+		[Export("tableView:acceptDrop:row:dropOperation:")]
+		public bool AcceptDrop (NSTableView tableView, INSDraggingInfo info, nint row, NSTableViewDropOperation dropOperation)
 		{
 			return false;
 		}
@@ -306,7 +308,7 @@ namespace Xwt.Mac
 		{
 		}
 
-		public override NSDragOperation ValidateDrop (NSTableView tableView, INSDraggingInfo info, nint row, NSTableViewDropOperation dropOperation)
+		[Export("tableView:validateDrop:proposedRow:proposedDropOperation:")]
 		{
 			return NSDragOperation.None;
 		}

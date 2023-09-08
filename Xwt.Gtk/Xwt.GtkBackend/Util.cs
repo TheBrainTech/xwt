@@ -30,6 +30,7 @@ using Xwt.Drawing;
 using Xwt.Backends;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Xwt.GtkBackend
 {
@@ -78,7 +79,7 @@ namespace Xwt.GtkBackend
 				data.SetUris(new string[] { ((Uri)val).AbsolutePath });
 			else {
 				var at = Gdk.Atom.Intern (atomType, false);
-				data.Set (at, 0, TransferDataSource.SerializeValue (val));
+				data.Set (at, 0, TransferDataSource.SerializeValue (val, val.GetType()));
 			}
 		}
 		
@@ -275,6 +276,30 @@ namespace Xwt.GtkBackend
 		internal static void Dispose (this Cairo.Context cr)
 		{
 			((IDisposable)cr).Dispose ();
+		}
+
+		[DllImport (GtkInterop.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
+		static extern void gtk_label_set_attributes (IntPtr label, IntPtr attrList);
+
+		internal static TextIndexer ApplyFormattedText(this Gtk.Label label, FormattedText text)
+		{
+			TextIndexer indexer = null;
+			var list = new FastPangoAttrList ();
+			if (text != null) {
+				if (label.IsRealized) {
+					var color = Gdk.Color.Zero;
+					var colorVal = label.StyleGetProperty ("link-color");
+					if (colorVal is Gdk.Color)
+						color = (Gdk.Color)colorVal;
+					if (!color.Equals (Gdk.Color.Zero))
+						list.DefaultLinkColor = color;
+				}
+				indexer = new TextIndexer (text.Text);
+				list.AddAttributes (indexer, text.Attributes);
+			}
+			gtk_label_set_attributes (label.Handle, list.Handle);
+
+			return indexer;
 		}
 	}
 }

@@ -37,7 +37,7 @@ namespace Xwt.Mac
 		Func<bool> PerformAccessiblePressDelegate { get; set; }
 	}
 
-	public class AccessibleBackend : IAccessibleBackend
+	public partial class AccessibleBackend : IAccessibleBackend
 	{
 		INSAccessibleEventSource eventProxy;
 		INSAccessibility widget;
@@ -46,8 +46,8 @@ namespace Xwt.Mac
 
 		public void Initialize (IWidgetBackend parentWidget, IAccessibleEventSink eventSink)
 		{
-			var parentBackend = parentWidget as ViewBackend;
-			Initialize (parentBackend?.Widget, eventSink);
+			var widget = (parentWidget as ICellSource)?.TableView ?? (parentWidget as ViewBackend)?.Widget;
+			Initialize (widget, eventSink);
 		}
 
 		public void Initialize (IPopoverBackend parentPopover, IAccessibleEventSink eventSink)
@@ -73,6 +73,8 @@ namespace Xwt.Mac
 				widget = ((EmbedNativeWidgetBackend)parentWidget).EmbeddedView;
 			else if (parentWidget is CustomAlignedContainer) // bypass alignment containers
 				widget = ((CustomAlignedContainer)parentWidget).Child;
+			if (widget is NSImageView imageView)
+				widget = imageView.Cell;
 			if (widget == null)
 				widget = parentWidget as INSAccessibility;
 			if (widget == null)

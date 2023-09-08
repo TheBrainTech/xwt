@@ -167,7 +167,12 @@ namespace Xwt.WPFBackend
 			if (action == null)
 				throw new ArgumentNullException ("action");
 
-			application.Dispatcher.BeginInvoke (action, new object [0]);
+			try {
+				application.Dispatcher.BeginInvoke (action, new object [0]);
+			} catch (Exception ex) {
+
+				throw;
+			}
 		}
 
 		public override object TimerInvoke (Func<bool> action, TimeSpan timeSpan)

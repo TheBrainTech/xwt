@@ -159,7 +159,9 @@ namespace Xwt.Mac
 			if (eventId is TableViewEvent) {
 				switch ((TableViewEvent)eventId) {
 				case TableViewEvent.SelectionChanged:
-					selChangeObserver = NSNotificationCenter.DefaultCenter.AddObserver (new NSString (SelectionChangeEventName), HandleTreeSelectionDidChange, Table);
+					using (var key = new NSString(SelectionChangeEventName)) {
+						selChangeObserver = NSNotificationCenter.DefaultCenter.AddObserver(key, HandleTreeSelectionDidChange, Table);
+					}
 					break;
 				}
 			}
@@ -445,6 +447,17 @@ namespace Xwt.Mac
 				// may be drawn already and it will not be redrawn even
 				// if Selection has been changed.
 				NeedsDisplay = true;
+
+				// FIXME: when building using Xcode 12, macOS stops redrawing subviews on selection change
+				// We have always a CompositeCell with Subviews for real cell views
+				foreach (var sub in Subviews)
+				{
+					sub.NeedsDisplay = true;
+					foreach (var subsub in sub.Subviews)
+					{
+						subsub.NeedsDisplay = true;
+					}
+				}
 			}
 		}
 

@@ -39,14 +39,29 @@ namespace Xwt
 		/// <param name="modifiers">The modifier keys.</param>
 		/// <param name="isRepeat">the key has been pressed more then once.</param>
 		/// <param name="timestamp">The timestamp of the key event.</param>
-		public KeyEventArgs (Key key, ModifierKeys modifiers, bool isRepeat, long timestamp)
+        /// <param name="characters">The character string this event represents</param>
+        /// <param name="charactersIgnoringModifiers">The character string this event represents ignoring any modifier keys that are pressed</param>
+		public KeyEventArgs (Key key, ModifierKeys modifiers, bool isRepeat, long timestamp, string characters, string charactersIgnoringModifiers)
 		{
 			this.Key = key;
 			this.Modifiers = modifiers;
 			this.IsRepeat = isRepeat;
 			this.Timestamp = timestamp;
+			this.Characters = characters;
+			this.CharactersIgnoringModifiers = charactersIgnoringModifiers;
 		}
-		
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Xwt.KeyEventArgs"/> class.
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="modifiers">The modifier keys.</param>
+		/// <param name="isRepeat">the key has been pressed more then once.</param>
+		/// <param name="timestamp">The timestamp of the key event.</param>
+		public KeyEventArgs(Key key, ModifierKeys modifiers, bool isRepeat, long timestamp) : this (key, modifiers, isRepeat, timestamp, string.Empty, string.Empty)
+        {
+        }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Xwt.KeyEventArgs"/> class.
 		/// </summary>
@@ -55,12 +70,43 @@ namespace Xwt
 		/// <param name="modifiers">The modifier keys.</param>
 		/// <param name="isRepeat">the key has been pressed more then once.</param>
 		/// <param name="timestamp">The timestamp of the key event.</param>
-		public KeyEventArgs (Key key, int nativeKeyCode, ModifierKeys modifiers, bool isRepeat, long timestamp)
-			: this (key, modifiers, isRepeat, timestamp)
+		/// <param name="characters">The character string this event represents</param>
+		/// <param name="charactersIgnoringModifiers">The character string this event represents ignoring any modifier keys that are pressed</param>
+		public KeyEventArgs (Key key, int nativeKeyCode, ModifierKeys modifiers, bool isRepeat, long timestamp, string characters, string charactersIgnoringModifiers)
+			: this (key, modifiers, isRepeat, timestamp, characters, charactersIgnoringModifiers)
 		{
 			this.NativeKeyCode = nativeKeyCode;
 		}
-		
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Xwt.KeyEventArgs"/> class.
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="nativeKeyCode">The native key code.</param>
+		/// <param name="modifiers">The modifier keys.</param>
+		/// <param name="isRepeat">the key has been pressed more then once.</param>
+		/// <param name="timestamp">The timestamp of the key event.</param>
+		public KeyEventArgs(Key key, int nativeKeyCode, ModifierKeys modifiers, bool isRepeat, long timestamp) : this (key, nativeKeyCode, modifiers, isRepeat, timestamp, string.Empty, string.Empty)
+        {
+        }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Xwt.KeyEventArgs"/> class.
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="nativeKeyCode">The native key code.</param>
+		/// <param name="modifiers">The modifier keys.</param>
+		/// <param name="isRepeat">the key has been pressed more then once.</param>
+		/// <param name="timestamp">The timestamp of the key event.</param>
+		/// <param name="characters">The character string this event represents</param>
+		/// <param name="charactersIgnoringModifiers">The character string this event represents ignoring any modifier keys that are pressed</param>
+        /// <param name="nativeEvent">The native event object</param>
+		public KeyEventArgs(Key key, int nativeKeyCode, ModifierKeys modifiers, bool isRepeat, long timestamp, string characters, string charactersIgnoringModifiers, object nativeEvent)
+			: this(key, nativeKeyCode, modifiers, isRepeat, timestamp, characters, charactersIgnoringModifiers)
+		{
+			this.NativeEvent = nativeEvent;
+		}
+
 		/// <summary>
 		/// Gets the key.
 		/// </summary>
@@ -103,6 +149,24 @@ namespace Xwt
 		/// the backend from processing the key and adding the appropriate character to <see cref="Xwt.TextEntry.Text"/>.
 		/// </remarks>
 		public bool Handled { get; set; }
+
+		/// <summary>
+        /// Gets or sets the character representation of the event
+        /// </summary>
+        /// <value>The string of characters</value>
+		public string Characters { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the character representation of the event ignoring the modifier keys
+		/// </summary>
+		/// <value>The string of characters</value>
+		public string CharactersIgnoringModifiers { get; private set; }
+
+		/// <summary>
+        /// Gets or sets the native event object
+        /// </summary>
+        /// <value>An opaque object representing the event in the native toolkit</value>
+		public object NativeEvent { get; private set; }
 	}
 }
 

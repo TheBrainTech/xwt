@@ -27,6 +27,7 @@
 using System;
 using AppKit;
 using CoreGraphics;
+using ObjCRuntime;
 using Xwt.Backends;
 
 namespace Xwt.Mac
@@ -39,7 +40,7 @@ namespace Xwt.Mac
 		{
 		}
 		
-		public AlertDialogBackend (IntPtr intptr)
+		public AlertDialogBackend (NativeHandle intptr)
 		{
 		}
 
@@ -108,12 +109,44 @@ namespace Xwt.Mac
 			}
 
 			var win = Context.Toolkit.GetNativeWindow (transientFor) as NSWindow;
+			Window.ReleasedWhenClosed = true;
 			if (win != null)
 				return sortedButtons [(int)this.RunSheetModal (win) - 1000];
+
+			if (win == null)
+			{
+				//a modal dialog needs parent window so we try take the current key
+				win = NSApplication.SharedApplication.ModalWindow ?? NSApplication.SharedApplication.KeyWindow;
+			}
+			
+			if (win != null)
+			{
+				win.AddChildWindow(this.Window, NSWindowOrderingMode.Above);
+			}
+
+			Util.CenterWindow(this.Window, win);
 			return sortedButtons [(int)this.RunModal () - 1000];
 		}
 
 		public bool ApplyToAll { get; set; }
 		#endregion
+
+		public override bool ConformsToProtocol (NativeHandle protocol)
+		{
+			// HACK: for some reason on systems with a TouchBar this might be called
+			//       after the window has been closed and released, resulting in
+			//       an ObjectDisposedException followed by a crash
+			if (isDisposed)
+				return false;
+
+			return base.ConformsToProtocol (protocol);
+		}
+
+		bool isDisposed;
+		protected override void Dispose (bool disposing)
+		{
+			isDisposed = true;
+			base.Dispose (disposing);
+		}
 	}
 }

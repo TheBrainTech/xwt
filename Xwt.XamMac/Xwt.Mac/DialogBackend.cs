@@ -29,6 +29,7 @@ using System.Linq;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using ObjCRuntime;
 using Xwt.Backends;
 using Xwt.Drawing;
 
@@ -55,7 +56,7 @@ namespace Xwt.Mac
 			}
 		}
 
-		public DialogBackend (IntPtr ptr) : base (ptr)
+		public DialogBackend (NativeHandle ptr) : base (ptr)
 		{
 		}
 
@@ -171,22 +172,42 @@ namespace Xwt.Mac
 
 		public void RunLoop (IWindowFrameBackend parent)
 		{
+			NSWindow nsParent = parent?.Window as NSWindow;
+			if (nsParent == null)
+			{
+				//a modal dialog needs parent window so we try take the current key
+				nsParent = NSApplication.SharedApplication.ModalWindow ?? NSApplication.SharedApplication.KeyWindow;
+			}
+
+			weakParentWindow = new WeakReference<NSWindow>(nsParent);
+
+			// Next, make this window key before adding it as a child.
+			// This matches behavior in MonoDevelop.Ide.MessageService.RunCustomDialog.
+			MakeKeyAndOrderFront(NSApplication.SharedApplication);
+
 			Visible = true;
 			modalSessionRunning = true;
+
+			Util.CenterWindow(this, nsParent);
 			NSApplication.SharedApplication.RunModalForWindow (this);
 		}
 
 		public void EndLoop ()
 		{
 			modalSessionRunning = false;
-			var parent = ParentWindow;
-			if (parent != null)
-				parent.RemoveChildWindow (this);
+
+			NSWindow parent = null;
+			weakParentWindow?.TryGetTarget(out parent);
+
 			OrderOut (this);
 			Close();
 			NSApplication.SharedApplication.StopModal ();
-			if (parent != null)
+			if (parent != null) {
 				parent.MakeKeyAndOrderFront (parent);
+				if (parent.AccessibilityFocusedWindow != parent) {
+					parent.AccessibilityFocusedWindow = parent;
+				}
+			}
 		}
 
 		#endregion

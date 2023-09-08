@@ -151,6 +151,7 @@ namespace Xwt
 	class DefaultFileSelectorBackend : XwtWidgetBackend, IFileSelectorBackend
 	{
 		TextEntry entry;
+		Button button;
 		FileDialog dialog;
 		FileDialogFilterCollection filters;
 		FileDialogFilter activeFilter;
@@ -168,15 +169,31 @@ namespace Xwt
 			box.Accessible.Title = Application.TranslationCatalog.GetString("File Selector");
 
 			entry = new TextEntry ();
-			entry.Accessible.Label = Application.TranslationCatalog.GetString ("Path");
+			entry.Accessible.Title = Application.TranslationCatalog.GetString ("Path");
+			entry.Visible = true;
 			entry.Changed += (sender, e) => NotifyFileChange ();
-			box.PackStart (entry, true);
+			box.PackStart (entry, true, vpos: WidgetPlacement.Center);
 
-			var btn = new Button ("...");
-			btn.Accessible.Label = Application.TranslationCatalog.GetString ("Browse");
-			box.PackStart (btn);
-			btn.Clicked += BtnClicked;
+			button = new Button ("...");
+			button.Accessible.Title = Application.TranslationCatalog.GetString ("Browse");
+			box.PackStart (button, false, vpos: WidgetPlacement.Center);
+			button.Clicked += BtnClicked;
 			Content = box;
+
+			Accessible.PropertyChanged += HandleAccessiblePropertyChanged;
+		}
+
+		private void HandleAccessiblePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof (Accessible.LabelWidget)) {
+				Content.Accessible.LabelWidget = Accessible.LabelWidget;
+				button.Accessible.LabelWidget = Accessible.LabelWidget;
+				entry.Accessible.LabelWidget = Accessible.LabelWidget;
+			} else if (e.PropertyName == nameof (Accessible.Label)) {
+				Content.Accessible.Label = Accessible.Label;
+				button.Accessible.Label = Accessible.Label;
+				entry.Accessible.Label = Accessible.Label;
+			}
 		}
 
 		public FileDialogFilter ActiveFilter {
@@ -277,14 +294,25 @@ namespace Xwt
 					dialog.ActiveFilter = activeFilter;
 				if (!string.IsNullOrEmpty (title))
 					dialog.Title = title;
-				if (dialog.Run (ParentWindow))
+				if (dialog.Run(ParentWindow)) {
 					FileName = dialog.FileName;
+					currentFolder = dialog.CurrentFolder;
+					// do not update the active filter, since we don't want the
+					// picker to propagate filter changes back to the selector.
+					//activeFilter = dialog.ActiveFilter;
+				}
 			} finally {
-				currentFolder = dialog.CurrentFolder;
-				activeFilter = dialog.ActiveFilter;
 				dialog.Dispose ();
 				dialog = null;
 			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && !IsDisposed) {
+				Accessible.PropertyChanged -= HandleAccessiblePropertyChanged;
+			}
+			base.Dispose(disposing);
 		}
 	}
 }

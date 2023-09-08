@@ -171,6 +171,8 @@ namespace Xwt.GtkBackend
 			}
 			set {
 				Widget.TooltipText = value;
+				var engine = Toolkit.GetBackend(Frontend.Surface.ToolkitEngine) as GtkEngine;
+				engine?.PlatformBackend?.EnableNativeTooltip(Widget);
 			}
 		}
 		
@@ -702,7 +704,7 @@ namespace Xwt.GtkBackend
 			if ((args.Event.State & Gdk.ModifierType.Mod1Mask) != 0)
 				m |= ModifierKeys.Alt;
 
-			return new KeyEventArgs (k, (int)args.Event.KeyValue, m, false, (long)args.Event.Time);
+			return new KeyEventArgs (k, (int)args.Event.KeyValue, m, false, (long)args.Event.Time, string.Empty, string.Empty, args.Event);
 		}
 
 		[GLib.ConnectBefore]
@@ -723,7 +725,7 @@ namespace Xwt.GtkBackend
 			Key k = (Key)args.Event.KeyValue;
 			ModifierKeys m = args.Event.State.ToXwtValue ();
 
-			return new KeyEventArgs (k, (int)args.Event.KeyValue, m, false, (long)args.Event.Time);
+			return new KeyEventArgs (k, (int)args.Event.KeyValue, m, false, (long)args.Event.Time, string.Empty, string.Empty, args.Event);
 		}
 
 		protected Gtk.IMContext IMContext { get; set; }

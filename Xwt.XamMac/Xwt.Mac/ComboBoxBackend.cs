@@ -49,6 +49,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using AppKit;
 using Xwt.Backends;
 
@@ -260,6 +261,12 @@ namespace Xwt.Mac
 					return false;
 				return base.AllowsVibrancy;
 			}
+		}
+
+		public override void SelectItem (nint index)
+		{
+			base.SelectItem (index);
+			Backend.ApplicationContext.InvokeUserCode (((IComboBoxEventSink)(Backend.EventSink)).OnSelectionChanged);
 		}
 	}
 }

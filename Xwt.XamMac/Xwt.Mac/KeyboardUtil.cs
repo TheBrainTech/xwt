@@ -33,13 +33,22 @@ namespace Xwt.Mac
 	{
 		public static KeyEventArgs ToXwtKeyEventArgs (this NSEvent keyEvent)
 		{
-			Key key = GetXwtKey(keyEvent);
-			ModifierKeys mod = keyEvent.ModifierFlags.ToXwtValue ();
-			return new KeyEventArgs (key, keyEvent.KeyCode, mod, keyEvent.IsARepeat, (long)TimeSpan.FromSeconds (keyEvent.Timestamp).TotalMilliseconds);
+			NSEventModifierMask mask;
+			Key key = GetXwtKey(keyEvent, out mask);
+			ModifierKeys mod = mask.ToXwtValue ();
+			return new KeyEventArgs (key, keyEvent.KeyCode, mod, keyEvent.IsARepeat, (long)TimeSpan.FromSeconds (keyEvent.Timestamp).TotalMilliseconds, keyEvent.Characters, keyEvent.CharactersIgnoringModifiers, keyEvent);
 		}
 
-		static Key GetXwtKey (NSEvent keyEvent)
+		static Key RemoveShift(Key key, ref NSEventModifierMask mask)
+        {
+			mask &= ~NSEventModifierMask.ShiftKeyMask;
+			return key;
+        }
+
+		static Key GetXwtKey (NSEvent keyEvent, out NSEventModifierMask modMask)
 		{
+			modMask = keyEvent.ModifierFlags;
+
 			// special keys
 			switch (keyEvent.KeyCode) {
 				case 65: return Key.NumPadDecimal;  // kVK_ANSI_KeypadDecimal        = 0x41
@@ -74,27 +83,27 @@ namespace Xwt.Mac
 				case 60: return Key.ShiftRight;     // kVK_RightShift                = 0x3C
 				case 61: return Key.AltRight;       // kVK_RightOption               = 0x3D
 				case 62: return Key.ControlRight;   // kVK_RightControl              = 0x3E
-				//case 0x3F: return Key.FN;           // kVK_Function                  = 0x3F
-				//case 0x40: return Key.F17;          // kVK_F17                       = 0x40
-				//case 0x48: return Key.VolUp;        // kVK_VolumeUp                  = 0x48
-				//case 0x49: return Key.VolDown;      // kVK_VolumeDown                = 0x49
-				//case 0x4A: return Key.Mute;         // kVK_Mute                      = 0x4A
-				//case 0x4F: return Key.F18;          // kVK_F18                       = 0x4F
-				//case 0x50: return Key.F19;          // kVK_F19                       = 0x50
-				//case 0x5A: return Key.F20;          // kVK_F20                       = 0x5A
+				case 0x3F: return Key.function;           // kVK_Function                  = 0x3F
+				case 0x40: return Key.F17;          // kVK_F17                       = 0x40
+				case 0x48: return Key.AudioRaiseVolume;        // kVK_VolumeUp                  = 0x48
+				case 0x49: return Key.AudioLowerVolume;      // kVK_VolumeDown                = 0x49
+				case 0x4A: return Key.AudioMute;         // kVK_Mute                      = 0x4A
+				case 0x4F: return Key.F18;          // kVK_F18                       = 0x4F
+				case 0x50: return Key.F19;          // kVK_F19                       = 0x50
+				case 0x5A: return Key.F20;          // kVK_F20                       = 0x5A
 				case 96: return Key.F5;             // kVK_F5                        = 0x60
 				case 97: return Key.F6;             // kVK_F6                        = 0x61
 				case 98: return Key.F7;             // kVK_F7                        = 0x62
 				case 99: return Key.F3;             // kVK_F3                        = 0x63
 				case 100: return Key.F8;            // kVK_F8                        = 0x64
 				case 101: return Key.F9;            // kVK_F9                        = 0x65
-				//case 0x67: return Key.F11;          // kVK_F11                       = 0x67
-				case 105: return Key.Print;         // kVK_F13                       = 0x69
-				//case 0x6A: return Key.F16;          // kVK_F16                       = 0x6A
-				//case 0x6B: return Key.F14;          // kVK_F14                       = 0x6B
-				case 109: return Key.F10;           // kVK_F10                       = 0x6D
-				//case 0x6F: return Key.F12;          // kVK_F12                       = 0x6F
-				//case 0x71: return Key.F15;          // kVK_F15                       = 0x71
+				case 0x67: return Key.F11;          // kVK_F11                       = 0x67
+                case 105: return Key.Print;         // kVK_F13                       = 0x69
+				case 0x6A: return Key.F16;          // kVK_F16                       = 0x6A
+                case 0x6B: return Key.F14;          // kVK_F14                       = 0x6B
+                case 109: return Key.F10;           // kVK_F10                       = 0x6D
+                case 0x6F: return Key.F12;          // kVK_F12                       = 0x6F
+                case 0x71: return Key.F15;          // kVK_F15                       = 0x71
 				case 114: return Key.Help;          // kVK_Help                      = 0x72
 				case 115: return Key.Home;          // kVK_Home                      = 0x73
 				case 116: return Key.PageUp;        // kVK_PageUp                    = 0x74
@@ -112,34 +121,42 @@ namespace Xwt.Mac
 
 			// character keys: use character comparison, since KeyCode is always US
 			// and does not honor inernationalization like WPF or GTK
-			if (keyEvent.CharactersIgnoringModifiers.Length > 0)
-				switch (keyEvent.CharactersIgnoringModifiers[0]) {
-				case 'A': return Key.A;
-				case 'B': return Key.B;
-				case 'C': return Key.C;
-				case 'D': return Key.D;
-				case 'E': return Key.E;
-				case 'F': return Key.F;
-				case 'G': return Key.G;
-				case 'H': return Key.H;
-				case 'I': return Key.I;
-				case 'J': return Key.J;
-				case 'K': return Key.K;
-				case 'L': return Key.L;
-				case 'M': return Key.M;
-				case 'N': return Key.N;
-				case 'O': return Key.O;
-				case 'P': return Key.P;
-				case 'Q': return Key.Q;
-				case 'R': return Key.R;
-				case 'S': return Key.S;
-				case 'T': return Key.T;
-				case 'U': return Key.U;
-				case 'V': return Key.V;
-				case 'W': return Key.W;
-				case 'X': return Key.X;
-				case 'Y': return Key.Y;
-				case 'Z': return Key.Z;
+
+			// How non-roman keyboards seem to work in Cocoa, for example a Russian keyboard, is like so
+			// If you press the м key on the keyboard (which is the 'v' key on a roman/english/qwerty keyboard)
+			// keyEvent.Characters and keyEvent.CharactersIgnoringModifers both contain м
+			// If you press the cmd+м on the keyboard, keyEvent.Characters contains a 'v' and keyEvent.CharactersIgnoringModifiers
+			// contains the м
+			// This way it can map cmd+м to paste like on a roman keyboard.
+			var characters = string.IsNullOrWhiteSpace(keyEvent.Characters) ? keyEvent.CharactersIgnoringModifiers : keyEvent.Characters;
+			if (characters.Length > 0)
+				switch (characters[0]) {
+				case 'A': return Key.a;
+				case 'B': return Key.b;
+				case 'C': return Key.c;
+				case 'D': return Key.d;
+				case 'E': return Key.e;
+				case 'F': return Key.f;
+				case 'G': return Key.g;
+				case 'H': return Key.h;
+				case 'I': return Key.i;
+				case 'J': return Key.j;
+				case 'K': return Key.k;
+				case 'L': return Key.l;
+				case 'M': return Key.m;
+				case 'N': return Key.n;
+				case 'O': return Key.o;
+				case 'P': return Key.p;
+				case 'Q': return Key.q;
+				case 'R': return Key.r;
+				case 'S': return Key.s;
+				case 'T': return Key.t;
+				case 'U': return Key.u;
+				case 'V': return Key.v;
+				case 'W': return Key.w;
+				case 'X': return Key.x;
+				case 'Y': return Key.y;
+				case 'Z': return Key.z;
 				case 'a': return Key.a;
 				case 'b': return Key.b;
 				case 'c': return Key.c;
@@ -178,25 +195,132 @@ namespace Xwt.Mac
 				case '9': return Key.K9;
 				case '0': return Key.K0;
 
-				case '^': return Key.Caret;
-				case '\'': return Key.Quote;
-				case '(': return Key.LeftBracket;
-				case ')': return Key.RightBracket;
-				case '*': return Key.Asterisk;
-				case '+': return Key.Plus;
-				case ',': return Key.Comma;
-				case '-': return Key.Minus;
-				case '.': return Key.Period;
-				case '/': return Key.Slash;
-				case '\\': return Key.Backslash;
-				case ':': return Key.Colon;
-				case ';': return Key.Semicolon;
-				case '<': return Key.Less;
-				case '>': return Key.Greater;
-				case '=': return Key.Equal;
-				case '?': return Key.Question;
-				case '@': return Key.At;
-			}
+				case '^': return RemoveShift(Key.Caret, ref modMask);
+				case '\'': return RemoveShift(Key.Quote, ref modMask);
+				case '(': return RemoveShift(Key.LeftParenthesis, ref modMask);
+				case ')': return RemoveShift(Key.RightParenthesis, ref modMask);
+				case '*': return RemoveShift(Key.Asterisk, ref modMask);
+				case '+': return RemoveShift(Key.Plus, ref modMask);
+				case ',': return RemoveShift(Key.Comma, ref modMask);
+				case '-': return RemoveShift(Key.Minus, ref modMask);
+				case '.': return RemoveShift(Key.Period, ref modMask);
+				case '/': return RemoveShift(Key.Slash, ref modMask);
+				case '\\': return RemoveShift(Key.Backslash, ref modMask);
+				case ':': return RemoveShift(Key.Colon, ref modMask);
+				case ';': return RemoveShift(Key.Semicolon, ref modMask);
+				case '<': return RemoveShift(Key.Less, ref modMask);
+				case '>': return RemoveShift(Key.Greater, ref modMask);
+				case '=': return RemoveShift(Key.Equal, ref modMask);
+				case '?': return RemoveShift(Key.Question, ref modMask);
+				case '@': return RemoveShift(Key.At, ref modMask);
+				case '_': return RemoveShift(Key.Underscore, ref modMask);
+				case '!': return RemoveShift(Key.Exclamation, ref modMask);
+				case '#': return RemoveShift(Key.Hash, ref modMask);
+				case '$': return RemoveShift(Key.Dollar, ref modMask);
+				case '%': return RemoveShift(Key.Percentage, ref modMask);
+				case '&': return RemoveShift(Key.Ampersand, ref modMask);
+				case '[': return RemoveShift(Key.LeftSquareBracket, ref modMask);
+				case ']': return RemoveShift(Key.RightSquareBracket, ref modMask);
+				case '{': return RemoveShift(Key.LeftBrace, ref modMask);
+				case '}': return RemoveShift(Key.RightBrace, ref modMask);
+				case '\"': return RemoveShift(Key.Quote, ref modMask);
+				case '|': return RemoveShift(Key.Pipe, ref modMask);
+				case '`': return RemoveShift(Key.Backtick, ref modMask);
+				case '~': return RemoveShift(Key.Tilde, ref modMask);
+
+				// Alt+<Key.whatever> and Alt+Shift+<Key.whatever> generate printable characters
+				// so if we want to use them as keyboard shortcuts, we map them back to their
+				// group 0 key. For Alt+Shift+<whatever> we map it to the unshifted key
+				case '¯': return Key.Comma;
+				case '≤': return Key.Comma;
+				case '˘': return Key.Period;
+				case '≥': return Key.Period;
+				case '¿': return Key.Slash;
+				case '÷': return Key.Slash;
+				case 'Ú': return Key.Semicolon;
+				case '…': return Key.Semicolon;
+				case 'æ': return Key.Quote;
+				case 'Æ': return Key.Quote;
+				case '»': return Key.Backslash;
+				case '«': return Key.Backslash;
+				case '“': return Key.LeftSquareBracket;
+				case '”': return Key.LeftSquareBracket;
+				case '‘': return Key.RightSquareBracket;
+				case '’': return Key.RightSquareBracket;
+				case '–': return Key.Minus;
+				case '—': return Key.Minus;
+				case '≠': return Key.Equal;
+				case '±': return Key.Equal;
+
+				case '¡': return Key.K1;
+				case '⁄': return Key.K1;
+				case '€': return Key.K2;
+				case '™': return Key.K2;
+				case '‹': return Key.K3;
+				case '¢': return Key.K4;
+				case '›': return Key.K4;
+				case '∞': return Key.K5;
+				case 'ﬁ': return Key.K5;
+				case '§': return Key.K6;
+				case 'ﬂ': return Key.K6;
+				case '¶': return Key.K7;
+				case '‡': return Key.K7;
+				case '•': return Key.K8;
+				case 'ª': return Key.K9;
+				case '·': return Key.K9;
+				case 'º': return Key.K0;
+
+				case 'å': return Key.a;
+				case 'Å': return Key.a;
+				case '∫': return Key.b;
+				case 'ı': return Key.b;
+				case 'ç': return Key.c;
+				case 'Ç': return Key.c;
+				case '∂': return Key.d;
+				case 'Î': return Key.d;
+				case '´': return Key.e;
+				case '‰': return Key.e;
+				case 'ƒ': return Key.f;
+				case 'Ï': return Key.f;
+				case '©': return Key.g;
+				case 'Ì': return Key.g;
+				case '˙': return Key.h;
+				case 'Ó': return Key.h;
+				case 'È': return Key.i;
+				case '∆': return Key.j;
+				case 'Ô': return Key.j;
+				case '˚': return Key.k;
+				case '': return Key.k;
+				case '¬': return Key.l;
+				case 'Ò': return Key.l;
+				case 'µ': return Key.m;
+				case '˜': return Key.m;
+				case 'ˆ': return Key.n;
+				case 'ø': return Key.o;
+				case 'Ø': return Key.o;
+				case 'π': return Key.p;
+				case '∏': return Key.p;
+				case 'œ': return Key.q;
+				case 'Œ': return Key.q;
+				case '®': return Key.r;
+				case 'Â': return Key.r;
+				case 'ß': return Key.s;
+				case 'Í': return Key.s;
+				case '†': return Key.t;
+				case 'Ê': return Key.t;
+				case '¨': return Key.u;
+				case 'Ë': return Key.u;
+				case '√': return Key.v;
+				case '◊': return Key.v;
+				case '∑': return Key.w;
+				case '„': return Key.w;
+				case '≈': return Key.x;
+				case 'Ù': return Key.x;
+				case '¥': return Key.y;
+				case 'Á': return Key.y;
+				case 'Ω': return Key.z;
+				case 'Û': return Key.z;
+				}
 			return (Key)0;
 		}
 	}

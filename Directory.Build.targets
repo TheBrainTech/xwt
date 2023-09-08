@@ -1,5 +1,9 @@
 <Project>
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
 
-  <!-- This is empty just to make sure we don't search above the Xwt tree for a Directory.Build.Targets -->
-
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" Condition=" '$(PackageId)' != '' " />
+  </ItemGroup>
 </Project>

@@ -30,6 +30,7 @@
 
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -41,7 +42,7 @@ namespace Xwt.WPFBackend
 	{
 		List<MenuItemBackend> items;
 		FontData customFont;
-		IMenuEventSink eventSink;
+		UIElement dummyAccessibiltyUIElement;
 
 		public void Initialize(IMenuEventSink eventSink) {
 			this.eventSink = eventSink;
@@ -51,6 +52,7 @@ namespace Xwt.WPFBackend
 		{
 			base.InitializeBackend (frontend, context);
 			items = new List<MenuItemBackend> ();
+			dummyAccessibiltyUIElement = new UIElement ();
 		}
 
 		public IList<MenuItemBackend> Items {
@@ -70,6 +72,12 @@ namespace Xwt.WPFBackend
 		}
 
 		public ContextMenu NativeMenu => menu;
+
+		public UIElement DummyAccessibilityUIElement => dummyAccessibiltyUIElement;
+
+		new Menu Frontend {
+			get { return (Menu)base.frontend; }
+		}
 
 		public virtual object Font {
 			get {
@@ -148,8 +156,13 @@ namespace Xwt.WPFBackend
 		{
 			if (this.menu == null) {
 				this.menu = new ContextMenu ();
+
 				foreach (var item in Items)
 					this.menu.Items.Add (item.Item);
+
+				var accessibleBackend = (AccessibleBackend)Toolkit.GetBackend (Frontend.Accessible);
+				if (accessibleBackend != null)
+					accessibleBackend.InitAutomationProperties (menu);
 
 				menu.Opened += (object sender, RoutedEventArgs e) => {
 					this.Context.InvokeUserCode(eventSink.OnOpening);

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using ObjCRuntime;
 using Xwt.Backends;
 
 namespace Xwt.Mac
@@ -40,26 +41,28 @@ namespace Xwt.Mac
 
 		class TreeDelegate: NSOutlineViewDelegate
 		{
+			static readonly NSObject ObjectKey = new NSString("NSObject");
+
 			public TreeViewBackend Backend;
 
 			public override void ItemDidExpand (NSNotification notification)
 			{
-				Backend.EventSink.OnRowExpanded (((TreeItem)notification.UserInfo["NSObject"]).Position);
+				Backend.EventSink.OnRowExpanded (((TreeItem)notification.UserInfo[ObjectKey]).Position);
 			}
 
 			public override void ItemWillExpand (NSNotification notification)
 			{
-				Backend.EventSink.OnRowExpanding (((TreeItem)notification.UserInfo["NSObject"]).Position);
+				Backend.EventSink.OnRowExpanding (((TreeItem)notification.UserInfo[ObjectKey]).Position);
 			}
 
 			public override void ItemDidCollapse (NSNotification notification)
 			{
-				Backend.EventSink.OnRowCollapsed (((TreeItem)notification.UserInfo["NSObject"]).Position);
+				Backend.EventSink.OnRowCollapsed (((TreeItem)notification.UserInfo[ObjectKey]).Position);
 			}
 
 			public override void ItemWillCollapse (NSNotification notification)
 			{
-				Backend.EventSink.OnRowCollapsing (((TreeItem)notification.UserInfo["NSObject"]).Position);
+				Backend.EventSink.OnRowCollapsing (((TreeItem)notification.UserInfo[ObjectKey]).Position);
 			}
 
 			public override nfloat GetRowHeight (NSOutlineView outlineView, NSObject item)
@@ -403,7 +406,7 @@ namespace Xwt.Mac
 		{
 		}
 		
-		public TreeItem (IntPtr p): base (p)
+		public TreeItem (NativeHandle p): base (p)
 		{
 		}
 		
@@ -448,8 +451,9 @@ namespace Xwt.Mac
 			items.TryGetValue (pos, out it);
 			return it;
 		}
-		
-		public override bool AcceptDrop (NSOutlineView outlineView, INSDraggingInfo info, NSObject item, nint index)
+
+		[Export("tableView:acceptDrop:row:dropOperation:")]
+		public bool AcceptDrop (NSOutlineView outlineView, INSDraggingInfo info, NSObject item, nint index)
 		{
 			return false;
 		}
@@ -512,7 +516,8 @@ namespace Xwt.Mac
 		{
 		}
 
-		public override NSDragOperation ValidateDrop (NSOutlineView outlineView, INSDraggingInfo info, NSObject item, nint index)
+		[Export("tableView:validateDrop:proposedRow:proposedDropOperation:")]
+		public NSDragOperation ValidateDrop (NSOutlineView outlineView, INSDraggingInfo info, NSObject item, nint index)
 		{
 			return NSDragOperation.None;
 		}

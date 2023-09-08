@@ -26,6 +26,7 @@
 using System;
 using System.Linq;
 using AppKit;
+using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
 using Xwt.Accessibility;
@@ -34,7 +35,7 @@ using GtkWidget = Gtk.Widget;
 
 namespace Xwt.Gtk.Mac
 {
-	public class GtkMacAccessibleBackend : AccessibleBackend
+	public partial class GtkMacAccessibleBackend : AccessibleBackend
 	{
 		public GtkMacAccessibleBackend ()
 		{
@@ -47,6 +48,23 @@ namespace Xwt.Gtk.Mac
 
 			// The object returned could either be an NSAccessibilityElement or it might be an NSObject that implements INSAccessibility
 			return Runtime.GetNSObject<NSObject> (handle, false) as INSAccessibility;
+		}
+
+		public override bool IsAccessible {
+			get {
+				var nsa = GetNSAccessibilityElement (widget.Accessible);
+				if (nsa == null) {
+					return false;
+				}
+				return nsa.AccessibilityElement;
+			}
+			set {
+				var nsa = GetNSAccessibilityElement (widget.Accessible);
+				if (nsa == null) {
+					return;
+				}
+				nsa.AccessibilityElement = value;
+			}
 		}
 
 		public override string Label {
@@ -66,6 +84,39 @@ namespace Xwt.Gtk.Mac
 			}
 		}
 
+		public override string RoleDescription {
+			get {
+				var nsa = GetNSAccessibilityElement (widget.Accessible);
+				if (nsa == null) {
+					return null;
+				}
+				return nsa.AccessibilityRoleDescription;
+			}
+			set {
+				var nsa = GetNSAccessibilityElement (widget.Accessible);
+				if (nsa == null) {
+					return;
+				}
+				nsa.AccessibilityRoleDescription = value;
+			}
+		}
+
+		public override string Title {
+			get {
+				var nsa = GetNSAccessibilityElement (widget.Accessible);
+				if (nsa == null) {
+					return null;
+				}
+				return nsa.AccessibilityTitle;
+			}
+			set {
+				var nsa = GetNSAccessibilityElement (widget.Accessible);
+				if (nsa == null) {
+					return;
+				}
+				nsa.AccessibilityTitle = value;
+			}
+		}
 
 		public override Widget LabelWidget
 		{
@@ -104,6 +155,24 @@ namespace Xwt.Gtk.Mac
 				}
 
 				nsa.AccessibilityUrl = new NSUrl (value.AbsoluteUri);
+			}
+		}
+
+		public override Rectangle Bounds {
+			get {
+				var nsa = GetNSAccessibilityElement (widget.Accessible);
+				if (nsa == null) {
+					return Rectangle.Zero;
+				}
+				var r = nsa.AccessibilityFrame;
+				return new Rectangle (r.X, r.Y, r.Width, r.Height);
+			}
+			set {
+				var nsa = GetNSAccessibilityElement (widget.Accessible);
+				if (nsa == null) {
+					return;
+				}
+				nsa.AccessibilityFrame = new CGRect ((nfloat)value.X, (nfloat)value.Y, (nfloat)value.Width, (nfloat)value.Height); ;
 			}
 		}
 

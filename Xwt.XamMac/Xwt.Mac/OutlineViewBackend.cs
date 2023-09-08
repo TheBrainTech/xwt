@@ -26,6 +26,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+global using ObjCRuntime;
+
 using System;
 using System.Linq;
 using AppKit;
@@ -42,6 +44,10 @@ namespace Xwt.Mac
 		{
 			Backend = viewBackend;
 			AllowsColumnReordering = false;
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.BigSur)
+			{
+				Style = NSTableViewStyle.FullWidth;
+			}
 		}
 
 		public NSView View {

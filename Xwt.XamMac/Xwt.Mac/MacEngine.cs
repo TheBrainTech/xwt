@@ -36,6 +36,8 @@ namespace Xwt.Mac
 {
 	public class MacEngine: Xwt.Backends.ToolkitEngineBackend
 	{
+		public static Func<bool, AppDelegate> AppDelegateFactory;
+
 		static AppDelegate appDelegate;
 		static NSAutoreleasePool pool;
 		
@@ -45,26 +47,29 @@ namespace Xwt.Mac
 		
 		public override void InitializeApplication ()
 		{
-			if(!IsGuest) {
+			if (InitializeToolkit)
+			{
 				NSApplicationInitializer.Initialize();
+
+				//Hijack ();
+				if (pool != null)
+					pool.Dispose();
+				pool = new NSAutoreleasePool();
+				appDelegate = AppDelegateFactory?.Invoke(IsGuest) ?? new AppDelegate(IsGuest);
+				NSApplication.SharedApplication.Delegate = appDelegate;
+
+				// If NSPrincipalClass is not set, set it now. This allows running
+				// the application without a bundle
+				var info = NSBundle.MainBundle.InfoDictionary;
+				if (info.ValueForKey((NSString)"NSPrincipalClass") == null)
+					info.SetValueForKey((NSString)"NSApplication", (NSString)"NSPrincipalClass");
 			}
-
-			//Hijack ();
-			if (pool != null)
-				pool.Dispose ();
-			pool = new NSAutoreleasePool ();
-			appDelegate = new AppDelegate (IsGuest);
-			NSApplication.SharedApplication.Delegate = appDelegate;
-
-			// If NSPrincipalClass is not set, set it now. This allows running
-			// the application without a bundle
-			var info = NSBundle.MainBundle.InfoDictionary;
-			if (info.ValueForKey ((NSString)"NSPrincipalClass") == null)
-				info.SetValueForKey ((NSString)"NSApplication", (NSString)"NSPrincipalClass");
-
-			//Application listeners
-			NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidResignActiveNotification, OnDeactivated);
-			NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidBecomeActiveNotification, OnActivated);
+			else
+			{
+				// Although the AppDelegate does not need to be hijacked, keep this allocated
+				// as there are some non-NSApplicationDelegate methods still used by Xwt
+				appDelegate = new AppDelegate(IsGuest);
+			}
 		}
 
 		public override void InitializeBackends ()
@@ -152,16 +157,16 @@ namespace Xwt.Mac
 			NSApplication.SharedApplication.Terminate(appDelegate);
 		}
 
+		public override void ExitApplication(int exitCode)
+		{
+			if (exitCode == 0)
+				NSApplication.SharedApplication.Terminate(appDelegate);
+			else
+				Environment.Exit(exitCode);
+		}
+
 		static Selector hijackedSel = new Selector ("hijacked_loadNibNamed:owner:");
 		static Selector originalSel = new Selector ("loadNibNamed:owner:");
-		
-		static void Hijack ()
-		{
-			Class c = ObjcHelper.GetMetaClass ("NSBundle");
-			if (!c.AddMethod (hijackedSel.Handle, new Func<IntPtr, IntPtr, IntPtr, IntPtr,bool>(HijackedLoadNibNamed), "B@:@@"))
-				throw new Exception ("Failed to add method");
-			c.MethodExchange (originalSel.Handle, hijackedSel.Handle);
-		}
 		
 		static bool HijackedLoadNibNamed (IntPtr self, IntPtr sel, IntPtr filePath, IntPtr owner)
 		{
@@ -197,8 +202,8 @@ namespace Xwt.Mac
 				if (!action ())
 					timer.Invalidate ();
 			});
-			runLoop.AddTimer (timer, NSRunLoop.NSDefaultRunLoopMode);
-			runLoop.AddTimer (timer, NSRunLoop.NSRunLoopModalPanelMode);
+			runLoop.AddTimer (timer, NSRunLoopMode.Default);
+			runLoop.AddTimer (timer, NSRunLoopMode.ModalPanel);
 			return timer;
 		}
 		
@@ -277,28 +282,29 @@ namespace Xwt.Mac
 		{
 			var until = NSDate.DistantPast;
 			var app = NSApplication.SharedApplication;
-			var p = new NSAutoreleasePool ();
-			while (true) {
-				var ev = app.NextEvent (NSEventMask.AnyEvent, until, NSRunLoop.NSDefaultRunLoopMode, true);
-				if (ev != null)
-					app.SendEvent (ev);
-				else
-					break;
+			using (var p = new NSAutoreleasePool()) {
+				while (true) {
+					var ev = app.NextEvent(NSEventMask.AnyEvent, until, NSRunLoopMode.Default, true);
+					if (ev != null)
+						app.SendEvent(ev);
+					else
+						break;
+				}
 			}
-			p.Dispose ();
 		}
 
 		public override object RenderWidget (Widget w)
 		{
 			var view = ((ViewBackend)w.GetBackend ()).Widget;
 			view.LockFocus ();
-			var img = new NSImage (view.DataWithPdfInsideRect (view.Bounds));
-			var imageData = img.AsTiff ();
-			var imageRep = (NSBitmapImageRep)NSBitmapImageRep.ImageRepFromData (imageData);
-			var im = new NSImage ();
-			im.AddRepresentation (imageRep);
-			im.Size = new CGSize ((nfloat)view.Bounds.Width, (nfloat)view.Bounds.Height);
-			return im;
+			using (var img = new NSImage(view.DataWithPdfInsideRect(view.Bounds)))
+			using (var imageData = img.AsTiff()) {
+				var imageRep = (NSBitmapImageRep)NSBitmapImageRep.ImageRepFromData(imageData);
+				var im = new NSImage ();
+				im.AddRepresentation (imageRep);
+				im.Size = new CGSize ((nfloat)view.Bounds.Width, (nfloat)view.Bounds.Height);
+				return im;
+			}
 		}
 
 		private void OnActivated(NSNotification notification) {
@@ -325,6 +331,15 @@ namespace Xwt.Mac
 		bool launched;
 		List<IMacWindowBackend> pendingWindows = new List<IMacWindowBackend> ();
 
+		public enum LaunchType
+		{
+			Unknown,
+			Normal,
+			LaunchedFromFileManager
+		}
+
+		public LaunchType LaunchReason { get; private set; } = LaunchType.Unknown;
+
 		public event EventHandler<TerminationEventArgs> Terminating;
 		public event EventHandler Unhidden;
 		public event EventHandler<OpenFilesEventArgs> OpenFilesRequest;
@@ -350,6 +365,15 @@ namespace Xwt.Mac
 		public override void DidFinishLaunching (NSNotification notification)
 		{
 			launched = true;
+
+			NSObject val;
+			if (notification.UserInfo.TryGetValue (NSApplication.LaunchIsDefaultLaunchKey, out val)) {
+				var num = val as NSNumber;
+				if (num != null) {
+					LaunchReason = num.BoolValue ? LaunchType.Normal : LaunchType.LaunchedFromFileManager;
+				}
+			}
+
 			foreach (var w in pendingWindows)
 				w.InternalShow ();
 		}

@@ -564,6 +564,13 @@ namespace Xwt.Mac
 		static Selector becomeFirstResponderSel = new Selector ("becomeFirstResponder");
 		static Selector resignFirstResponderSel = new Selector ("resignFirstResponder");
 
+		static DelegateIntPtrIntPtrIntPtrNSDragOperation draggingEnteredDelegate = new DelegateIntPtrIntPtrIntPtrNSDragOperation(DraggingEntered);
+		static DelegateIntPtrIntPtrIntPtrNSDragOperation draggingUpdatedDelegate = new DelegateIntPtrIntPtrIntPtrNSDragOperation(DraggingUpdated);
+		static DelegateIntPtrIntPtrIntPtrVoid draggingExitedDelegate = new DelegateIntPtrIntPtrIntPtrVoid(DraggingExited);
+		static DelegateIntPtrIntPtrIntPtrBool prepareForDragOperationDelegate = new DelegateIntPtrIntPtrIntPtrBool(PrepareForDragOperation);
+		static DelegateIntPtrIntPtrIntPtrBool performDragOperationDelegate = new DelegateIntPtrIntPtrIntPtrBool(PerformDragOperation);
+		static DelegateIntPtrIntPtrIntPtrVoid concludeDragOperationDelegate = new DelegateIntPtrIntPtrIntPtrVoid(ConcludeDragOperation);
+
 		static HashSet<Type> typesConfiguredForDragDrop = new HashSet<Type> ();
 		static HashSet<Type> typesConfiguredForFocusEvents = new HashSet<Type> ();
 
@@ -577,23 +584,31 @@ namespace Xwt.Mac
 			lock (typesConfiguredForDragDrop) {
 				if (typesConfiguredForDragDrop.Add (type)) {
 					Class c = new Class (type);
-					c.AddMethod (draggingEnteredSel.Handle, new Func<IntPtr,IntPtr,IntPtr,NSDragOperation> (DraggingEntered), "i@:@");
-					c.AddMethod (draggingUpdatedSel.Handle, new Func<IntPtr,IntPtr,IntPtr,NSDragOperation> (DraggingUpdated), "i@:@");
-					c.AddMethod (draggingExitedSel.Handle, new Action<IntPtr,IntPtr,IntPtr> (DraggingExited), "v@:@");
-					c.AddMethod (prepareForDragOperationSel.Handle, new Func<IntPtr,IntPtr,IntPtr,bool> (PrepareForDragOperation), "B@:@");
-					c.AddMethod (performDragOperationSel.Handle, new Func<IntPtr,IntPtr,IntPtr,bool> (PerformDragOperation), "B@:@");
-					c.AddMethod (concludeDragOperationSel.Handle, new Action<IntPtr,IntPtr,IntPtr> (ConcludeDragOperation), "v@:@");
+					c.AddMethod (draggingEnteredSel.Handle, draggingEnteredDelegate, "i@:@");
+					c.AddMethod (draggingUpdatedSel.Handle, draggingUpdatedDelegate, "i@:@");
+					c.AddMethod (draggingExitedSel.Handle, draggingExitedDelegate, "v@:@");
+					c.AddMethod (prepareForDragOperationSel.Handle, prepareForDragOperationDelegate, "B@:@");
+					c.AddMethod (performDragOperationSel.Handle, performDragOperationDelegate, "B@:@");
+					c.AddMethod (concludeDragOperationSel.Handle, concludeDragOperationDelegate, "v@:@");
 				}
 			}
 		}
-		
+
+		delegate bool DelegateIntPtrIntPtrBool(IntPtr p1, IntPtr p2);
+		delegate NSDragOperation DelegateIntPtrIntPtrIntPtrNSDragOperation(IntPtr p1, IntPtr p2, IntPtr p3);
+		delegate void DelegateIntPtrIntPtrIntPtrVoid(IntPtr p1, IntPtr p2, IntPtr p3);
+		delegate bool DelegateIntPtrIntPtrIntPtrBool(IntPtr p1, IntPtr p2, IntPtr p3);
+
+		static DelegateIntPtrIntPtrBool onBecomeFirstResponderDelegate = new DelegateIntPtrIntPtrBool(OnBecomeFirstResponder);
+		static DelegateIntPtrIntPtrBool onResignFirstResponderDelegate = new DelegateIntPtrIntPtrBool(OnResignFirstResponder);
+
 		static void SetupFocusEvents (Type type)
 		{
 			lock (typesConfiguredForFocusEvents) {
 				if (typesConfiguredForFocusEvents.Add (type)) {
 					Class c = new Class (type);
-					c.AddMethod (becomeFirstResponderSel.Handle, new Func<IntPtr,IntPtr,bool> (OnBecomeFirstResponder), "B@:");
-					c.AddMethod (resignFirstResponderSel.Handle, new Func<IntPtr,IntPtr,bool> (OnResignFirstResponder), "B@:");
+					c.AddMethod (becomeFirstResponderSel.Handle, onBecomeFirstResponderDelegate, "B@:");
+					c.AddMethod (resignFirstResponderSel.Handle, onResignFirstResponderDelegate, "B@:");
 				}
 			}
 		}
@@ -624,7 +639,7 @@ namespace Xwt.Mac
 		public void SetDragTarget (TransferDataType[] types, DragDropAction dragAction)
 		{
 			SetupForDragDrop (Widget.GetType ());
-			var dtypes = types.Select (ToNSDragType).ToArray ();
+			var dtypes = types.Select (ToNSPasteboardType).ToArray ();
 			Widget.RegisterForDraggedTypes (dtypes);
 		}
 
@@ -647,9 +662,9 @@ namespace Xwt.Mac
 				return NSDragOperation.None;
 			var backend = ob.Backend;
 
-			INSDraggingInfo di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, false);
-			var types = di.GetDraggingPasteboard().Types.Select (t => ToXwtDragType (t)).ToArray ();
-			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
+			var di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, owns: false);
+			var types = di.DraggingPasteboard.Types.Select (ToXwtDragType).ToArray ();
+			var pos = backend.Widget.ConvertPointFromView (di.DraggingLocation, null).ToXwtPoint ();
 
 			var widget = backend.Frontend;
 			if (widget.ShouldPreventDragByLocation != null) {
@@ -703,11 +718,11 @@ namespace Xwt.Mac
 				return false;
 			
 			var backend = ob.Backend;
-			
-			INSDraggingInfo di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, false);
-			var types = di.GetDraggingPasteboard().Types.Select (t => ToXwtDragType (t)).ToArray ();
-			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
 
+			var di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, owns: false);
+			var types = di.DraggingPasteboard.Types.Select (ToXwtDragType).ToArray ();
+			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
+			
 			if ((backend.currentEvents & WidgetEvent.DragDropCheck) != 0) {
 				var args = new DragCheckEventArgs (pos, types, ConvertAction (di.GetDraggingSourceOperationMask()));
 				bool res = backend.ApplicationContext.InvokeUserCode (delegate {
@@ -731,8 +746,8 @@ namespace Xwt.Mac
 			
 			var backend = ob.Backend;
 			
-			INSDraggingInfo di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, false);
-			var pos = new Point (di.GetDraggingLocation().X, di.GetDraggingLocation().Y);
+			var di = Runtime.GetINativeObject<INSDraggingInfo> (dragInfo, owns: false);
+			var pos = new Point (di.DraggingLocation.X, di.DraggingLocation.Y);
 			
 			if ((backend.currentEvents & WidgetEvent.DragDrop) != 0) {
 				TransferDataStore store = new TransferDataStore ();
@@ -751,8 +766,7 @@ namespace Xwt.Mac
 		{
 			Console.WriteLine ("ConcludeDragOperation");
 		}
-
-#if !MONOMAC
+		
 		protected virtual void OnDragOverCheck (INSDraggingInfo di, DragOverCheckEventArgs args)
 		{
 			ApplicationContext.InvokeUserCode (delegate {
@@ -766,7 +780,6 @@ namespace Xwt.Mac
 				eventSink.OnDragOver (args);
 			});
 		}
-#endif
 
 		static bool IsWebURL(string url) {
 			string cmp = url.ToLower();
@@ -775,7 +788,15 @@ namespace Xwt.Mac
 
 		void InitPasteboard (NSPasteboard pb, TransferDataSource data)
 		{
-			pb.ClearContents ();
+			ApplicationContext.InvokeUserCode(delegate {
+				eventSink.OnDragFinished (args);
+			});
+		}
+
+		NSPasteboardItem CreatePasteboardItem (TransferDataSource data)
+		{
+			var typesSupported = new List<string>();
+
 			foreach (var t in data.DataTypes) {
 				if (t == TransferDataType.Uri) {
 					Uri url = (Uri)data.GetValue(t);
@@ -803,6 +824,13 @@ namespace Xwt.Mac
 					pb.SetDataForType(nsData, t.Id);
 				}
 			}
+
+			var pasteboardItem = new NSPasteboardItem();
+
+			var dataProvider = new PasteboardDataProvider(data);
+			pasteboardItem.SetDataProviderForTypes(dataProvider, typesSupported.ToArray());
+
+			return pasteboardItem;
 		}
 
 		static string[] GetItemsForType(NSPasteboard pboard, NSString type) {
@@ -854,14 +882,25 @@ namespace Xwt.Mac
 			return res;
 		}
 		
-		static string ToNSDragType (TransferDataType type)
+		public static string ToNSPasteboardType (TransferDataType type)
 		{
 			if (type == TransferDataType.Text) return NSPasteboard.NSStringType;
 			if (type == TransferDataType.Uri) return NSPasteboard.NSFilenamesType;
 			if (type == TransferDataType.Image) return NSPasteboard.NSPictType;
 			if (type == TransferDataType.Rtf) return NSPasteboard.NSRtfType;
 			if (type == TransferDataType.Html) return NSPasteboard.NSHtmlType;
-			return type.Id;
+
+			// Internal types often use an assembly qualified name for the id, which
+			// apparently isn't valid for the pasteboard typename. In that case,
+			// remove everything after the ", " so that just the class full name
+			// forms the pasteboard type name (alphanumeric + periods, no spaces).
+			string pasteboardType = type.Id;
+			int delimiterIndex = pasteboardType.IndexOf(", ");
+			if (delimiterIndex != -1 && delimiterIndex > 0) {
+				pasteboardType = pasteboardType.Substring(0, delimiterIndex);
+			}
+
+			return pasteboardType;
 		}
 		
 		static TransferDataType ToXwtDragType (string type)
@@ -898,7 +937,7 @@ namespace Xwt.Mac
 #endregion
 	}
 
-	sealed class WidgetPlacementWrapper: NSControl, IViewObject
+	sealed class WidgetPlacementWrapper: NSView, IViewObject
 	{
 		NSView child;
 		Widget w;
@@ -961,10 +1000,32 @@ namespace Xwt.Mac
 			}
 			child.Frame = new CGRect ((nfloat)cx, (nfloat)cy, (nfloat)cwidth, (nfloat)cheight);
 		}
+	}
 
-		public override void SizeToFit ()
+	class DraggingSource : NSObject, INSDraggingSource
+	{
+		WeakReference<ViewBackend> weakViewBackend;
+
+		public DraggingSource(ViewBackend viewBackend)
 		{
-			base.SizeToFit ();
+			weakViewBackend = new WeakReference<ViewBackend>(viewBackend);
+		}
+		
+		[Export("draggingSession:willBeginAtPoint:")]
+		public void DraggingSessionWillBeginAtPoint(NSDraggingSession session, CGPoint screenPoint)
+		{
+		}
+
+		[Export("draggingSession:endedAtPoint:operation:")]
+		public void DraggingSessionEndedAtPoint(NSDraggingSession session, CGPoint screenPoint, NSDragOperation operation)
+		{
+			if (weakViewBackend.TryGetTarget(out var viewBackend))
+			{
+				bool deleteSource = operation == NSDragOperation.Move || operation == NSDragOperation.Delete;
+				var args = new DragFinishedEventArgs(deleteSource);
+
+				viewBackend.OnDragFinished(args);
+			}
 		}
 	}
 	
@@ -979,5 +1040,37 @@ namespace Xwt.Mac
 			return dragOperation;
 		}
 	}	
+
+	public class PasteboardDataProvider : NSObject, INSPasteboardItemDataProvider
+	{
+		TransferDataSource dataSource;
+
+		public PasteboardDataProvider(TransferDataSource dataSource)
+		{
+			this.dataSource = dataSource;
+		}
+
+		public void ProvideDataForType (NSPasteboard pasteboard, NSPasteboardItem item, string type)
+		{
+			foreach (TransferDataType transferDataType in dataSource.DataTypes) {
+				string currentPasteboardType = ViewBackend.ToNSPasteboardType (transferDataType);
+				if (currentPasteboardType == type) {
+					if (transferDataType == TransferDataType.Text) {
+						pasteboard.SetStringForType((string)dataSource.GetValue(transferDataType), NSPasteboard.NSPasteboardTypeString);
+					}
+					else {
+						// For internal types, provided serialized data
+						object value = dataSource.GetValue(transferDataType);
+						NSData serializedData = NSData.FromArray(TransferDataSource.SerializeValue(value, value.GetType()));
+						pasteboard.SetDataForType(serializedData, type);
+					}
+				}
+			}
+		}
+
+		public void FinishedWithDataProvider (NSPasteboard pasteboard)
+		{
+		}
+	}
 }
 

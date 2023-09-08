@@ -170,7 +170,7 @@ namespace Xwt.Mac
 				using (var stream = new UnmanagedMemoryStream ((byte*)data.Bytes, bytes.Length))
 					stream.Read (bytes, 0, bytes.Length);
 				try {
-					return TransferDataSource.DeserializeValue(bytes);
+					return TransferDataSource.DeserializeValue (bytes, Type.GetType (type.Id));
 				} catch(System.Runtime.Serialization.SerializationException) {
 					// if data cannot be read, do not crash - return null
 					return null;
@@ -215,7 +215,7 @@ namespace Xwt.Mac
 			else if (obj is string)
 				data = NSData.FromString ((string)obj);
 			else
-				data = NSData.FromArray (TransferDataSource.SerializeValue (obj));
+				data = NSData.FromArray (TransferDataSource.SerializeValue (obj, obj.GetType()));
 			pboard.SetDataForType (data, type);
 		}
 	}

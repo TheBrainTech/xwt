@@ -11,6 +11,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\xwt.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,7 +36,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <XamMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\x86_64\full\Xamarin.Mac.dll</XamMacPath>
+    <XamMacPath Condition="Exists('\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\64bits\full\Xamarin.Mac.dll')">\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\64bits\full\Xamarin.Mac.dll</XamMacPath>
     <XamMacPath Condition="Exists('$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\Xamarin.Mac\v2.0\Xamarin.Mac.dll')">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\Xamarin.Mac\v2.0\Xamarin.Mac.dll</XamMacPath>
+    <XamMacPath Condition="Exists('$(MSBuildProgramFiles32)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\Xamarin.Mac\v2.0\Xamarin.Mac.dll')">$(MSBuildProgramFiles32)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\Xamarin.Mac\v2.0\Xamarin.Mac.dll</XamMacPath>
+    <XamMacPath Condition="Exists('$(MSBuildToolsPath)\..\..\..\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\Xamarin.Mac\v2.0\Xamarin.Mac.dll')">$(MSBuildToolsPath)\..\..\..\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\Xamarin.Mac\v2.0\Xamarin.Mac.dll</XamMacPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -57,13 +61,26 @@
     <Compile Include="GtkMacFontBackendHandler.cs" />
     <Compile Include="GtkQuartz.cs" />
     <Compile Include="GtkMacPopoverBackend.cs" />
-    <Compile Include="GtkMacOpenFileDialogBackend.cs" />
-    <Compile Include="GtkMacSaveFileDialogBackend.cs" />
-    <Compile Include="GtkMacSelectFolderBackend.cs" />
     <Compile Include="..\Xwt.XamMac\Xwt.Mac\NSApplicationInitializer.cs">
       <Link>NSApplicationInitializer.cs</Link>
     </Compile>
     <Compile Include="GtkMacAccessibleBackend.cs" />
+    <Compile Include="GtkMacAccessibleBackend.AccessibilityHelper.cs" />
+    <Compile Include="..\Xwt.XamMac\Xwt.Mac\AccerssibilityHelper.cs">
+      <Link>AccerssibilityHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Xwt.XamMac\Xwt.Mac\FileDialogBackend.cs">
+      <Link>FileDialogBackend.cs</Link>
+    </Compile>
+    <Compile Include="..\Xwt.XamMac\Xwt.Mac\SelectFolderDialogBackend.cs">
+      <Link>SelectFolderDialogBackend.cs</Link>
+    </Compile>
+    <Compile Include="..\Xwt.XamMac\Xwt.Mac\OpenFileDialogBackend.cs">
+      <Link>OpenFileDialogBackend.cs</Link>
+    </Compile>
+    <Compile Include="..\Xwt.XamMac\Xwt.Mac\SaveFileDialogBackend.cs">
+      <Link>SaveFileDialogBackend.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="..\BuildHelpers.targets" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

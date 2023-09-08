@@ -42,7 +42,7 @@ namespace Xwt.Mac
 		{
 		}
 
-		public override void Initialize()
+		public override void Initialize ()
 		{
 			base.Initialize();
 			ViewObject = new CustomAlignedContainer (EventSink, ApplicationContext, new NSImageView ()) {
@@ -52,19 +52,30 @@ namespace Xwt.Mac
 
 		protected override Size GetNaturalSize ()
 		{
-			NSImage img = Widget.Image;
-			return img == null ? Size.Zero : img.Size.ToXwtSize ();
+			return nsImage == null ? Size.Zero : nsImage.Size.ToXwtSize ();
 		}
+
+		NSImage nsImage; // Needed to keep a ref, otherwise Xam.Mac might GC the managed version and then try to resurrect it
 
 		public void SetImage (ImageDescription image)
 		{
 			if (image.IsNull) {
 				Widget.Image = null;
+				nsImage = null;
 				return;
 			}
+			
+			nsImage = image.ToNSImage ();
+			Widget.Image = nsImage;
+			Widget.SetFrameSize (nsImage.Size);
+		}
 
-			Widget.Image = image.ToNSImage ();
-			Widget.SetFrameSize (Widget.Image.Size);
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing)
+				nsImage = null;
+
+			base.Dispose(disposing);
 		}
 	}
 }

@@ -294,7 +294,7 @@ namespace Xwt.GtkBackend
 			Key k = (Key)args.Event.KeyValue;
 			ModifierKeys m = args.Event.State.ToXwtValue ();
 
-			KeyEventArgs kargs = new KeyEventArgs (k, (int)args.Event.KeyValue, m, false, (long)args.Event.Time);
+			KeyEventArgs kargs = new KeyEventArgs (k, (int)args.Event.KeyValue, m, false, (long)args.Event.Time, string.Empty, string.Empty, args.Event);
 			ApplicationContext.InvokeUserCode (delegate {
 				EventSink.OnKeyPressed (kargs);
 			});
@@ -308,7 +308,7 @@ namespace Xwt.GtkBackend
 			Key k = (Key)args.Event.KeyValue;
 			ModifierKeys m = args.Event.State.ToXwtValue ();
 
-			KeyEventArgs kargs = new KeyEventArgs (k, (int)args.Event.KeyValue, m, false, (long)args.Event.Time);
+			KeyEventArgs kargs = new KeyEventArgs (k, (int)args.Event.KeyValue, m, false, (long)args.Event.Time, string.Empty, string.Empty, args.Event);
 			ApplicationContext.InvokeUserCode (delegate {
 				EventSink.OnKeyReleased (kargs);
 			});
@@ -320,6 +320,12 @@ namespace Xwt.GtkBackend
 			CurrentIter = iter;
 			EventSink = Frontend.Load (this);
 			CellRenderer.Visible = Frontend.Visible;
+
+			if (CellRenderer is GtkCellRendererCustom && Frontend.AccessibleFields.Label != null) {
+				var label = GetValue (Frontend.AccessibleFields.Label) as string;
+				((GtkCellRendererCustom)CellRenderer).AccessibleText = label ?? string.Empty;
+			}
+
 			OnLoadData ();
 		}
 

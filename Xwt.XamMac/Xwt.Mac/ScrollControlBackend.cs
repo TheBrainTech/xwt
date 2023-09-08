@@ -27,6 +27,7 @@
 using System;
 using AppKit;
 using CoreGraphics;
+using ObjCRuntime;
 using Xwt.Backends;
 
 namespace Xwt.Mac
@@ -98,7 +99,7 @@ namespace Xwt.Mac
 		}
 
 		public double UpperValue {
-			get { return vertical ? scrollView.ContentSize.Height : scrollView.ContentSize.Width; }
+			get { return vertical ? scrollView.ContentView.DocumentRect.Height : scrollView.ContentView.DocumentRect.Width; }
 		}
 
 		public double PageIncrement {

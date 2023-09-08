@@ -308,7 +308,11 @@ namespace Xwt
 		public Accessible Accessible {
 			get {
 				if (accessible == null) {
-					accessible = new Accessible (this);
+					if (Backend is XwtWidgetBackend) {
+						accessible = ((XwtWidgetBackend)Backend).Accessible;
+					} else {
+						accessible = new Accessible(this);
+					}
 				}
 				return accessible;
 			}

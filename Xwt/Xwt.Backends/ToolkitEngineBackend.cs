@@ -40,16 +40,19 @@ namespace Xwt.Backends
 		Dictionary<Type,Type> backendTypesByFrontend;
 		Toolkit toolkit;
 		bool isGuest;
+		bool initializeToolkit;
 
 		/// <summary>
 		/// Initialize the specified toolkit.
 		/// </summary>
 		/// <param name="toolkit">Toolkit to initialize.</param>
 		/// <param name="isGuest">If set to <c>true</c> the toolkit will be initialized as guest of another toolkit.</param>
-		internal void Initialize (Toolkit toolkit, bool isGuest)
+		internal void Initialize (Toolkit toolkit, bool isGuest, bool initializeToolkit)
 		{
 			this.toolkit = toolkit;
 			this.isGuest = isGuest;
+			this.initializeToolkit = initializeToolkit;
+
 			if (backendTypes == null) {
 				backendTypes = new Dictionary<Type, Type> ();
 				backendTypesByFrontend = new Dictionary<Type, Type> ();
@@ -86,6 +89,11 @@ namespace Xwt.Backends
 			get { return isGuest; }
 		}
 
+		public bool InitializeToolkit
+		{
+			get { return initializeToolkit; }
+		}
+
 		/// <summary>
 		/// Initializes the application.
 		/// </summary>
@@ -113,6 +121,14 @@ namespace Xwt.Backends
 		/// Exits the main GUI loop
 		/// </summary>
 		public abstract void ExitApplication ();
+
+		/// <summary>
+		/// Exits the main GUI loop with an exit code
+		/// </summary>
+		public virtual void ExitApplication(int exitCode)
+		{
+			ExitApplication();
+		}
 
 		/// <summary>
 		/// Releases all resource used by the <see cref="Xwt.Backends.ToolkitEngineBackend"/> object.

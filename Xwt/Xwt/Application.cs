@@ -98,13 +98,9 @@ namespace Xwt
 			Initialize (null);
 		}
 
-		/// <summary>
-		/// Initialize Xwt with the specified type.
-		/// </summary>
-		/// <param name="type">The toolkit type.</param>
-		public static void Initialize (ToolkitType type, bool isGuest = false)
+		public static void Initialize(ToolkitType type, bool initializeToolkit)
 		{
-			Initialize (Toolkit.GetBackendType (type), isGuest);
+			Initialize(Toolkit.GetBackendType(type), initializeToolkit);
 			toolkit.Type = type;
 		}
 
@@ -112,15 +108,17 @@ namespace Xwt
 		/// Initialize Xwt with the specified backend type.
 		/// </summary>
 		/// <param name="backendType">The <see cref="Type.FullName"/> of the backend type.</param>
-		public static void Initialize (string backendType, bool isGuest = false)
+		public static void Initialize (string backendType)
 		{
-			if (backendType == null)
-				throw new ArgumentNullException ("backendType");
-			
+			Initialize(backendType, true);
+		}
+
+		public static void Initialize (string backendType, bool initializeToolkit)
+		{			
 			if (engine != null)
 				return;
 
-			toolkit = Toolkit.Load (backendType, isGuest);
+			toolkit = Toolkit.Load (backendType, false, initializeToolkit);
 			toolkit.SetActive ();
 			engine = toolkit.Backend;
 			mainLoop = new UILoop (toolkit);
@@ -129,7 +127,7 @@ namespace Xwt
 
 			toolkit.EnterUserCode ();
 		}
-		
+
 		/// <summary>
 		/// Initializes Xwt as guest, embedded into an other existing toolkit.
 		/// </summary>
@@ -150,6 +148,20 @@ namespace Xwt
 				throw new ArgumentNullException ("backendType");
 			Initialize (backendType, true);
 			toolkit.ExitUserCode (null);
+		}
+
+		public static void InitializeAsGuest(ToolkitType type, bool initializeToolkit)
+		{
+			InitializeAsGuest(Toolkit.GetBackendType(type), initializeToolkit);
+			toolkit.Type = type;
+		}
+
+		public static void InitializeAsGuest(string backendType, bool initializeToolkit)
+		{
+			if (backendType == null)
+				throw new ArgumentNullException("backendType");
+			Initialize(backendType, initializeToolkit);
+			toolkit.ExitUserCode(null);
 		}
 
 		/// <summary>
@@ -178,6 +190,17 @@ namespace Xwt
 
 			if (SynchronizationContext.Current is XwtSynchronizationContext)
 				XwtSynchronizationContext.Uninstall ();
+		}
+
+		/// <summary>
+		/// Exits the Xwt application.
+		/// </summary>
+		public static void Exit(int exitCode)
+		{
+			toolkit.InvokePlatformCode(() => engine.ExitApplication(exitCode));
+
+			if (SynchronizationContext.Current is XwtSynchronizationContext)
+				XwtSynchronizationContext.Uninstall();
 		}
 
 		/// <summary>

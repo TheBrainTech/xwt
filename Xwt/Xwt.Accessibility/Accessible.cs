@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Xwt.Backends;
 
 namespace Xwt.Accessibility
@@ -130,6 +132,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.IsAccessible = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -139,6 +142,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.Identifier = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -148,6 +152,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.Label = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -156,6 +161,7 @@ namespace Xwt.Accessibility
 			set {
 				labelWidget = value;
 				Backend.LabelWidget = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -165,6 +171,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.Title = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -174,6 +181,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.Description = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -183,6 +191,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.Value = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -192,6 +201,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.Uri = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -201,6 +211,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.Bounds = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -210,6 +221,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.Role = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -219,6 +231,7 @@ namespace Xwt.Accessibility
 			}
 			set {
 				Backend.RoleDescription = value;
+				OnPropertyChanged ();
 			}
 		}
 
@@ -260,6 +273,47 @@ namespace Xwt.Accessibility
 				backendHost.OnAfterEventRemove (AccessibleEvent.Press, press);
 			}
 		}
+
+		void OnPropertyChanged ([CallerMemberName] string propertyName = null)
+		{
+			if (propertyName != null)
+			{
+				PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		/// <param name="polite">(WPF, XamMac, GtkMac) will use AutomationLiveSetting.Polite/NSAccessibilityPriorityLevel.Medium
+		/// if true and AutomationLiveSetting.Assertive/NSAccessibilityPriorityLevel.High otherwise (default)</param>
+		public void MakeAnnouncement (string message, bool polite = false)
+		{
+			Backend.MakeAnnouncement (message, polite);
+		}
+
+		/// <summary>
+		/// Returns true if Narrator, VoiceOver or a third-party accessibility means are in use
+		/// </summary>
+		public bool AccessibilityInUse {
+			get {
+				return Backend.AccessibilityInUse;
+			}
+		}
+
+		/// <summary>
+		/// Supported on XamMac and GtkMac only
+		/// </summary>
+		public event EventHandler AccessibilityInUseChanged
+		{
+			add
+			{
+				Backend.AccessibilityInUseChanged += value;
+			}
+			remove
+			{
+				Backend.AccessibilityInUseChanged -= value;
+			}
+		}
 	}
 
 	class DefaultNoOpAccessibleBackend : IAccessibleBackend
@@ -285,6 +339,12 @@ namespace Xwt.Accessibility
 		public Uri Uri { get; set; }
 
 		public bool IsAccessible { get; set; }
+
+		public bool AccessibilityInUse { get; }
+
+#pragma warning disable 067
+		public event EventHandler AccessibilityInUseChanged;
+#pragma warning restore 067
 
 		public void AddChild (object nativeChild)
 		{
@@ -333,6 +393,10 @@ namespace Xwt.Accessibility
 		}
 
 		public void InitializeBackend (object frontend, ApplicationContext context)
+		{
+		}
+
+		public void MakeAnnouncement(string message, bool polite = false)
 		{
 		}
 	}

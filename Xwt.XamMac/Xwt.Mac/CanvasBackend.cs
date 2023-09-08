@@ -28,6 +28,7 @@
 using System;
 using AppKit;
 using CoreGraphics;
+using ObjCRuntime;
 using Xwt.Backends;
 
 namespace Xwt.Mac
@@ -125,7 +126,7 @@ namespace Xwt.Mac
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
-			context.InvokeUserCode (delegate {
+			ApplicationContext.InvokeUserCode (delegate {
 				CGContext ctx = NSGraphicsContext.CurrentContext.GraphicsPort;
 
 				//fill BackgroundColor

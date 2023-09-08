@@ -108,6 +108,20 @@ namespace Xwt.Mac
 			v.Frame = new CGRect ((nfloat)rect.X, y, (nfloat)rect.Width, (nfloat)rect.Height);
 		}
 
+		public static void CenterWindow(NSWindow nsChild, NSWindow nsParent)
+		{
+			if (nsParent != null && nsParent.IsVisible)
+			{
+				int x = (int)(nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2);
+				int y = (int)(nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2);
+				nsChild.SetFrameOrigin(new CGPoint(x, y));
+			}
+			else
+			{
+				nsChild.Center();
+			}
+		}
+
 		public static Alignment ToAlignment (this NSTextAlignment align)
 		{
 			switch (align) {
@@ -292,6 +306,8 @@ namespace Xwt.Mac
 		public static int ToMacValue (this FontWeight weight)
 		{
 			switch (weight) {
+			case FontWeight.Ultrathin:
+				return 0;
 			case FontWeight.Thin:
 				return 1;
 			case FontWeight.Ultralight:
@@ -304,6 +320,8 @@ namespace Xwt.Mac
 				return 5;
 			case FontWeight.Medium:
 				return 6;
+			case FontWeight.Mediumbold:
+				return 7;
 			case FontWeight.Semibold:
 				return 8;
 			case FontWeight.Bold:
@@ -314,8 +332,14 @@ namespace Xwt.Mac
 				return 11;
 			case FontWeight.Ultraheavy:
 				return 12;
-			default:
+			case FontWeight.Semiblack:
 				return 13;
+			case FontWeight.Black:
+				return 14;
+			case FontWeight.Ultrablack:
+				return 15;
+			default:
+				return 15;
 			}
 		}
 
@@ -428,7 +452,7 @@ namespace Xwt.Mac
 			ns.BeginEditing ();
 			var r = new NSRange (0, ns.Length);
 			ns.RemoveAttribute (NSStringAttributeKey.ParagraphStyle, r);
-			var pstyle = NSParagraphStyle.DefaultParagraphStyle.MutableCopy () as NSMutableParagraphStyle;
+			var pstyle = NSParagraphStyle.Default.MutableCopy () as NSMutableParagraphStyle;
 			pstyle.Alignment = alignment;
 			ns.AddAttribute (NSStringAttributeKey.ParagraphStyle, pstyle, r);
 			ns.EndEditing ();
@@ -447,7 +471,7 @@ namespace Xwt.Mac
 		{
 			if (str == null)
 				return null;
-			var newText = new StringBuilder ();
+			var newText = new StringBuilder (str.Length);
 			for (int i = 0; i < str.Length; i++) {
 				if (str [i] != '_')
 					newText.Append (str [i]);
@@ -703,11 +727,12 @@ namespace Xwt.Mac
 				// apply color matrix
 				var transformColor = new CIColorMatrix();
 				transformColor.SetDefaults();
-				transformColor.Image = ciImage;
+				transformColor.InputImage = ciImage;
 				transformColor.RVector = new CIVector(0, (float)color.Value.Red, 0);
 				transformColor.GVector = new CIVector((float)color.Value.Green, 0, 0);
 				transformColor.BVector = new CIVector(0, 0, (float)color.Value.Blue);
-				ciImage = (CIImage)transformColor.ValueForKey(new NSString("outputImage"));
+				using (var key = new NSString("outputImage"))
+					ciImage = (CIImage)transformColor.ValueForKey(key);
 
 				var ciCtx = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, null);
 				ciCtx.DrawImage (ciImage, new CGRect (CGPoint.Empty, size), new CGRect (CGPoint.Empty, displaySize));

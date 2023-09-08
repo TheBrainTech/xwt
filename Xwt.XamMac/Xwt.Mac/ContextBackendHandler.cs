@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using AppKit;
 using CoreGraphics;
+using ObjCRuntime;
 using Xwt.Backends;
 using Xwt.Drawing;
 
@@ -275,12 +276,15 @@ namespace Xwt.Mac
 					                         CGPatternTiling.ConstantSpacing, true, c => c.DrawImage (bounds, cgimg));
 				}
 
-				CGContext ctx = gc.Context;
-				var alpha = new[] { (nfloat)pi.Alpha };
-				ctx.SetFillColorSpace (Util.PatternColorSpace);
-				ctx.SetStrokeColorSpace (Util.PatternColorSpace);
-				ctx.SetFillPattern (pattern, alpha);
-				ctx.SetStrokePattern (pattern, alpha);
+				using (pattern)
+				{
+					CGContext ctx = gc.Context;
+					var alpha = new[] { (nfloat)pi.Alpha };
+					ctx.SetFillColorSpace(Util.PatternColorSpace);
+					ctx.SetStrokeColorSpace(Util.PatternColorSpace);
+					ctx.SetFillPattern(pattern, alpha);
+					ctx.SetStrokePattern(pattern, alpha);
+				}
 			}
 		}
 		
@@ -357,7 +361,7 @@ namespace Xwt.Mac
 		public override Matrix GetCTM (object backend)
 		{
 			CGAffineTransform t = GetContextTransform ((CGContextBackend)backend);
-			Matrix ctm = new Matrix (t.xx, t.yx, t.xy, t.yy, t.x0, t.y0);
+			Matrix ctm = new Matrix (t.A, t.B, t.C, t.D, t.Tx, t.Ty);
 			return ctm;
 		}
 

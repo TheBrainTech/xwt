@@ -40,7 +40,12 @@ namespace Xwt.Mac
 		public override void Initialize ()
 		{
 			base.Initialize ();
+
 			var view = new CustomSecureTextField (EventSink, ApplicationContext);
+			view.Cell.UsesSingleLineMode = true;
+			view.Cell.Scrollable = true;
+			view.Cell.Wraps = false;
+
 			ViewObject = new CustomAlignedContainer (EventSink, ApplicationContext, (NSView)view) { DrawsBackground = false };
 			((NSTextFieldCell)Widget.Cell).BezelStyle = NSTextFieldBezelStyle.Square;
 			((NSTextFieldCell)Widget.Cell).Bezeled = true;
@@ -118,6 +123,7 @@ namespace Xwt.Mac
 			this.context = context;
 			this.eventSink = eventSink;
 			Activated += (sender, e) => context.InvokeUserCode (eventSink.OnActivated);
+			Changed += (sender, e) => context.InvokeUserCode (eventSink.OnChanged);
 		}
 
 		public NSView View {
@@ -127,12 +133,6 @@ namespace Xwt.Mac
 		}
 
 		public ViewBackend Backend { get; set; }
-
-		public override void DidChange (NSNotification notification)
-		{
-			base.DidChange (notification);
-			context.InvokeUserCode (eventSink.OnChanged);
-		}
 	}
 }
 

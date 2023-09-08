@@ -1,4 +1,4 @@
-﻿//
+//
 // SaveFileDialogBackend.cs
 //
 // Author:
@@ -24,27 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using AppKit;
 using Foundation;
 using Xwt.Backends;
 
 namespace Xwt.Mac
 {
-	public class SaveFileDialogBackend : NSSavePanel, ISaveFileDialogBackend
+	public class SaveFileDialogBackend : FileDialogBackend, ISaveFileDialogBackend
 	{
-		public SaveFileDialogBackend ()
+		protected override NSSavePanel GetFilePanel ()
 		{
+			return NSSavePanel.SavePanel;
 		}
 
-		#region IFileDialogBackend implementation
-		public void Initialize (System.Collections.Generic.IEnumerable<FileDialogFilter> filters, bool multiselect, string initialFileName)
+		protected override void OnInitialize (IEnumerable<FileDialogFilter> filters, bool multiselect, string initialFileName)
 		{
 			if(!string.IsNullOrEmpty(initialFileName)) {
 				this.NameFieldStringValue = initialFileName;
 				this.DirectoryUrl = new NSUrl(initialFileName, true);
 			}
+			base.OnInitialize (filters, multiselect, initialFileName);
 
-			this.Prompt = Application.TranslationCatalog.GetString("Select File");
+			Panel.Prompt = Application.TranslationCatalog.GetString ("Select File");
 		}
 
 		public bool Run (IWindowFrameBackend parent)
@@ -90,8 +92,6 @@ namespace Xwt.Mac
 
 			}
 		}
-
-		#endregion
 
 		#region IBackend implementation
 

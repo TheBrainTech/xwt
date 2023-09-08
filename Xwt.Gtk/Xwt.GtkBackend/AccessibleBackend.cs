@@ -49,6 +49,12 @@ namespace Xwt.GtkBackend
 		IAccessibleEventSink eventSink;
 		ApplicationContext context;
 
+		public virtual event EventHandler AccessibilityInUseChanged;
+		protected virtual void OnAccessibilityInUseChanged (object sender, EventArgs eventArgs)
+		{
+			AccessibilityInUseChanged?.Invoke (sender, eventArgs);
+		}
+
 		public AccessibleBackend ()
 		{
 		}
@@ -61,27 +67,15 @@ namespace Xwt.GtkBackend
 		public void Initialize (IWidgetBackend parentWidget, IAccessibleEventSink eventSink)
 		{
 			var backend = parentWidget as WidgetBackend;
-			Gtk.Widget nativeWidget = null;
-
-			// Needed only for AtkCocoa.
-			if (Platform.IsMac) {
-				// Gtk.ComboBox and Gtk.ComboBoxEntry a11y doesn't work with Gtk/AtkCocoa.
-				// Workaround:
-				// Set a11y properties to their children.
-				// For Gtk.ComboBoxEntry use its Gtk.Entry, for Gtk.ComboBox -- Gtk.ToggleButton.
-				if (backend is IComboBoxEntryBackend) {
-					nativeWidget = (backend?.Widget as Gtk.Bin)?.Child;
-				} else if (backend is IComboBoxBackend) {
-					foreach (var child in ((Gtk.Container)backend.Widget).AllChildren) {
-						if (child is Gtk.ToggleButton) {
-							nativeWidget = (Gtk.Widget)child;
-							break;
-						}
-					}
-				}
-			}
-
-			Initialize (nativeWidget ?? backend?.Widget, eventSink);
+			if (Platform.IsMac && backend is IComboBoxEntryBackend) {
+				// Gtk.ComboBoxEntry a11y doesn't work with Gtk/AtkCocoa.
+				// Workaround: Set a11y properties to its Gtk.Entry
+				Initialize ((backend?.Widget as Gtk.Bin)?.Child, eventSink);
+			} else if (backend is TableViewBackend && backend.Widget is Gtk.ScrolledWindow) {
+				// due to special Gtk.TreeView scrolling behaviour we need to apply a11y preferences to the tree
+				Initialize ((backend.Widget as Gtk.ScrolledWindow)?.Child, eventSink);
+			} else
+				Initialize (backend?.Widget, eventSink);
 		}
 
 		public void Initialize (IPopoverBackend parentPopover, IAccessibleEventSink eventSink)
@@ -114,7 +108,7 @@ namespace Xwt.GtkBackend
 			this.context = context;
 		}
 
-		public Rectangle Bounds {
+		public virtual Rectangle Bounds {
 			get {
 				int x = 0, y = 0, w = 0, h = 0;
 				(widget.Accessible as AtkComponent)?.GetExtents (out x, out y, out w, out h, Atk.CoordType.Screen);
@@ -155,9 +149,9 @@ namespace Xwt.GtkBackend
 			}
 		}
 
-		public string RoleDescription { get; set; }
+		public virtual string RoleDescription { get; set; }
 
-		public string Title { get; set; }
+		public virtual string Title { get; set; }
 
 		public string Value {
 			get {
@@ -188,7 +182,7 @@ namespace Xwt.GtkBackend
 
 		public virtual Uri Uri { get; set; }
 
-		public bool IsAccessible {
+		public virtual bool IsAccessible {
 			get {
 				return widget.Accessible?.Role != Atk.Role.Invalid;
 			}
@@ -198,6 +192,8 @@ namespace Xwt.GtkBackend
 				//	return widget.Accessible.Role = Atk.Role.Invalid;
 			}
 		}
+
+		public virtual bool AccessibilityInUse => false;
 
 		public virtual void AddChild (object nativeChild)
 		{
@@ -222,12 +218,15 @@ namespace Xwt.GtkBackend
 
 		public void DisableEvent (object eventId)
 		{
-			throw new NotImplementedException ();
 		}
 
 		public void EnableEvent (object eventId)
 		{
-			throw new NotImplementedException ();
+		}
+
+		public virtual void MakeAnnouncement (string message, bool polite = false)
+		{
+			// TODO
 		}
 	}
 }
