@@ -134,7 +134,7 @@ namespace Xwt
 		/// <param name="type">The toolkit type.</param>
 		public static void InitializeAsGuest (ToolkitType type)
 		{
-			Initialize (type, true);
+			Initialize (type, false);
 			toolkit.ExitUserCode (null);
 		}
 		

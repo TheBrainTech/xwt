@@ -84,7 +84,9 @@ namespace Xwt.Mac
 
 			Center ();
 
-			WeakDelegate = this;
+			// TODO: calling this causes the app to not start. I don't know what this was being used for exactly
+			// but I suspect we have to do something else instead of just  eliminating it.
+			//WeakDelegate = this;
 		}
 
 		object IWindowFrameBackend.Window {
