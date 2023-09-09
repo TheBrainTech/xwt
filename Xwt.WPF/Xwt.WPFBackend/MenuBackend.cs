@@ -43,6 +43,7 @@ namespace Xwt.WPFBackend
 		List<MenuItemBackend> items;
 		FontData customFont;
 		UIElement dummyAccessibiltyUIElement;
+		IMenuEventSink eventSink;
 
 		public void Initialize(IMenuEventSink eventSink) {
 			this.eventSink = eventSink;
