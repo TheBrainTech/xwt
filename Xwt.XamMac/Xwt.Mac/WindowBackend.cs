@@ -80,7 +80,10 @@ namespace Xwt.Mac
 			ContentView.Hidden = true;
 
 			// TODO: do it only if mouse move events are enabled in a widget
-			AcceptsMouseMovedEvents = true;
+			// Sept 10, 2023: Removed call to set AcceptsMouseMovedEvents = true
+			// Seems to not have an adverse effect. Restore this if things
+			// stop working
+			//AcceptsMouseMovedEvents = true;
 
 			Center();
 
@@ -434,13 +437,13 @@ namespace Xwt.Mac
 		
 		public override void BecomeMainWindow ()
 		{
-      base.BecomeMainWindow ();
+			base.BecomeMainWindow ();
 			eventSink.OnBecomeMain ();
 		}
 		
 		public override void BecomeKeyWindow ()
 		{
-      base.BecomeKeyWindow ();
+			base.BecomeKeyWindow ();
 			eventSink.OnBecomeKey ();
 		}
 
