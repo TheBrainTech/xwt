@@ -82,11 +82,13 @@ namespace Xwt.Mac
 			// TODO: do it only if mouse move events are enabled in a widget
 			AcceptsMouseMovedEvents = true;
 
-			Center ();
+			Center();
 
-			// TODO: calling this causes the app to not start. I don't know what this was being used for exactly
-			// but I suspect we have to do something else instead of just  eliminating it.
-			//WeakDelegate = this;
+			// Use event handlers instead of taking over WeakDelegate
+			DidResize += HandleDidResize;
+			DidMove += HandleDidMove;
+			WindowShouldClose += HandleWindowShouldClose;
+			WillClose += HandleWillClose;
 		}
 
 		object IWindowFrameBackend.Window {
@@ -319,26 +321,22 @@ namespace Xwt.Mac
 			}
 		}
 
-		[Export ("windowDidResize:")]
-		new void DidResize (NSNotification notification)
+		new void HandleDidResize (object sender, EventArgs eventArgs)
 		{
 			OnBoundsChanged();
 		}
 
-		[Export ("windowDidMove:")]
-		new void DidMove (NSNotification notification)
+		new void HandleDidMove(object sender, EventArgs eventArgs)
 		{
 			OnBoundsChanged ();
 		}
 
-		[Export("windowShouldClose:")]
-		new bool WindowShouldClose (NSObject sender)
+		new bool HandleWindowShouldClose(NSObject sender)
 		{
 			return closePerformed = RequestClose ();
 		}
 
-		[Export ("windowWillClose:")]
-		new void WillClose (NSNotification notification)
+		new void HandleWillClose(object sender, EventArgs eventArgs)
 		{
 			OnHidden ();
 			OnClosed ();
