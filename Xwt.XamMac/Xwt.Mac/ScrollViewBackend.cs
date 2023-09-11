@@ -56,6 +56,7 @@ namespace Xwt.Mac
 			Widget.AutoresizesSubviews = true;
 			Widget.DrawsBackground = false;
 			Widget.ScrollerStyle = NSScrollerStyle.Overlay;
+			
 		}
 
 		protected override void Dispose (bool disposing)
@@ -105,8 +106,9 @@ namespace Xwt.Mac
 		protected override Size CalcFittingSize()
 		{
 			var s = Frontend.Surface.GetPreferredSize ();
-			s.Width = Math.Max (s.Width, Widget.ContentView.Frame.Size.Width);
-			s.Height = Math.Max (s.Height, Widget.ContentView.Frame.Size.Height);
+			// Do not base size on size of ContentView or legacy (non-overlapping) scrollbars will cause the view to shrink each time the size is calculated (WIN-8891)
+			s.Width = Math.Max (s.Width, this.Widget.Bounds.Size.Width);
+			s.Height = Math.Max (s.Height, this.Widget.Bounds.Size.Height);
 			return s;
 		}
 
@@ -265,7 +267,7 @@ namespace Xwt.Mac
 				bounceViewRight.Frame = new CGRect(size.Width, 0, (nfloat)maxBounce, size.Height);
 			}
 		}
-		
+
 		public void SetChildSize (Size s)
 		{
 			// ScrollView child calculation does not take scrolling policies into account
