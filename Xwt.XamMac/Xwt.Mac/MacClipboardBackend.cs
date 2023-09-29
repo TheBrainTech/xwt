@@ -170,7 +170,7 @@ namespace Xwt.Mac
 				using (var stream = new UnmanagedMemoryStream ((byte*)data.Bytes, bytes.Length))
 					stream.Read (bytes, 0, bytes.Length);
 				try {
-					return TransferDataSource.DeserializeValue (bytes, Type.GetType (type.Id));
+					return TransferDataSource.DeserializeValue (bytes, TransferDataType.ToType(type.Id));
 				} catch(System.Runtime.Serialization.SerializationException) {
 					// if data cannot be read, do not crash - return null
 					return null;

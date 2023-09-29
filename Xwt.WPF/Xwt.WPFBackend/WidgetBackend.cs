@@ -937,7 +937,7 @@ namespace Xwt.WPFBackend
 					// Deserialize any data type, including possibly a byte[] that is wrapped in
 					// a header/footer (in another longer byte[]), to get the original value back out.
 					// Now it's a byte array again, or whatever type of object...
-					store.AddValue (type, TransferDataSource.DeserializeValue (value as byte[], Type.GetType(type.Id)));
+					store.AddValue (type, TransferDataSource.DeserializeValue (value as byte[], typeof(byte[])));
 				}
 				else
 					store.AddValue (type, value);

@@ -132,8 +132,8 @@ namespace Xwt
 				case "rtf":
 					return typeof(string);
 				default:
-					// this is probably an error but try using string
-					return typeof(string);
+					// any custom types should be serialized into bytes
+					return typeof(byte[]);
 			}
 		}
 
