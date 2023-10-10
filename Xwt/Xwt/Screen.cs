@@ -89,6 +89,11 @@ namespace Xwt
 				return ToolkitEngine.DesktopBackend.GetScaleFactor (Backend);
 			}
 		}
-	}
+
+        public bool IsSameScreen(object obj)
+        {
+            return ToolkitEngine.DesktopBackend.IsSameScreen(this, obj);
+        }
+    }
 }
 

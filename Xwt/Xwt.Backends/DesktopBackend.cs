@@ -110,6 +110,8 @@ namespace Xwt.Backends
 		{
 			return null;
 		}
-	}
+
+        public abstract bool IsSameScreen (Screen screen, object obj);
+    }
 }
 

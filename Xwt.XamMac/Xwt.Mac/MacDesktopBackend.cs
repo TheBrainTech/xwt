@@ -74,7 +74,16 @@ namespace Xwt.Mac
 
 		public override bool IsPrimaryScreen (object backend)
 		{
-			return NSScreen.Screens[0] == (NSScreen) backend;
+			return IsSameScreen(NSScreen.Screens[0], backend);
+		}
+
+		public override bool IsSameScreen (Screen screen, object backend)
+		{
+			return IsSameScreen ((NSScreen)screen.GetBackend(), backend);
+		}
+
+		private bool IsSameScreen (NSScreen screen, object backend) {
+			return screen.Frame == ((NSScreen)backend).Frame;
 		}
 
 		public override void OpenUrl (string url)

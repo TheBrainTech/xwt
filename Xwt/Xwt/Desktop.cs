@@ -172,7 +172,8 @@ namespace Xwt
 		{
 			foreach (var s in Screens) {
 				var backend = Toolkit.GetBackend (s);
-				if (backend == sb || backend.Equals (sb))
+
+				if (backend == sb || s.IsSameScreen (sb))
 					return s;
 			}
 			return null;
