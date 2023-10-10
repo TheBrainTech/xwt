@@ -138,6 +138,11 @@ namespace Xwt.WPFBackend
 			return ((SWF.Screen)backend).DeviceName;
 		}
 
+		public override bool IsSameScreen(Screen screen, object backend) {
+			bool ret = ((SWF.Screen)screen.GetBackend()).DeviceName == ((SWF.Screen)backend).DeviceName && ((SWF.Screen)screen.GetBackend()).Bounds == ((SWF.Screen)backend).Bounds;
+			return ret;
+		}
+
 		#endregion
 
 		#region P/Invoke
