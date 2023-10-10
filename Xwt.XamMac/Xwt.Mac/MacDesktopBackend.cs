@@ -38,7 +38,7 @@ namespace Xwt.Mac
 	{
 		#region implemented abstract members of DesktopBackend
 
-		internal static MacDesktopBackend Instance;
+		public static MacDesktopBackend Instance;
 		internal static Rectangle desktopBounds;
 
 		public MacDesktopBackend ()
@@ -47,7 +47,7 @@ namespace Xwt.Mac
 			CalcDesktopBounds ();
 		}
 
-		internal void NotifyScreensChanged ()
+		public void NotifyScreensChanged ()
 		{
 			CalcDesktopBounds ();
 			OnScreensChanged ();

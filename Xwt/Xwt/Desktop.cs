@@ -178,8 +178,7 @@ namespace Xwt
 					if (backend == sb || s.IsSameScreen (sb))
 						return s;
 				}
-				// didn't match any screen, maybe screens have changed - can happen if screen layouts has changed
-				// we don't get the event from the OS
+				// didn't match any screen, maybe screens have changed - can happen if screen layouts has changed and for some reason we don't get the event from the OS
 				NotifyScreensChanged();
 				// try again, but not more than once
 				count++;
