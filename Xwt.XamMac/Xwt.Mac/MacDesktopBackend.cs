@@ -83,7 +83,7 @@ namespace Xwt.Mac
 		}
 
 		private bool IsSameScreen (NSScreen screen, object backend) {
-			return screen.Frame == ((NSScreen)backend).Frame;
+			return screen.IsEqual((NSScreen)backend) && screen.Frame == ((NSScreen)backend).Frame;
 		}
 
 		public override void OpenUrl (string url)
