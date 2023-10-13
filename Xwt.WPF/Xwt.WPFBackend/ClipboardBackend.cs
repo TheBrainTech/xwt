@@ -29,6 +29,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Xwt.Backends;
 using WindowsClipboard = System.Windows.Clipboard;
@@ -71,6 +72,49 @@ namespace Xwt.WPFBackend
 			});
 		}
 
+		
+		private void SetClipboardMultipleFormats(string text, string textHtml, string imageFilePath, Xwt.Drawing.Image image) {
+
+			// WIN-9879 indicates that the Keza clipboard code is more robust that the XWT clipboard code and so
+			// this method was imported in from Keza.Windows.WindowsClipboardHelper on Oct 12, 2023.
+			
+			DataObject dataObject = new DataObject();
+			if(text != null) {
+				dataObject.SetText(text);
+			}
+			if(textHtml != null) {
+				dataObject.SetData(DataFormats.Html, GenerateCFHtml(textHtml));
+			}
+			if(image != null) {
+				var src = image.ToBitmap().GetBackend() as WpfImage;
+				var imageSource = src.MainFrame;
+				BitmapSource bitmapSource = ConvertToBitmapSource(imageSource);
+				dataObject.SetImage(bitmapSource);
+			}
+
+			CatchExceptionsAndRetry(() => {
+				WindowsClipboard.SetDataObject(dataObject);
+			});
+		}
+		
+		private BitmapSource ConvertToBitmapSource(ImageSource imageSource) {
+			if(imageSource is BitmapSource) {
+				return imageSource as BitmapSource;
+			} else {
+				// Create a RenderTargetBitmap and draw the ImageSource onto it.
+				RenderTargetBitmap rtb = new RenderTargetBitmap((int)imageSource.Width, (int)imageSource.Height, 96, 96, PixelFormats.Pbgra32);
+				DrawingVisual drawingVisual = new DrawingVisual();
+
+				using(System.Windows.Media.DrawingContext drawingContext = drawingVisual.RenderOpen()) {
+					drawingContext.DrawImage(imageSource, new Rect(0, 0, imageSource.Width, imageSource.Height));
+				}
+
+				rtb.Render(drawingVisual);
+				return rtb;
+			}
+		}
+
+		
 		public override void SetData(TransferDataType type, Func<object> dataSource, bool cleanClipboardFirst = true) {
 			if(type == null)
 				throw new ArgumentNullException("type");
@@ -82,22 +126,14 @@ namespace Xwt.WPFBackend
 			}
 
 			if (type == TransferDataType.Html) {
-				CatchExceptionsAndRetry(() => {
-					WindowsClipboard.SetData(type.ToWpfDataFormat(), GenerateCFHtml(dataSource().ToString()));
-				});
+				SetClipboardMultipleFormats(null, dataSource().ToString(), null, null);
 			} else if (type == TransferDataType.Image) {
 				var img = dataSource() as Xwt.Drawing.Image;
-				if (img != null)
-				{
-					var src = img.ToBitmap().GetBackend() as WpfImage;
-					CatchExceptionsAndRetry(() => {
-						WindowsClipboard.SetData(type.ToWpfDataFormat(), src.MainFrame);
-					});
+				if (img != null) {
+					SetClipboardMultipleFormats(null, null, null, img);
 				}
-			} else if(type == TransferDataType.Uri) {
-				CatchExceptionsAndRetry(() => {
-					WindowsClipboard.SetFileDropList((StringCollection)(dataSource()));
-				});
+			} else if(type == TransferDataType.Text) {
+				SetClipboardMultipleFormats(dataSource().ToString(), null, null, null);
 			} else {
 				CatchExceptionsAndRetry(() => {
 					WindowsClipboard.SetData(type.ToWpfDataFormat(), dataSource());
