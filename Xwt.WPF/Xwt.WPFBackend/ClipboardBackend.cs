@@ -73,7 +73,7 @@ namespace Xwt.WPFBackend
 		}
 
 		
-		private void SetClipboardMultipleFormats(string text, string textHtml, string imageFilePath, Xwt.Drawing.Image image) {
+		private void SetClipboardMultipleFormats(string text, string textHtml, Xwt.Drawing.Image image) {
 
 			// WIN-9879 indicates that the Keza clipboard code is more robust that the XWT clipboard code and so
 			// this method was imported in from Keza.Windows.WindowsClipboardHelper on Oct 12, 2023.
@@ -126,14 +126,18 @@ namespace Xwt.WPFBackend
 			}
 
 			if (type == TransferDataType.Html) {
-				SetClipboardMultipleFormats(null, dataSource().ToString(), null, null);
+				SetClipboardMultipleFormats(null, dataSource().ToString(), null);
 			} else if (type == TransferDataType.Image) {
 				var img = dataSource() as Xwt.Drawing.Image;
 				if (img != null) {
-					SetClipboardMultipleFormats(null, null, null, img);
+					SetClipboardMultipleFormats(null, null, img);
 				}
+			} else if(type == TransferDataType.Uri) {
+				CatchExceptionsAndRetry(() => {
+					WindowsClipboard.SetFileDropList((StringCollection)(dataSource()));
+				});
 			} else if(type == TransferDataType.Text) {
-				SetClipboardMultipleFormats(dataSource().ToString(), null, null, null);
+				SetClipboardMultipleFormats(dataSource().ToString(), null, null);
 			} else {
 				CatchExceptionsAndRetry(() => {
 					WindowsClipboard.SetData(type.ToWpfDataFormat(), dataSource());
