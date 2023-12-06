@@ -168,23 +168,32 @@ namespace Xwt
 			return Screens.FirstOrDefault (s => s.Bounds.Contains (x, y));
 		}
 
+		private static int getScreenCallDepth = 0;
 		internal static Screen GetScreen (object sb)
 		{
-			int count = 0;
-			while(count < 2) {
-				foreach (var s in Screens) {
-					var backend = Toolkit.GetBackend (s);
+			getScreenCallDepth++; // prevent infinite recursion
+			try {
+				int count = 0;
+				while(count < 2) {
+					foreach (var s in Screens) {
+						var backend = Toolkit.GetBackend (s);
 
-					if (backend == sb || s.IsSameScreen (sb))
-						return s;
+						if (backend == sb || s.IsSameScreen (sb))
+							return s;
+					}
+
+					if(getScreenCallDepth == 1) {
+						// didn't match any screen, maybe screens have changed - can happen if screen layouts has changed and for some reason we don't get the event from the OS
+						NotifyScreensChanged();
+					}
+					// try again, but not more than once
+					count++;
 				}
-				// didn't match any screen, maybe screens have changed - can happen if screen layouts has changed and for some reason we don't get the event from the OS
-				NotifyScreensChanged();
-				// try again, but not more than once
-				count++;
+				// give up and assume primary
+				return Screens.Count == 0 ? null : Screens[0];
+			} finally {
+				getScreenCallDepth--;
 			}
-			// give up and assume primary
-			return Screens.Count == 0 ? null : Screens[0];
 		}
 
 		/// <summary>
