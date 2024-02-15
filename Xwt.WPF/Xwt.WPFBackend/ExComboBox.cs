@@ -29,7 +29,6 @@ using System.Windows;
 using SW = System.Windows;
 using SWC = System.Windows.Controls;
 using System.Windows.Controls;
-using System.Runtime.Remoting.Channels;
 
 namespace Xwt.WPFBackend
 {
